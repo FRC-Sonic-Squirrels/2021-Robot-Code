@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 
 /**
@@ -43,7 +42,6 @@ public final class Constants {
 
         public static final boolean kGyroReversed = true;
 
-        //TODO: Look into if these values are still the same with New Comp Bot
         // Comp bot track width (center of wheel to center of wheel) is 0.627m
         public static final double kTrackwidthMeters = 0.627;
         public static final DifferentialDriveKinematics kDriveKinematics = 
@@ -61,6 +59,7 @@ public final class Constants {
         // TalonFX encoders have 2048, Rev Robitics have 4096
         public static final int kEncoderCPR = 2048;
 
+        //TODO: Look into these actual values
         // Aprox 6 inch (0.1524 meters) traction wheels, measured 0.15836 m
         // Measured circumference = 0.509 m
         public static final double kDistancePerWheelRevolutionMeters = 0.509;
@@ -68,8 +67,8 @@ public final class Constants {
                 kDistancePerWheelRevolutionMeters / Math.PI;
 
         // gear reduction from Falcon Gearbox:
-        // Two stages 11:60 then 16:31 for a total gear reduction of 11:120
-        public static final double kGearReduction = 11.0 / 120.0;
+        // Two stages 11:60 then 16:31 for a total gear reduction of 8.68:1
+        public static final double kGearReduction = (50 / 12) * (50 / 24);
 
         // Assumes the encoders are directly mounted on the motor shafts
         public static final double kEncoderDistancePerPulseMeters =

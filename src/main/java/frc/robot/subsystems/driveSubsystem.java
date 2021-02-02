@@ -49,13 +49,6 @@ public class driveSubsystem extends SubsystemBase {
 
   private boolean driveInvert = false;
 
-  // limit max ramp rate of joystick velocity and rotation. Set max units/sec.
-  private SlewRateLimiter speedFilter = new SlewRateLimiter(0.05);
-  private SlewRateLimiter rotationFilter = new SlewRateLimiter(0.05);
-
-  // OLD Gyro, NAVX:
-  //    private final AHRS m_gyro = new AHRS(SPI.Port.kMXP);
-
   // New Gyro, pigeon IMU on the CAN bus
   private PigeonIMU m_gyro = new PigeonIMU(driveConstants.pigeonCANid);
 

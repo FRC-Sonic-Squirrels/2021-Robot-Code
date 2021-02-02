@@ -38,6 +38,7 @@ public class driveCommand extends CommandBase {
       }
     }
 
+    //TODO : Change Throttle to Right Trigger (Toggle)
     if (m_drive.getDriveInvert() == true) {
       if (driveController.getBumper(Hand.kLeft) == false) {
         m_drive.arcadeDrive(-driveController.getY(Hand.kLeft) * 0.5, -driveController.getX(Hand.kRight) * 0.5);

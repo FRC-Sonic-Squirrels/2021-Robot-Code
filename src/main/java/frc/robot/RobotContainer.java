@@ -11,10 +11,12 @@ import static frc.robot.Constants.driveConstants.kDriveKinematics;
 import java.util.List;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
+import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import frc.robot.subsystems.driveSubsystem;
 import frc.robot.Constants.driveConstants;
 import frc.robot.commands.driveCommand;
+import frc.robot.commands.driveInvertCommand;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 
@@ -44,6 +46,73 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
-  private void configureButtonBindings() {}
+  private void configureButtonBindings() {
+      //TODO: Oriente Driver Controls to be more like *Forza Controls* (Right Trigger = Throttle, left = Break/reverse)
+
+      // Driver Controller Buttons 
+    /*
+    final JoystickButton driverAButton = new JoystickButton(m_driveController, Button.kA.value);
+    final JoystickButton driverBButton = new JoystickButton(m_driveController, Button.kB.value);
+    final JoystickButton driverStartButton = new JoystickButton(m_driveController, Button.kStart.value);
+    final JoystickButton driverBackButton = new JoystickButton(m_driveController, Button.kBack.value);
+    final JoystickButton driverLeftBumper = new JoystickButton(m_driveController, Button.kBumperLeft.value);
+    */
+
+    final JoystickButton driverRightBumper = new JoystickButton(m_driveController, Button.kBumperRight.value);
+    
+    
+    // Operator Controller Buttons
+    /*
+    final JoystickButton opAButton = new JoystickButton(m_operatorController, Button.kA.value);
+    final JoystickButton opBButton = new JoystickButton(m_operatorController, Button.kB.value);
+    final JoystickButton opXButton = new JoystickButton(m_operatorController, Button.kX.value);
+    final JoystickButton opYButton = new JoystickButton(m_operatorController, Button.kY.value);
+    final JoystickButton opStartButton = new JoystickButton(m_operatorController, Button.kStart.value);
+    final JoystickButton opBackButton = new JoystickButton(m_operatorController, Button.kBack.value);
+    final JoystickButton opLeftBumper = new JoystickButton(m_operatorController, Button.kBumperLeft.value);
+    final JoystickButton opRightBumper = new JoystickButton(m_operatorController, Button.kBumperRight.value);
+    final POVButton opDPadUp = new POVButton(m_operatorController, 0);
+    final POVButton opDPadDown = new POVButton(m_operatorController, 180);
+    */
+    
+    // Driver Controls
+      // Right Bumper - invert drive controls
+      // Left Bumper - Slow down robot by 1/2
+      
+      //TODO: See why whenPressed is throwing an error
+      //driverRightBumper.whenPressed(new driveInvertCommand(m_drive));
+    
+    // Operator Controls
+      // Left Joystick - manual turret control
+      // Left Trigger - manually move the indexer backwards
+      // Right Trigger - manually move the indexer forwards
+      // A Button - hold to deploy intake
+      // B Button - stage balls for shooting
+      // X Button - restage balls
+      // Y Button - hold to eject balls out the back of the indexer
+      // Right Bumper - shoot with hood up
+      // Left Bumper - shoot with hood down
+      // D Pad Up - manually increase ball count
+      // D Pad Down - manually decrease ball count
+      // Start Button - zero the turret
+      // Back Button - spool up the shooter
+      
+      /*
+      opAButton.whileHeld(new intakeDeployCommand(m_intake));
+      opBButton.whenPressed(new indexerStageForShootingCommand(m_indexer));
+      opXButton.whenPressed(new indexerRestageCommand(m_indexer));
+      opYButton.whileHeld(new indexerReverseEjectCommand(m_indexer));
+      opRightBumper.whileHeld(new hoodUpAutoShootCommand(m_indexer, m_turret, m_shooter, m_limelight));
+      opLeftBumper.whileHeld(new hoodDownAutoShootCommand(m_indexer, m_turret, m_shooter, m_limelight));
+      opDPadUp.whenPressed(() -> m_indexer.setBallCount(m_indexer.getBallCount() + 1));
+      opDPadDown.whenPressed(() -> m_indexer.setBallCount(m_indexer.getBallCount() - 1));
+      opBackButton.toggleWhenPressed(new shooterSpoolCommand(m_shooter));
+
+      */
+
+
+
+
+  }
 
 }
