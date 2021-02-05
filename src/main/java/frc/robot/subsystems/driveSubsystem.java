@@ -18,14 +18,12 @@ import static frc.robot.Constants.driveConstants.kGearReduction;
 import static frc.robot.Constants.driveConstants.kGyroReversed;
 import static frc.robot.Constants.driveConstants.kDriveKinematics;
 import static frc.robot.Constants.driveConstants.driveTimeout;
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.PigeonIMU;
-import edu.wpi.first.wpilibj.SlewRateLimiter;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -36,9 +34,7 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpiutil.math.MathUtil;
-import frc.robot.Constants.driveConstants;
-import edu.wpi.first.wpilibj.drive.RobotDriveBase;
+import static frc.robot.Constants.driveConstants;
 
 public class driveSubsystem extends SubsystemBase {
 
@@ -47,14 +43,14 @@ public class driveSubsystem extends SubsystemBase {
   private WPI_TalonFX falcon3_rightLead   = new WPI_TalonFX(driveConstants.falcon3_rightLead);
   private WPI_TalonFX falcon4_rightFollow = new WPI_TalonFX(driveConstants.falcon4_rightFollow);
 
+  // teleop driver control fine tuning
   private boolean driveInvert = false;
+  private boolean forzaModeEnabled = false;
+  private boolean squaredInputs = false;
 
   // limit max ramp rate of joystick velocity and rotation. Set max units/sec.
-  private SlewRateLimiter speedFilter = new SlewRateLimiter(0.05);
-  private SlewRateLimiter rotationFilter = new SlewRateLimiter(0.05);
-
-  // OLD Gyro, NAVX:
-  //    private final AHRS m_gyro = new AHRS(SPI.Port.kMXP);
+  //private SlewRateLimiter speedFilter = new SlewRateLimiter(0.05);
+  //private SlewRateLimiter rotationFilter = new SlewRateLimiter(0.05);
 
   // New Gyro, pigeon IMU on the CAN bus
   private PigeonIMU m_gyro = new PigeonIMU(driveConstants.pigeonCANid);
@@ -92,7 +88,7 @@ public class driveSubsystem extends SubsystemBase {
     // Voltage limits
     setVoltageLimit(11);
 
-    // set Ramp up speed, time in seconds (smaller is more responseive, 0 disables)
+    // set Ramp up speed, time in seconds (smaller is more responsive, 0 disables)
     // configOpenLoopRampRate(0.25);
     
     // set brake mode
@@ -139,7 +135,7 @@ public class driveSubsystem extends SubsystemBase {
     double rightDist = getRightPosition();
     m_odometry.update(Rotation2d.fromDegrees(getHeading()), leftDist, rightDist);
 
-    // log drive train and data to Smartdashboard
+    // log drive train and data to SmartDashboard
     /* Display 9-axis Heading (requires magnetometer calibration to be useful) */
     SmartDashboard.putNumber("IMU_FusedHeading", m_gyro.getFusedHeading());
     // NOTE: call getFusedHeading(FusionStatus) to detect gyro errors
@@ -157,7 +153,7 @@ public class driveSubsystem extends SubsystemBase {
   }
   
   /**
-   * Returns the distance in Meteres the left wheel has travelled
+   * Returns the distance in Meters the left wheel has travelled
    *
    * @return distance in meters
    */
@@ -167,7 +163,7 @@ public class driveSubsystem extends SubsystemBase {
   }
 
   /**
-   * Returns the distance in Meteres the right wheel has travelled
+   * Returns the distance in Meters the right wheel has travelled
    *
    * @return distance in meters
    */
@@ -222,7 +218,7 @@ public class driveSubsystem extends SubsystemBase {
       return current_pose;
     }
 
-    // new odometery class starting from current position
+    // new odometry class starting from current position
     Rotation2d current_heading = Rotation2d.fromDegrees(getHeading());
     DifferentialDriveOdometry future_odometry =
         new DifferentialDriveOdometry(current_heading, current_pose);
@@ -431,10 +427,10 @@ public class driveSubsystem extends SubsystemBase {
   }
 
   /**
-   * Disablecurrent limiting for drivetrain.
+   * Disable current limiting for drivetrain.
    */
   public void disableCurrentLimit() {
-    // not completely disabled, 4x80 amps is 240Amps, wich is almost 100% of the battery output
+    // not completely disabled, 4x80 amps is 240Amps, which is almost 100% of the battery output
     setCurrentLimit(new SupplyCurrentLimitConfiguration(true, 80, 60, 1));
   }
 
@@ -444,6 +440,30 @@ public class driveSubsystem extends SubsystemBase {
 
   public void setDriveInvert(boolean invert) {
     driveInvert = invert;
+  }
+
+  public void toggleDriveInverted() {
+    driveInvert = ! driveInvert;
+  }
+
+  public boolean getForzaModeEnabled() {
+    return forzaModeEnabled;
+  }
+
+  public void setForzaModeEnabled(boolean forzaMode) {
+    forzaModeEnabled = forzaMode;
+  }
+
+  public void toggleForzaMode() {
+    forzaModeEnabled = ! forzaModeEnabled;
+  }
+
+  public boolean getSquaredInputs() {
+    return squaredInputs;
+  }
+
+  public void toggleSquaredInputs() {
+    squaredInputs = ! squaredInputs;
   }
 
 }

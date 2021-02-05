@@ -8,26 +8,20 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.driveSubsystem;
+import frc.robot.subsystems.indexerSubsystem;
 
-public class driveInvertCommand extends CommandBase {
+public class indexerEjectCommand extends CommandBase {
 
-  driveSubsystem m_drive;
+  private indexerSubsystem m_indexer;
 
-  public driveInvertCommand(driveSubsystem drive) {
-    addRequirements(drive);
-    m_drive = drive;
+  public indexerEjectCommand(indexerSubsystem indexer) {
+    addRequirements(indexer);
+    m_indexer = indexer;
   }
 
   @Override
   public void initialize() {
-    if (m_drive.getDriveInvert() == true) {
-      m_drive.setDriveInvert(false);
-    }
-
-    else {
-      m_drive.setDriveInvert(true);
-    }
+    m_indexer.ejectIndexer();
   }
 
   @Override
@@ -36,10 +30,11 @@ public class driveInvertCommand extends CommandBase {
 
   @Override
   public void end(boolean interrupted) {
+    m_indexer.stopIndexer();
   }
 
   @Override
   public boolean isFinished() {
-    return true;
+    return false;
   }
 }
