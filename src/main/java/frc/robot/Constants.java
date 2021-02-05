@@ -58,7 +58,7 @@ public final class Constants {
         public static final double kPDriveVel = 5.0; // frc-characterization 14.4
         public static final double kDDriveVel = 0.0; // frc-characterization 5.16
 
-        // TalonFX encoders have 2048, Rev Robitics have 4096
+        // TalonFX encoders have 2048, Rev Robotics have 4096
         public static final int kEncoderCPR = 2048;
 
         // Aprox 6 inch (0.1524 meters) traction wheels, measured 0.15836 m
