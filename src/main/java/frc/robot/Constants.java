@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
  * 
  *  ...
  * 
- * private WPI_TalonFX leftLeadFalcon  = new WPI_TalonFX(canId.leftLeadFalcon);
+ * private WPI_TalonFX leftLeadFalcon  = new WPI_TalonFX(canId.leftLeadFalcon);che
  * 
  */
 public final class Constants {
@@ -73,5 +73,13 @@ public final class Constants {
         // Assumes the encoders are directly mounted on the motor shafts
         public static final double kEncoderDistancePerPulseMeters =
                 (kDistancePerWheelRevolutionMeters * kGearReduction) / (double) kEncoderCPR;
+    }
+
+    public static final class shooterConstants {
+        public static final int shooter1 = 16;
+        public static final int shooter2 = 17;
+        public static final int shooterTimeout = 30;
+        public static final int shooterSlotIdx = 0;
+        public static final int shooterHood = 6;
     }
 }
