@@ -127,122 +127,46 @@ public class RobotContainer {
       opBackButton.whenPressed(new shooterSpoolCommand(m_shooter));
   }
   
+
+    /**
+   * Use this to pass the autonomous command to the main {@link Robot} class.
+   *
+   * @return the command to run in autonomous
+   */
+  public Command getAutonomousCommand(String autoName) {
+
+    if (autoName == "donothing") {
+      return getNoAutonomousCommand();
+    }
+    else if (autoName == "figure8") {
+      // return getAutonomousFigure8Command();
+    }
+    else if (autoName == "barrel") {
+      // return getAutonomousBarrelCommand();
+    }
+    else if (autoName == "slalom") {
+      //return getAutonomousSlalomCommand();
+    }
+    else if (autoName == "bounce") {
+      //return getAutonomousBounceCommand();
+    }
+
+    // return do nothing if we don't recognize the choice
+    System.out.println("Warning: No autonomous command specified.");
+    return getNoAutonomousCommand();
+  }
+
   /**
    * Do nothing during auton
    * 
    * @return Auton do nothing command
    */
-  public Command noAutonomous() {
+  public Command getNoAutonomousCommand() {
     return new RunCommand(() -> m_drive.tankDriveVolts(0, 0));
   }
 
-  public Command straightOn3Ball() {
-    RamseteCommand moveBack1 = createTrajectoryCommand(new Pose2d(0, 0, new Rotation2d(0)), List.of(new Translation2d(-0.5, 0)), new Pose2d(-1, 0, new Rotation2d(0)), true, 2.5, 0.75);
-    
-    return moveBack1.alongWith(new InstantCommand(() -> m_shooter.setShooterRPM(3000), m_shooter)).
-    andThen(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_limelight, true));
-  }
-
-  public Command straightOn3BallForward() {
-    RamseteCommand moveForward1 = createTrajectoryCommand(new Pose2d(0, 0, new Rotation2d(0)), List.of(new Translation2d(0.25, 0)), new Pose2d(0.5, 0, new Rotation2d(0)), false, 2.5, 0.75);
-    
-    return 
-    new InstantCommand(() -> m_shooter.setShooterPID(0.0005, 0.000000, 0, 0.00018, 250), m_shooter).
-    andThen(moveForward1.alongWith(new InstantCommand(() -> m_shooter.setShooterRPM(2800), m_shooter))).
-    andThen(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_limelight, false));
-  }
-
-  public Command straightOn6BallRendezvous() {//Gets the 3 balls on rendezvous point towards center of field
-    RamseteCommand moveBack1 = createTrajectoryCommand(new Pose2d(0, 0, new Rotation2d(0)), List.of(new Translation2d(-0.5, 0)), new Pose2d(-1, 0, new Rotation2d(0)), true, 2.5, 0.75);
-    RamseteCommand moveBack2 = createTrajectoryCommand(new Pose2d(-1, 0, new Rotation2d(0.4)), List.of(new Translation2d(-1, 0)), new Pose2d(-2, 0, new Rotation2d(0)), true, 2.5, 0.5); 
-    RamseteCommand moveForward3 = createTrajectoryCommand(new Pose2d(-2, 0, new Rotation2d(0)), List.of(new Translation2d(-1, 0)), new Pose2d(0, 0, new Rotation2d(0)), false, 2.5, 1);
-    return 
-    new InstantCommand(() -> m_shooter.setShooterPID(0.0005, 0.00000025, 0, 0.00022, 250), m_shooter).alongWith(new InstantCommand(() -> m_indexer.setBallCount(3), m_indexer)).
-    andThen((new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_limelight, true))).
-    andThen(moveBack1.alongWith(new InstantCommand(() -> m_shooter.setShooterRPM(3550), m_shooter))).
-    andThen(new WaitUntilCommand(() -> m_indexer.getBallCount() == 0)).
-    andThen(moveBack2.deadlineWith(new intakeDeployCommand(m_intake), new indexerDefaultCommand(m_indexer).perpetually()).
-    andThen(moveForward3.deadlineWith(new InstantCommand(() -> m_shooter.setShooterRPM(3550), m_shooter), new InstantCommand(() -> m_turret.setAngleDegrees(3.0), m_turret), new indexerStageForShootingCommand(m_indexer))).
-    andThen(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_limelight, true)));
-  }
-
-  // same as straightOn3Ball() but with sing SequentialCommandGroup
-  public Command straightOn3Ball_reorg() {
-   
-    // power port is directly in front of robot, center limelight over initiation line
-    powerPortLocation = new Translation2d(feet2Meters(10), 0);
-
-    Command ac = new SequentialCommandGroup(
-      // Do these setup things in parallel
-      new ParallelCommandGroup(
-        new InstantCommand(() -> m_indexer.setBallCount(3), m_indexer),
-        new SequentialCommandGroup(
-          new InstantCommand(() -> m_shooter.setShooterRPM(3550), m_shooter),  // aprox rpm for 13'
-          new InstantCommand(() -> m_shooter.deployHood(), m_shooter)    // deploy hood, set ll pipeline
-        ),
-        createTrajectoryCommand(new Pose2d(0, 0, new Rotation2d(0)), List.of(new Translation2d(-0.5, 0)), new Pose2d(-1, 0, new Rotation2d(0)), true, 2.5, 0.75)
-      ),
-      new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_limelight, true, true)
-    );
-
-    return ac;
-  }
-
-
-  public Command rightSide3Ball() {
-    RamseteCommand moveBack1 = createTrajectoryCommand(new Pose2d(0, 0, new Rotation2d(0)), List.of(new Translation2d(-0.1, 0)), new Pose2d(-1, 0, new Rotation2d(0)), true, 2.5, 0.75);
-
-    return 
-    new InstantCommand(() -> m_shooter.setShooterPID(0.0005, 0.00000025, 0, 0.00022, 250), m_shooter).
-    andThen(moveBack1.alongWith(new InstantCommand(() -> m_shooter.setShooterRPM(3550), m_shooter), new InstantCommand(() -> m_turret.setAngleDegrees(-3), m_turret))).
-    andThen(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_limelight, true));
-  }
-
-  public Command rightSide4Ball() {
-    RamseteCommand moveBack1 = createTrajectoryCommand(new Pose2d(0, 0, new Rotation2d(0)), List.of(new Translation2d(-1.15, 0)), new Pose2d(-2.54, 0, new Rotation2d(0)), true, 2.5, 1);
-    RamseteCommand moveForward2 = createTrajectoryCommand(new Pose2d(-2.54, 0, new Rotation2d(0)), List.of(new Translation2d(-1.15, 0)), new Pose2d(0, 0, new Rotation2d(0)), false, 3.5, 1.5);
-    
-    return 
-    new InstantCommand(() -> m_shooter.setShooterPID(0.0005, 0.00000025, 0, 0.00022, 250), m_shooter).
-    andThen(moveBack1.deadlineWith(new intakeDeployCommand(m_intake), new indexerDefaultCommand(m_indexer).perpetually(), new InstantCommand(() -> m_indexer.runIntake()))).
-    andThen(moveForward2.alongWith(new InstantCommand(() -> m_shooter.setShooterRPM(3550), m_shooter), new InstantCommand(() -> m_turret.setAngleDegrees(-3), m_turret)).
-    andThen(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_limelight, true)));
-  }
-
-  public Command rightSide5Ball() {
-    RamseteCommand moveBack1 = createTrajectoryCommand(new Pose2d(0, 0, new Rotation2d(0)), List.of(new Translation2d(-1.15, 0)), new Pose2d(-2.54, 0, new Rotation2d(0)), true, 2, 1);
-    RamseteCommand moveBack2 = createTrajectoryCommand(new Pose2d(-2.54, 0, new Rotation2d(0)), List.of(new Translation2d(-2.6, 0)), new Pose2d(-3.5, 0, new Rotation2d(0)), true, 2.5, 1);
-    RamseteCommand moveForward3 = createTrajectoryCommand(new Pose2d(-2.85, 0, new Rotation2d(0)), List.of(new Translation2d(-2, 0)), new Pose2d(-1.5, 0, new Rotation2d(0)), false, 2.5, 1);
-    
-    return 
-    new InstantCommand(() -> m_shooter.setShooterPID(0.0005, 0.00000025, 0, 0.00022, 250), m_shooter).
-    andThen(moveBack1.deadlineWith(new intakeDeployCommand(m_intake), new indexerDefaultCommand(m_indexer).perpetually())).
-    andThen(moveBack2.deadlineWith(new intakeDeployCommand(m_intake), new indexerDefaultCommand(m_indexer).perpetually())).
-    andThen(new WaitCommand(2).deadlineWith(new intakeDeployCommand(m_intake), new indexerDefaultCommand(m_indexer).perpetually())).
-    andThen(moveForward3.alongWith(new InstantCommand(() -> m_shooter.setShooterRPM(3550), m_shooter), new InstantCommand(() -> m_turret.setAngleDegrees(-3), m_turret), new indexerStageForShootingCommand(m_indexer))).
-    andThen(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_limelight, true));
-  }
-
-  public Command rightSide6Ball() {
-    RamseteCommand moveBack1 = createTrajectoryCommand(new Pose2d(0, 0, new Rotation2d(0)), List.of(new Translation2d(-1.15, 0)), new Pose2d(-2.49, 0, new Rotation2d(0)), true, 3, 2);
-    RamseteCommand moveBack2 = createTrajectoryCommand(new Pose2d(-2.49, 0, new Rotation2d(0)), List.of(new Translation2d(-2.6, 0)), new Pose2d(-3.35, 0, new Rotation2d(0)), true, 3, 1.5);
-    RamseteCommand moveBack3 = createTrajectoryCommand(new Pose2d(-3.35, 0, new Rotation2d(0)), List.of(new Translation2d(-3.6, 0)), new Pose2d(-4.35, 0, new Rotation2d(0)), true, 3, 1.5);
-    RamseteCommand moveForward4 = createTrajectoryCommand(new Pose2d(-4.35, 0, new Rotation2d(0)), List.of(new Translation2d(-4, 0)), new Pose2d(-1.5, 0, new Rotation2d(0)), false, 3.75, 2.75);
-
-    return 
-    new InstantCommand(() -> m_shooter.setShooterPID(0.0005, 0.00000025, 0, 0.00022, 250), m_shooter).alongWith(new InstantCommand(() -> m_indexer.setBallCount(3))).
-    andThen(new InstantCommand(() -> m_turret.setAngleDegrees(-3), m_turret)).
-    andThen(new WaitUntilCommand(() -> m_indexer.getBallCount() == 0).deadlineWith(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_limelight, true))).
-    andThen(moveBack1.deadlineWith(new intakeDeployCommand(m_intake), new indexerDefaultCommand(m_indexer).perpetually())).
-    andThen(moveBack2.deadlineWith(new intakeDeployCommand(m_intake), new indexerDefaultCommand(m_indexer).perpetually())).
-    andThen(new WaitCommand(0.5).deadlineWith(new intakeDeployCommand(m_intake), new indexerDefaultCommand(m_indexer).perpetually())).
-    andThen(moveBack3.deadlineWith(new intakeDeployCommand(m_intake), new indexerDefaultCommand(m_indexer).perpetually()).
-    andThen(new WaitCommand(0.75).deadlineWith(new intakeDeployCommand(m_intake), new indexerDefaultCommand(m_indexer).perpetually())).
-    andThen(moveForward4.deadlineWith(new InstantCommand(() -> m_shooter.setShooterRPM(3550), m_shooter), new InstantCommand(() -> m_turret.setAngleDegrees(-3), m_turret), new indexerStageForShootingCommand(m_indexer)))).
-    andThen(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_limelight, true));
-  }
-
-  public Command rightSide6Ball_reorg() {
+  // Complex Example from 2020 Infinite Recharge autonomous
+  public Command rightSide6Ball_InfiniteRecharge() {
 
     // power port is left of robot, 
     // 1. front of frame over initiation line
@@ -303,43 +227,6 @@ public class RobotContainer {
     return  ac;
   }
 
-
-  public Command rightSide6BallTest() {
-    RamseteCommand moveBack1 = createTrajectoryCommand(new Pose2d(0, 0, new Rotation2d(0)), List.of(new Translation2d(-1.15, 0)), new Pose2d(-1.75, 0, new Rotation2d(0)), true, 2.5, 1.5);
-    RamseteCommand moveBack2 = createTrajectoryCommand(new Pose2d(-1.75, 0, new Rotation2d(0)), List.of(new Translation2d(-2.6, 0)), new Pose2d(-4.35, 0, new Rotation2d(0)), true, 0.75, 0.5);
-    RamseteCommand moveForward3 = createTrajectoryCommand(new Pose2d(-4.35, 0, new Rotation2d(0)), List.of(new Translation2d(-4, 0)), new Pose2d(-2, 0, new Rotation2d(0)), false, 2.5, 1.5);
-
-    // To try and save time, this version continues through the 3 balls slowly rather than stopping at each one
-    return 
-    new InstantCommand(() -> m_shooter.setShooterPID(0.0005, 0.00000025, 0, 0.00022, 250), m_shooter).
-    alongWith(new InstantCommand(() -> m_indexer.setBallCount(3))).
-    andThen(new InstantCommand(() -> m_turret.setAngleDegrees(-3), m_turret), new InstantCommand(() -> m_shooter.setShooterRPM(3550), m_shooter), new InstantCommand(() -> m_limelight.setLEDMode(0))).
-    andThen(moveBack1.deadlineWith(new intakeDeployCommand(m_intake), new indexerDefaultCommand(m_indexer).perpetually())).
-    andThen(new WaitUntilCommand(() -> m_indexer.getBallCount() == 0).deadlineWith(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_limelight, true))).
-    andThen(moveBack2.deadlineWith(new intakeDeployCommand(m_intake), new indexerDefaultCommand(m_indexer).perpetually())).
-    andThen(moveForward3.deadlineWith(new InstantCommand(() -> m_shooter.setShooterRPM(3550), m_shooter), new InstantCommand(() -> m_turret.setAngleDegrees(-3), m_turret), new indexerStageForShootingCommand(m_indexer), new InstantCommand(() -> m_limelight.setLEDMode(0)))).
-    andThen(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_limelight, true, true));
-  }
-
-  public Command middle3Ball() {
-    RamseteCommand moveBack1 = createTrajectoryCommand(new Pose2d(0, 0, new Rotation2d(0)), List.of(new Translation2d(-0.1, 0)), new Pose2d(-1, 0, new Rotation2d(0)), true, 2.5, 0.75);
-    
-    return 
-    new InstantCommand(() -> m_shooter.setShooterPID(0.0005, 0.00000025, 0, 0.00022, 250), m_shooter).
-    andThen(moveBack1.deadlineWith(new InstantCommand(() -> m_shooter.setShooterRPM(3550), m_shooter), new InstantCommand(() -> m_turret.setAngleDegrees(3), m_turret))).
-    andThen(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_limelight, true));
-  }
-
-  public Command middle4BallTest() {
-    RamseteCommand moveBack1 = createTrajectoryCommand(new Pose2d(0, 0, new Rotation2d(0)), List.of(new Translation2d(-0.75, -0.25)), new Pose2d(-2.54, -0.5, new Rotation2d(0)), true, 3.5, 1.5);
-    RamseteCommand moveForward2 = createTrajectoryCommand(new Pose2d(-2.54, -0.5, new Rotation2d(0)), List.of(new Translation2d(-0.75, -0.25)), new Pose2d(0, 0, new Rotation2d(0)), true, 3.5, 1.5);
-    
-    return
-    new InstantCommand(() -> m_shooter.setShooterPID(0.0005, 0.00000025, 0, 0.00022, 250), m_shooter).
-    andThen(moveBack1.deadlineWith(new intakeDeployCommand(m_intake), new indexerDefaultCommand(m_indexer).perpetually())).
-    andThen(moveForward2.alongWith(new InstantCommand(() -> m_shooter.setShooterRPM(3550), m_shooter), new InstantCommand(() -> m_turret.setAngleDegrees(3)))).
-    andThen(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_limelight, true));
-  }
 
   /**
    * createTrajectoryCommand - given a start pose, some intermediate points, and a finish pose, create
