@@ -33,14 +33,11 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.Constants.driveConstants;
-import frc.robot.Constants.pwmConstants;
 import frc.robot.subsystems.driveSubsystem;
-import frc.robot.subsystems.elevatorSubsystem;
 import frc.robot.subsystems.indexerSubsystem;
 import frc.robot.subsystems.intakeSubsystem;
 import frc.robot.subsystems.turretSubsystem;
 import frc.robot.subsystems.shooterSubsystem;
-import frc.robot.subsystems.blinkinSubsystem;
 import frc.robot.commands.*;
 
 public class RobotContainer {
@@ -49,8 +46,6 @@ public class RobotContainer {
   public Translation2d powerPortLocation = new Translation2d(feet2Meters(10), 0);
 
   // Subsystems
-  // NOTE: blinkin needs to be first and public static to be accessed by other subsystems
-  public final static blinkinSubsystem m_blinkin = new blinkinSubsystem(pwmConstants.blinkin);
   // All other subsystems should be private
   public final driveSubsystem m_drive = new driveSubsystem();
   // public so that it can get the right instance.
@@ -58,8 +53,6 @@ public class RobotContainer {
   private final turretSubsystem m_turret = new turretSubsystem();
   public final shooterSubsystem m_shooter = new shooterSubsystem();
   public static final indexerSubsystem m_indexer = new indexerSubsystem();
-  //private final elevatorSubsystem m_elevator = new elevatorSubsystem();
-  //private final controlPanelSubsystem m_controlPanelMotors = new controlPanelSubsystem();
   private final intakeSubsystem m_intake = new intakeSubsystem();
   public static XboxController m_driveController = new XboxController(driveConstants.driveController);
   public static XboxController m_operatorController = new XboxController(driveConstants.operatorController);
@@ -98,16 +91,12 @@ public class RobotContainer {
     final POVButton opDPadDown = new POVButton(m_operatorController, 180);
     
     // Driver Controls
-      // Y Button to deploy the elevator
-      // X Button to retract the elevator
       // A Button toggle Forza mode
       // B Button toggle square driver inputs
-      // Left Trigger - climber down (raise robot)
-      // Right Trigger - climber up (lower robot)
+      // Left Trigger - reverse throttle (Forza mode)
+      // Right Trigger - forward throttle (Forza mode)
       // Right Bumper - invert drive controls
-      // Left Bumper - Slow down robot by 1/2
-      //driverYButton.whenPressed(new InstantCommand(() -> m_turret.setAngleDegrees(0), m_turret).andThen(() -> m_elevator.deployElevator()));
-      //driverXButton.whenPressed(() -> m_elevator.retractElevator());
+      // Left Bumper - turbo boost, FULL SPEED
       driverRightBumper.whenPressed(new driveInvertCommand(m_drive));
       driverAButton.whenPressed(new InstantCommand(() -> m_drive.toggleForzaMode()));
       driverBButton.whenPressed(new InstantCommand(() -> m_drive.toggleSquaredInputs()));

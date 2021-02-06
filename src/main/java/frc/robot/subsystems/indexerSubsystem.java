@@ -39,7 +39,6 @@ public class indexerSubsystem extends SubsystemBase {
   private boolean ejectBallStep3 = false;
   private int ballCount = 0;
   private int restageState = 0;
-  private blinkinSubsystem m_blinkin = RobotContainer.m_blinkin;
   private boolean finishedSingleFeed;
 
   public indexerSubsystem() {
@@ -215,7 +214,6 @@ public class indexerSubsystem extends SubsystemBase {
     setBeltsPercentOutput(0.0);
     setKickerPercentOutput(0.0);
     setIntakePercentOutput(0.0);
-    m_blinkin.solid_orange();
   }
 
   /**
@@ -252,7 +250,6 @@ public class indexerSubsystem extends SubsystemBase {
       setIntakePercentOutput(1);
       setBeltsRPM(6380);
       setKickerPercentOutput(0.3);
-      m_blinkin.solid_green();
   }
 
   /**
@@ -262,7 +259,6 @@ public class indexerSubsystem extends SubsystemBase {
       setIntakePercentOutput(0);
       setBeltsRPM(6380);
       setKickerPercentOutput(0);
-      m_blinkin.solid_blue();
   }
 
   /**
@@ -272,7 +268,6 @@ public class indexerSubsystem extends SubsystemBase {
       setIntakePercentOutput(-1);
       setBeltsRPM(-6380);
       setKickerPercentOutput(-0.3);
-      m_blinkin.strobe_red();
   }
 
   /**
