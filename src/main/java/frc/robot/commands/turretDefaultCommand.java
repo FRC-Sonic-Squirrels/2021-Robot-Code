@@ -7,31 +7,38 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.driveSubsystem;
+import frc.robot.RobotContainer;
+import frc.robot.subsystems.turretSubsystem;
 
-public class driveInvertCommand extends CommandBase {
+public class turretDefaultCommand extends CommandBase {
+  
+  turretSubsystem m_turret;
+  XboxController opController = RobotContainer.m_operatorController;
 
-  driveSubsystem m_drive;
-
-  public driveInvertCommand(driveSubsystem drive) {
-    addRequirements(drive);
-    m_drive = drive;
+  public turretDefaultCommand(turretSubsystem turret) {
+    addRequirements(turret);
+    m_turret = turret;
   }
 
   @Override
   public void initialize() {
-    if (m_drive.getDriveInvert() == true) {
-      m_drive.setDriveInvert(false);
-    }
-
-    else {
-      m_drive.setDriveInvert(true);
-    }
   }
 
   @Override
   public void execute() {
+    if (Math.abs(opController.getX(Hand.kLeft)) >= 0.1) {
+      m_turret.setPercentOutput(opController.getX(Hand.kLeft) * 0.5);
+    }
+    else {
+      m_turret.setPercentOutput(0);
+    }
+
+    if (opController.getStartButton() == true) {
+      m_turret.turretHome();
+    }
   }
 
   @Override
@@ -40,6 +47,6 @@ public class driveInvertCommand extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    return true;
+    return false;
   }
 }

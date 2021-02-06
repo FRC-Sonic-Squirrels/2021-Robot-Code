@@ -1,95 +1,104 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot;
 
+import static frc.robot.Constants.limeLightConstants.targetHeight_meters;
+import static frc.robot.Constants.limeLightConstants.limeLightHeight_meters;
+import static frc.robot.Constants.limeLightConstants.limeLightAngle_degrees;
+
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.Compressor;
 
-/**
- * The VM is configured to automatically run this class, and to call the functions corresponding to
- * each mode, as described in the TimedRobot documentation. If you change the name of this class or
- * the package after creating this project, you must also update the build.gradle file in the
- * project.
- */
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
-
+  public static boolean manualMode = false;
+  public static boolean turretHome = false;
   private RobotContainer m_robotContainer;
+  public PowerDistributionPanel m_pdp = new PowerDistributionPanel();
+  // TODO: if we really aren't using a compressor, remove all references to compressor
+  public Compressor Compressor;
+  SendableChooser <String> chooser = new SendableChooser<>();
+  public static double distance_meters = 0.0;
 
-  /**
-   * This function is run when the robot is first started up and should be used for any
-   * initialization code.
-   */
   @Override
   public void robotInit() {
-    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
-    // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+  
+    SmartDashboard.putNumber("distance ft", 0);
+    //RobotContainer.m_limelight.setLEDMode(1);
+    CameraServer.getInstance().startAutomaticCapture();
+    chooser.addOption("AutoNav Barrel", "barrel");
+    chooser.addOption("AutoNav Slalom", "slalom");
+    chooser.addOption("AutoNav Bounce", "bounce");
+    // TODO: put galactic search auton choices here
+    chooser.setDefaultOption("Do Nothing", "donothing");
+    SmartDashboard.putData("Auto mode", chooser);
   }
 
-  /**
-   * This function is called every robot packet, no matter the mode. Use this for items like
-   * diagnostics that you want ran during disabled, autonomous, teleoperated and test.
-   *
-   * <p>This runs after the mode specific periodic functions, but before LiveWindow and
-   * SmartDashboard integrated updating.
-   */
   @Override
   public void robotPeriodic() {
-    // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
-    // commands, running already-scheduled commands, removing finished or interrupted commands,
-    // and running subsystem periodic() methods.  This must be called from the robot's periodic
-    // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-  }
-
-  /** This function is called once each time the robot enters Disabled mode. */
-  @Override
-  public void disabledInit() {}
-
-  @Override
-  public void disabledPeriodic() {}
-
-  /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
-  @Override
-  public void autonomousInit() {
-    //m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-
-    // schedule the autonomous command (example)
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule();
+    SmartDashboard.putBoolean("limelight on target", RobotContainer.limelightOnTarget);
+    if (RobotContainer.m_limelight.getTV() == 1 ) {
+      // limelight can see a target
+      distance_meters = RobotContainer.m_limelight.getDist(targetHeight_meters, limeLightHeight_meters , limeLightAngle_degrees);
+      // distance_meters = ( 2.5019 - 0.603250) / Math.tan( Math.toRadians(30 + RobotContainer.m_limelight.getTY()));
+      SmartDashboard.putNumber("distance ft", distance_meters * 3.28084);
     }
   }
 
-  /** This function is called periodically during autonomous. */
   @Override
-  public void autonomousPeriodic() {}
+  public void disabledInit() {
+    //RobotContainer.m_limelight.setLEDMode(1);
+    m_robotContainer.m_shooter.setShooterRPM(0);
+  }
+
+  @Override
+  public void disabledPeriodic() {
+  }
+
+  @Override
+  public void autonomousInit() {
+    // TODO: move this to RobotInit() that gets run when the robot is powered on instead of here when
+    // Autonomous starts. Auton command generation can take almost a second. Don't waste it during a 
+    // match.
+
+    String autoName = chooser.getSelected();
+    m_autonomousCommand = m_robotContainer.getAutonomousCommand(autoName);
+
+    if (m_autonomousCommand != null) {
+      System.out.println("Scheduling Autonomous Command");
+      m_autonomousCommand.schedule();
+      System.out.println("Finished Autonomous Command");
+    }
+  }
+
+  @Override
+  public void autonomousPeriodic() {
+  }
 
   @Override
   public void teleopInit() {
-    // This makes sure that the autonomous stops running when
-    // teleop starts running. If you want the autonomous to
-    // continue until interrupted by another command, remove
-    // this line or comment it out.
     if (m_autonomousCommand != null) {
+      System.out.println("Cancelling Autonomous Command");
       m_autonomousCommand.cancel();
     }
   }
 
-  /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+  }
 
   @Override
   public void testInit() {
-    // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
   }
 
-  /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+  }
 }
