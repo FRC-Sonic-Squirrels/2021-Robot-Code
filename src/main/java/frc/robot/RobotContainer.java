@@ -28,7 +28,6 @@ import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -71,11 +70,11 @@ public class RobotContainer {
     // Driver Controller Buttons
     final JoystickButton driverAButton = new JoystickButton(m_driveController, Button.kA.value);
     final JoystickButton driverBButton = new JoystickButton(m_driveController, Button.kB.value);
-    final JoystickButton driverXButton = new JoystickButton(m_driveController, Button.kX.value);
-    final JoystickButton driverYButton = new JoystickButton(m_driveController, Button.kY.value);
-    final JoystickButton driverStartButton = new JoystickButton(m_driveController, Button.kStart.value);
-    final JoystickButton driverBackButton = new JoystickButton(m_driveController, Button.kBack.value);
-    final JoystickButton driverLeftBumper = new JoystickButton(m_driveController, Button.kBumperLeft.value);
+    //final JoystickButton driverXButton = new JoystickButton(m_driveController, Button.kX.value);
+    //final JoystickButton driverYButton = new JoystickButton(m_driveController, Button.kY.value);
+    //final JoystickButton driverStartButton = new JoystickButton(m_driveController, Button.kStart.value);
+    //final JoystickButton driverBackButton = new JoystickButton(m_driveController, Button.kBack.value);
+    //final JoystickButton driverLeftBumper = new JoystickButton(m_driveController, Button.kBumperLeft.value);
     final JoystickButton driverRightBumper = new JoystickButton(m_driveController, Button.kBumperRight.value);
     
     // Operator Controller Buttons
@@ -83,7 +82,7 @@ public class RobotContainer {
     final JoystickButton opBButton = new JoystickButton(m_operatorController, Button.kB.value);
     final JoystickButton opXButton = new JoystickButton(m_operatorController, Button.kX.value);
     final JoystickButton opYButton = new JoystickButton(m_operatorController, Button.kY.value);
-    final JoystickButton opStartButton = new JoystickButton(m_operatorController, Button.kStart.value);
+    //final JoystickButton opStartButton = new JoystickButton(m_operatorController, Button.kStart.value);
     final JoystickButton opBackButton = new JoystickButton(m_operatorController, Button.kBack.value);
     final JoystickButton opLeftBumper = new JoystickButton(m_operatorController, Button.kBumperLeft.value);
     final JoystickButton opRightBumper = new JoystickButton(m_operatorController, Button.kBumperRight.value);
@@ -190,7 +189,7 @@ public class RobotContainer {
 
       // shoot until all the balls are gone
       new ParallelRaceGroup(
-        new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_limelight, true, true),
+        new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_limelight, true),
         new WaitUntilCommand(() -> m_indexer.getBallCount() == 0)
       ),
 
@@ -218,7 +217,7 @@ public class RobotContainer {
 
       // shoot, finish when all the balls are gone
       new ParallelRaceGroup(
-        new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_limelight, true, true),
+        new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_limelight, true),
         new WaitUntilCommand(() -> m_indexer.getBallCount() == 0)
       )
 

@@ -27,7 +27,6 @@ public class shooterAutoCommand extends CommandBase {
   private double tv;
   private double tx;
   private double limelightSteerCommand = 0;
-  private boolean m_hoodup_override = false;
 
   /**
    * shooterAutoCommand class constructor
@@ -39,7 +38,7 @@ public class shooterAutoCommand extends CommandBase {
    * @param hood_up,    boolean: true = hood up, false = hood down
    * @param stationary, boolean: true if robot is stationary
    */
-  public shooterAutoCommand(indexerSubsystem indexer, turretSubsystem turret, shooterSubsystem shooter, limelight ll_util, boolean hood_up, boolean stationary) {
+  public shooterAutoCommand(indexerSubsystem indexer, turretSubsystem turret, shooterSubsystem shooter, limelight ll_util, boolean stationary) {
     addRequirements(indexer);
     addRequirements(turret);
     addRequirements(shooter);
@@ -48,27 +47,11 @@ public class shooterAutoCommand extends CommandBase {
     m_shooter = shooter;
     m_limelight = ll_util;
     m_stationary = stationary;
-    m_hoodup_override = hood_up;
-  }
-
-  /**
-   * shooterAutoCommand class constructor
-   * 
-   * @param indexer, indexer subsystem
-   * @param turret,  turret subsystem
-   * @param shooter, shooter subsystem
-   * @param ll_util, limelight class
-   * @param hood_up, boolean: true = hood up, false = hood down
-   */
-  public shooterAutoCommand(indexerSubsystem indexer, turretSubsystem turret, shooterSubsystem shooter, limelight ll_util, boolean hood_up) {
-
-    // call the main constructor, with stationary as "false"
-    this(indexer, turret, shooter, ll_util, hood_up, false);
   }
 
   public shooterAutoCommand(indexerSubsystem indexer, turretSubsystem turret, shooterSubsystem shooter, limelight ll_util) {
     // call main constructor, w/ stationary false, force hood up false
-     this(indexer, turret, shooter, ll_util, false, false);
+     this(indexer, turret, shooter, ll_util, false);
   }
 
   @Override

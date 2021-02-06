@@ -28,6 +28,8 @@ import frc.robot.RobotContainer;
 
 public class shooterSubsystem extends SubsystemBase {
 
+  //TODO: convert this to use Falcon 500s
+  
   private CANSparkMax neo_shooter1 = new CANSparkMax(shooter1, MotorType.kBrushless);
   private CANSparkMax neo_shooter2 = new CANSparkMax(shooter2, MotorType.kBrushless);
   private Solenoid hood = new Solenoid(Constants.shooterConstants.shooterHood);
