@@ -30,7 +30,8 @@ public class hoodSubsystem extends SubsystemBase {
     m_encoder = m_hood.getEncoder();
     m_pidController = m_hood.getPIDController();
 
-    // PID coefficients
+    // TODO: set and tune PID values
+    // PID coefficients (currently default)
     kP = 0.1;
     kI = 1e-4;
     kD = 1;
