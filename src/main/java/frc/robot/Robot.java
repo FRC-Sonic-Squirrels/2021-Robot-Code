@@ -4,7 +4,12 @@
 
 package frc.robot;
 
+import static frc.robot.Constants.limeLightConstants.targetHeight_meters;
+import static frc.robot.Constants.limeLightConstants.limeLightHeight_meters;
+import static frc.robot.Constants.limeLightConstants.limeLightAngle_degrees;
+
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -16,13 +21,14 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  */
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
+  public static boolean manualMode = false;
+  public static boolean turretHome = false;
 
   private RobotContainer m_robotContainer;
+  public static double distance_meters = 0.0;
 
-  /**
-   * This function is run when the robot is first started up and should be used for any
-   * initialization code.
-   */
+
+
   @Override
   public void robotInit() {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
@@ -39,11 +45,14 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
-    // commands, running already-scheduled commands, removing finished or interrupted commands,
-    // and running subsystem periodic() methods.  This must be called from the robot's periodic
-    // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+    SmartDashboard.putBoolean("limelight on target", RobotContainer.limelightOnTarget);
+    if (RobotContainer.m_limelight.getTV() == 1 ) {
+      // limelight can see a target
+      distance_meters = RobotContainer.m_limelight.getDist(targetHeight_meters, limeLightHeight_meters , limeLightAngle_degrees);
+      // distance_meters = ( 2.5019 - 0.603250) / Math.tan( Math.toRadians(30 + RobotContainer.m_limelight.getTY()));
+      SmartDashboard.putNumber("distance ft", distance_meters * 3.28084);
+    }
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
@@ -91,5 +100,7 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+    RobotContainer.m_shooter.testMode();
+  }
 }

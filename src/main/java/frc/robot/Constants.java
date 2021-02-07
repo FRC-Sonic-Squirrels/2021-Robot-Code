@@ -74,6 +74,32 @@ public final class Constants {
         public static final double kEncoderDistancePerPulseMeters =
                 (kDistancePerWheelRevolutionMeters * kGearReduction) / (double) kEncoderCPR;
     }
+    public static final class turretConstants {
+
+        public static final int turret = 5;
+        public static final int kSoftMaxTurretAngle = 90;
+        public static final int kSoftMinTurretAngle = -90;
+        public static final int kEncoderCPR = 4096; // CTRE Quadrature?
+
+        // BAG motor controlled by Talon
+        // Turret inner teeth = 264
+        // gear teeth = 20
+        // gearbox = 35:1
+        // Total motor to turret rotation ration: 1:462  (1:35 * 20:264)
+        // POST gearbox encoder ratio is:
+        // 20:264 or 1/13.2
+        //TODO: Change this Gear Ratio
+        public static final double kGearRation = 1 / 13.2; // turret rotations per encoder rotation
+        public static final double kTurretRotationsPerTick = kGearRation / kEncoderCPR;
+        public static final double kDegreesPerTick = 360 * kTurretRotationsPerTick;
+        // TODO: test and increase max velocity and acceleration
+        // Max velocity: 90 deg/s
+        // Max acceleration: 45 deg/s^2
+        public static final double kMaxDegreesPerSecond = 90;
+        public static final double kMaxDegreesPerSecondSquared = 45;
+        public static final int kTimeout = 30; // Talon command timeout
+        public static final int kIndex = 0; // Talon PID index
+    }
 
     public static final class shooterConstants {
         public static final int shooter1 = 16;
@@ -81,5 +107,19 @@ public final class Constants {
         public static final int shooterTimeout = 30;
         public static final int shooterSlotIdx = 0;
         public static final int shooterHood = 6;
+    }
+
+    public static final class limeLightConstants {
+        public static final double limeLightHeight_meters = .68394;
+        public static final double targetHeight_meters = 2.5019;
+        public static final double limeLightAngle_degrees = 30;
+    }
+
+    public static final class digitalIOConstants {
+        // assign digital IO (DIO) ports 0-9
+        //public static final int dio0_indexerSensor1 = 0;
+        //public static final int dio1_indexerSensor2 = 1;
+        //public static final int dio2_indexerSensor3 = 2;
+        public static final int dio7_turretLimit = 7;
     }
 }

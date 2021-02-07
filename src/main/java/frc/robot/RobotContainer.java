@@ -13,10 +13,11 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.controller.RamseteController;
-//import com.fearxzombie.limelight;
+import com.fearxzombie.limelight;
 import frc.robot.subsystems.driveSubsystem;
 import frc.robot.Constants.driveConstants;
 import frc.robot.commands.driveCommand;
+import frc.robot.subsystems.shooterSubsystem;
 import frc.robot.commands.driveInvertCommand;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
@@ -31,9 +32,13 @@ import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConst
 public class RobotContainer {
   //subsystems
   public final driveSubsystem m_drive = new driveSubsystem();
+
   public static final limelight m_limelight = new limelight("limelight-one");
+
   public static XboxController m_driveController = new XboxController(driveConstants.driveController);
   public static XboxController m_operatorController = new XboxController(driveConstants.operatorController);
+  public static boolean limelightOnTarget = false;
+  public static shooterSubsystem m_shooter = new shooterSubsystem();
 
 
   public RobotContainer() {
@@ -111,9 +116,6 @@ public class RobotContainer {
       opBackButton.toggleWhenPressed(new shooterSpoolCommand(m_shooter));
 
       */
-
-
-
 
   }
 
