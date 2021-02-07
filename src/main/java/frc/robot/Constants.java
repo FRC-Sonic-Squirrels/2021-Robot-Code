@@ -188,4 +188,7 @@ public final class Constants {
         public static final int dio2_indexerSensor3 = 2;
         public static final int dio7_turretLimit = 7;
     }
+    public static final class hoodConstants {
+        public static final int hoodMotor = canId.canId18;
+    }
 }
