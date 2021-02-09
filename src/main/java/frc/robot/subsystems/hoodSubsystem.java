@@ -28,6 +28,8 @@ public class hoodSubsystem extends SubsystemBase {
     m_hood.restoreFactoryDefaults();
 
     m_encoder = m_hood.getEncoder();
+    m_encoder.setPosition(0);
+    
     m_pidController = m_hood.getPIDController();
 
     // TODO: set and tune PID values
