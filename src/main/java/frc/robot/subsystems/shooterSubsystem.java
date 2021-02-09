@@ -7,6 +7,8 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -94,8 +96,8 @@ public class shooterSubsystem extends SubsystemBase {
     
     //m_encoder = neo_shooter1.getEncoder(EncoderType.kHallSensor, 4096);
     
-    kMaxOutput = 0.9; 
-    kMinOutput = -0.0;
+    kMaxOutput = 1.0; 
+    kMinOutput = -1.0;
     talon_shooter1.configPeakOutputForward(kMaxOutput);
     talon_shooter1.configPeakOutputReverse(kMinOutput);
 
@@ -146,6 +148,10 @@ public class shooterSubsystem extends SubsystemBase {
       m_atSpeed = false;
     }
 
+    // drive the motor with driver left joystick
+    XboxController driveController = RobotContainer.m_driveController;
+    talon_shooter1.set(TalonFXControlMode.PercentOutput,driveController.getY(Hand.kLeft));
+
     SmartDashboard.putBoolean("isAtSpeed", m_atSpeed);
   }
 
@@ -156,7 +162,7 @@ public class shooterSubsystem extends SubsystemBase {
    */
   public void setShooterRPM (double desiredRPM) {
     m_desiredRPM = desiredRPM;
-    targetVelocity = m_desiredRPM *2048.0 / 600.0;
+    targetVelocity = m_desiredRPM * 2048.0 / 600.0;
     m_initialTime = System.nanoTime();
     m_atSpeed = false;
     if (m_desiredRPM <= m_idleRPM) {
@@ -176,6 +182,8 @@ public class shooterSubsystem extends SubsystemBase {
     talon_shooter1.set(TalonFXControlMode.Velocity, targetVelocity);
     SmartDashboard.putNumber("ShooterRPM", m_desiredRPM);
   }
+
+
   public void testMode(){
     m_desiredRPM = SmartDashboard.getNumber("DesiredShooterRPM", 0);
     System.out.println("Shooter desired RPM: "  + m_desiredRPM);

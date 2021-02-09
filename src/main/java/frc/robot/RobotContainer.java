@@ -9,9 +9,13 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import static frc.robot.Constants.driveConstants.kDriveKinematics;
 import java.util.List;
+
+import javax.swing.plaf.InsetsUIResource;
+
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import com.fearxzombie.limelight;
 import frc.robot.subsystems.driveSubsystem;
@@ -69,11 +73,12 @@ public class RobotContainer {
     
     
     // Operator Controller Buttons
-    /*
+    
     final JoystickButton opAButton = new JoystickButton(m_operatorController, Button.kA.value);
     final JoystickButton opBButton = new JoystickButton(m_operatorController, Button.kB.value);
     final JoystickButton opXButton = new JoystickButton(m_operatorController, Button.kX.value);
     final JoystickButton opYButton = new JoystickButton(m_operatorController, Button.kY.value);
+    /*
     final JoystickButton opStartButton = new JoystickButton(m_operatorController, Button.kStart.value);
     final JoystickButton opBackButton = new JoystickButton(m_operatorController, Button.kBack.value);
     final JoystickButton opLeftBumper = new JoystickButton(m_operatorController, Button.kBumperLeft.value);
@@ -104,6 +109,12 @@ public class RobotContainer {
       // Start Button - zero the turret
       // Back Button - spool up the shooter
       
+      opYButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(0)));
+
+      opAButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(1000)));
+      opBButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(2000)));
+      opXButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(3000)));
+
       /*
       opAButton.whileHeld(new intakeDeployCommand(m_intake));
       opBButton.whenPressed(new indexerStageForShootingCommand(m_indexer));

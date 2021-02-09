@@ -31,12 +31,13 @@ import static frc.robot.Constants.digitalIOConstants.dio7_turretLimit;
 public class turretSubsystem extends SubsystemBase {
 
   //Neo 550 is the Motor Controlling the Turret
-  private CANSparkMax turretDrive = new CANSparkMax(turret, MotorType.kBrushless);
-  //private TalonSRX turretDrive = new TalonSRX(turret);
+  //private CANSparkMax turretDrive = new CANSparkMax(turret, MotorType.kBrushless);
+  private TalonSRX turretDrive = new TalonSRX(turret);
   private DigitalInput limit = new DigitalInput(dio7_turretLimit);
 
   public turretSubsystem() {
-    turretDrive.restoreFactoryDefaults();
+    //turretDrive.restoreFactoryDefaults();
+    turretDrive.configFactoryDefault();
     turretDrive.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, kIndex, kTimeout);
 
     turretDrive.setInverted(false);
