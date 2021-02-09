@@ -96,7 +96,8 @@ public class shooterSubsystem extends SubsystemBase {
     
     kMaxOutput = 0.9; 
     kMinOutput = -0.0;
-    talon_shooter1.set(TalonFXControlMode.PercentOutput, kMaxOutput);
+    talon_shooter1.configPeakOutputForward(kMaxOutput);
+    talon_shooter1.configPeakOutputReverse(kMinOutput);
 
     // Build the linear Interpolators just once each.
     m_lt_hoodUpC = new linearInterpolator(hoodUpC);
@@ -160,11 +161,13 @@ public class shooterSubsystem extends SubsystemBase {
     m_atSpeed = false;
     if (m_desiredRPM <= m_idleRPM) {
       
-      talon_shooter1.set(TalonFXControlMode.PercentOutput, kMaxOutput);
+      talon_shooter1.configPeakOutputForward(kMaxOutput);
+      talon_shooter1.configPeakOutputReverse(kMinOutput);
       setShooterPID(0.0003, 0, 0, 0.00018, 0);
     }
     else {
-      talon_shooter1.set(TalonFXControlMode.PercentOutput, kMaxOutput);
+      talon_shooter1.configPeakOutputForward(kMaxOutput);
+      talon_shooter1.configPeakOutputReverse(kMinOutput);
       // Old values: setShooterPID(0.0005, 0.00000015, 0, 0.0002, 600);
       //TODO: Test these values with new shooter
       setShooterPID(0.0004, 0.000001, 0.0, 0.0002, 200);
@@ -201,12 +204,13 @@ public class shooterSubsystem extends SubsystemBase {
     talon_shooter1.config_kI(0, I);
     talon_shooter1.config_kD(0, D);
     talon_shooter1.config_kF(0, F);
+    talon_shooter1.config_IntegralZone(0, iZ);
   }
 
   //Current limiting on the fly switching removed due to the SparkMAX API not supporting that sort of switch.
   public void setPercentOutput(double percent) {
-    //TODO: Set the Percentage output to 0
-    //talon_shooter1.setVoltage(0);
+    //TODO: Set the Percentage output to percent
+    talon_shooter1.set(TalonFXControlMode.PercentOutput, percent);
   }
 
   /**
