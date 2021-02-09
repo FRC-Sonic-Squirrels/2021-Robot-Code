@@ -43,31 +43,31 @@ public class shooterSubsystem extends SubsystemBase {
   private int m_idleRPM = 1500;
   
   private double hoodDownP[][] = {
-    {15.4, 2600}, // 4.5 feet
-    {3, 2650}, // 7 feet
-    {-7.2, 2750}, // 10 feet
-    {-12.2, 2900} // 12 feet
+    {15.4, 3500}, // 4.5 feet
+    {3, 3550}, // 7 feet
+    {-7.2, 3675}, // 10 feet
+    {-12.2, 3875} // 12 feet
   };
   private double hoodUpP[][] = {
-    {8, 3900}, // 9 feet
-    {-0.1, 3550}, // 13 feet
-    {-5, 3600}, // 17 feet
-    {-8.5, 3800}, // 21 feet
-    {-11, 4100} // 25 feet
+    {8, 5200}, // 9 feet
+    {-0.1, 4750}, // 13 feet
+    {-5, 4800}, // 17 feet
+    {-8.5, 5075}, // 21 feet
+    {-11, 5475} // 25 feet
   };
 
   private double hoodDownC[][] = {
-    {24.7, 2750}, // 4 feet
-    {12.3, 2850}, // 7 feet
-    {2.75, 2950}, // 10 feet
-    {-2.85, 3050} // 12 feet
+    {24.7, 3675}, // 4 feet
+    {12.3, 3800}, // 7 feet
+    {2.75, 3950}, // 10 feet
+    {-2.85, 4075} // 12 feet
   };
   private double hoodUpC[][] = {
-    {5, 3750}, // 9 feet
-    {-4.3, 3500}, // 13 feet
-    {-9.85, 3600}, // 17 feet
-    {-13.5, 3750}, // 21 feet
-    {-16, 4300} // 25 feet
+    {5, 5000}, // 9 feet
+    {-4.3, 4675}, // 13 feet
+    {-9.85, 4800}, // 17 feet
+    {-13.5, 5000}, // 21 feet
+    {-16, 5750} // 25 feet
   };
 
   public shooterSubsystem() {
@@ -209,7 +209,6 @@ public class shooterSubsystem extends SubsystemBase {
 
   //Current limiting on the fly switching removed due to the SparkMAX API not supporting that sort of switch.
   public void setPercentOutput(double percent) {
-    //TODO: Set the Percentage output to percent
     talon_shooter1.set(TalonFXControlMode.PercentOutput, percent);
   }
 
