@@ -54,21 +54,21 @@ public class shooterSubsystem extends SubsystemBase {
   // based on the reported limelight angle
 
   private double hoodDownFeet[][] = {
-    {4.0, 2600},  // 4 feet  2750
-    {7.0, 2500},  // 7 feet
-    {10.0, 2650}, // 10 feet
-    {12.0, 2700}, // 12 feet
-    {13.0, 2800}  // 13 feet
+    {4.0, 3500},  // 4 feet  2750
+    {7.0, 3350},  // 7 feet
+    {10.0, 3550}, // 10 feet
+    {12.0, 3600}, // 12 feet
+    {13.0, 3750}  // 13 feet
   };
 
   // RPM based on distance in feet from target
   private double hoodUpFeet[][] = {
-    {9,  3000},
-    {10, 3100},
-    {13, 3250},
-    {17, 3300},
-    {18, 3300},
-    {25, 3600}
+    {9,  4000},
+    {10, 4150},
+    {13, 4350},
+    {17, 4400},
+    {18, 4400},
+    {25, 4800}
   };
 
 
