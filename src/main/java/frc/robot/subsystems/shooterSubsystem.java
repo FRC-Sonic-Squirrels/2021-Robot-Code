@@ -7,152 +7,154 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
+import edu.wpi.first.wpilibj.SlewRateLimiter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
-import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
+import com.ctre.phoenix.motorcontrol.TalonFXSensorCollection;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-
-
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.team2930.lib.util.linearInterpolator;
 
 import frc.robot.Constants;
-import frc.robot.Robot;
 import frc.robot.RobotContainer;
-import frc.robot.Constants.shooterConstants;
+
 
 public class shooterSubsystem extends SubsystemBase {
 
+  //TODO: convert this to use Falcon 500s
 
-  private TalonFX talon_shooter1 = new TalonFX(Constants.shooterConstants.shooter1);
-  private TalonFX talon_shooter2 = new TalonFX(Constants.shooterConstants.shooter2);
+  private TalonFX talon_shooter1 = new WPI_TalonFX(Constants.shooterConstants.shooter1);
+  private TalonFX talon_shooter2 = new WPI_TalonFX(Constants.shooterConstants.shooter2);
+  
+  //private CANSparkMax talon_shooter1 = new CANSparkMax(shooter1, MotorType.kBrushless);
+  //private CANSparkMax talon_shooter2 = new CANSparkMax(shooter2, MotorType.kBrushless);
 
-
+  private TalonFXSensorCollection m_encoder;
   private double kMaxOutput, kMinOutput;
   private double m_desiredRPM = 0;
-  private double targetVelocity = 0;
   private boolean m_atSpeed = false;
-  private long m_initialTime = 0;
-  private linearInterpolator m_lt;
-  private linearInterpolator m_lt_hoodDownP;
-  private linearInterpolator m_lt_hoodUpP;
-  private linearInterpolator m_lt_hoodDownC;
-  private linearInterpolator m_lt_hoodUpC;
-  private int m_idleRPM = 1500;
-  
-  private double hoodDownP[][] = {
-    {15.4, 3500}, // 4.5 feet
-    {3, 3550}, // 7 feet
-    {-7.2, 3675}, // 10 feet
-    {-12.2, 3875} // 12 feet
-  };
-  private double hoodUpP[][] = {
-    {8, 5200}, // 9 feet
-    {-0.1, 4750}, // 13 feet
-    {-5, 4800}, // 17 feet
-    {-8.5, 5075}, // 21 feet
-    {-11, 5475} // 25 feet
+  private linearInterpolator m_lt_angle;
+  private linearInterpolator m_lt_feet;
+  private linearInterpolator m_lt_hoodDownAngle;
+  private linearInterpolator m_lt_hoodUpAngle;
+  private linearInterpolator m_lt_hoodDownFeet;
+  private linearInterpolator m_lt_hoodUpFeet;
+  private int m_idleRPM = 2000;
+  private double m_currentRPM = 0;
+  private double m_error = 0;
+  private double m_max_RPM_error = 15;
+  private final double RPMtoTicks = 2048 / 600;
+
+  private double m_rate_RPMpersecond = 2000;
+  private SlewRateLimiter m_rateLimiter;
+
+  // based on the reported limelight angle
+
+  private double hoodDownFeet[][] = {
+    {4.0, 2600},  // 4 feet  2750
+    {7.0, 2500},  // 7 feet
+    {10.0, 2650}, // 10 feet
+    {12.0, 2700}, // 12 feet
+    {13.0, 2800}  // 13 feet
   };
 
-  private double hoodDownC[][] = {
-    {24.7, 3675}, // 4 feet
-    {12.3, 3800}, // 7 feet
-    {2.75, 3950}, // 10 feet
-    {-2.85, 4075} // 12 feet
-  };
-  private double hoodUpC[][] = {
-    {5, 5000}, // 9 feet
-    {-4.3, 4675}, // 13 feet
-    {-9.85, 4800}, // 17 feet
-    {-13.5, 5000}, // 21 feet
-    {-16, 5750} // 25 feet
+  // RPM based on distance in feet from target
+  private double hoodUpFeet[][] = {
+    {9,  3000},
+    {10, 3100},
+    {13, 3250},
+    {17, 3300},
+    {18, 3300},
+    {25, 3600}
   };
 
+
+  /**
+   * shooterSubsystem() - constructor for shooterSubsytem class
+   */
   public shooterSubsystem() {
-    talon_shooter1.configFactoryDefault();
-    talon_shooter1.configFactoryDefault();
 
+    talon_shooter1.configFactoryDefault();
+    talon_shooter2.configFactoryDefault();
 
     // set min time to go from neutral to full power
-    talon_shooter1.configClosedloopRamp(0.5);
-    talon_shooter1.configClosedloopRamp(0.5);
+    // NOTE: closedloop ramp rate interacts poorly with closed loop control sometimes.
+    // talon_shooter1.setClosedLoopRampRate(0.5);
+    // talon_shooter2.setClosedLoopRampRate(0.5);
     
     // Set coast mode
     talon_shooter1.setNeutralMode(NeutralMode.Coast);
     talon_shooter2.setNeutralMode(NeutralMode.Coast);
-
+    
     talon_shooter1.setInverted(true);
-    
+
     talon_shooter2.follow(talon_shooter1);
-
-    /* Config sensor used for Primary PID [Velocity] */
-    talon_shooter1.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 30);
-
-    //m_pidController = neo_shooter1.getPIDController();
-    
-    //m_encoder = neo_shooter1.getEncoder(EncoderType.kHallSensor, 4096);
+    m_encoder = talon_shooter1.getSensorCollection();
     
     kMaxOutput = 1.0; 
-    kMinOutput = -1.0;
+    kMinOutput = -0.0;
     talon_shooter1.configPeakOutputForward(kMaxOutput);
     talon_shooter1.configPeakOutputReverse(kMinOutput);
 
+    setShooterPID(0.12, 0.0001, 0.0, 0.047, 100);
+
     // Build the linear Interpolators just once each.
-    m_lt_hoodUpC = new linearInterpolator(hoodUpC);
-    m_lt_hoodDownC = new linearInterpolator(hoodDownC);
-    m_lt_hoodUpP = new linearInterpolator(hoodUpP);
-    m_lt_hoodDownP = new linearInterpolator(hoodDownP);
+    m_lt_hoodUpFeet = new linearInterpolator(hoodUpFeet);
+    m_lt_hoodDownFeet = new linearInterpolator(hoodDownFeet);
 
     // pick a default, so that it is never undefined
-    m_lt = m_lt_hoodDownC;
+    m_lt_angle = m_lt_hoodDownAngle;
+    m_lt_feet = m_lt_hoodDownFeet;
 
-    SmartDashboard.putNumber("ShooterRPM", m_desiredRPM);
-    SmartDashboard.putNumber("RPM_Error", 0);
+    m_desiredRPM = 0;
+    
+    /* Config sensor used for Primary PID [Velocity] */
+    talon_shooter1.set(ControlMode.Velocity, 0);
+    m_rateLimiter = new SlewRateLimiter(m_rate_RPMpersecond, m_desiredRPM);
+
+    SmartDashboard.putNumber("RPM set point", m_desiredRPM);
+    SmartDashboard.putNumber("RPM", 0);
+    SmartDashboard.putNumber("RPM error", 0);
+    SmartDashboard.putNumber("Shooter Voltage", 0.0);
+
   }
 
+  /**
+   * periodic() - this function runs once every robot scheduler cycle.
+   */
   @Override
   public void periodic() {
 
-    SmartDashboard.putNumber("ActualShooterRPM", (int) (talon_shooter1.getSelectedSensorVelocity(0)));
+    m_currentRPM = m_encoder.getIntegratedSensorVelocity();
+    m_error = m_currentRPM - m_desiredRPM;
 
-    //
-    // Manual RPM control from Smartdashboard
-    //
-    double rpm = SmartDashboard.getNumber("ShooterRPM", -1);
-    if (rpm != -1) {
-      if (rpm == 0.0) {
-        // spin down, don't use PID (and power) to stop
-        stop();
-      }
-      else if (m_desiredRPM != rpm ) {
-        setShooterRPM(rpm);
-        m_initialTime = System.nanoTime();
-        m_atSpeed = false;
-      }
-    }
-
-    //
-    // Track how long it takes to reach desired RPM, set m_asSpeed
-    // 
-    if (isAtSpeed()) {
-      if (!m_atSpeed) {
-        SmartDashboard.putNumber("Time2RPM", System.nanoTime() - m_initialTime);
-      }
+    //if (Math.abs(m_error) < m_max_RPM_error) {
+    if (((m_error >= 0) && (m_error < 50)) ||
+        ((m_error < 0) && (m_error > -m_max_RPM_error))) {
       m_atSpeed = true;
     }
     else {
-      m_atSpeed = false;
+      m_atSpeed = false;  
     }
 
-    // drive the motor with driver left joystick
-    XboxController driveController = RobotContainer.m_driveController;
-    talon_shooter1.set(TalonFXControlMode.PercentOutput,driveController.getY(Hand.kLeft));
+    double setPoint = m_rateLimiter.calculate(m_desiredRPM);
+    if (m_desiredRPM < setPoint) {
+      // we don't rate reduce slowing the robot
+      setPoint = m_desiredRPM;
+    }
 
+
+    talon_shooter1.set(ControlMode.Velocity, setPoint * RPMtoTicks);
+ 
+
+    SmartDashboard.putNumber("RPM", m_currentRPM);
+    SmartDashboard.putNumber("RPM set point", setPoint);
+    SmartDashboard.putNumber("RPM error", m_error);
     SmartDashboard.putBoolean("isAtSpeed", m_atSpeed);
+    SmartDashboard.putNumber("Shooter Voltage", talon_shooter1.getBusVoltage());
   }
 
   /**
@@ -162,39 +164,31 @@ public class shooterSubsystem extends SubsystemBase {
    */
   public void setShooterRPM (double desiredRPM) {
     m_desiredRPM = desiredRPM;
-    targetVelocity = m_desiredRPM * 2048.0 / 600.0;
-    m_initialTime = System.nanoTime();
-    m_atSpeed = false;
-    if (m_desiredRPM <= m_idleRPM) {
-      
-      talon_shooter1.configPeakOutputForward(kMaxOutput);
-      talon_shooter1.configPeakOutputReverse(kMinOutput);
-      setShooterPID(0.0003, 0, 0, 0.00018, 0);
-    }
-    else {
-      talon_shooter1.configPeakOutputForward(kMaxOutput);
-      talon_shooter1.configPeakOutputReverse(kMinOutput);
-      // Old values: setShooterPID(0.0005, 0.00000015, 0, 0.0002, 600);
-      //TODO: Test these values with new shooter
-      setShooterPID(0.0004, 0.000001, 0.0, 0.0002, 200);
-    }
+    isAtSpeed();
 
-    talon_shooter1.set(TalonFXControlMode.Velocity, targetVelocity);
-    SmartDashboard.putNumber("ShooterRPM", m_desiredRPM);
+    if (m_desiredRPM == 0) {
+      setPercentOutput(0.0);
+
+      // zero the RPM change rate limit. No rate limit to stop the flywheel
+      m_rateLimiter = new SlewRateLimiter(m_rate_RPMpersecond, m_desiredRPM);
+    }
   }
 
+  /**
+   * deployHood() - raise shooter hood
+   */
+  public void deployHood() {
+    RobotContainer.m_limelight.setPipeline(4);
+    m_lt_feet = m_lt_hoodUpFeet;
+  }
 
-  public void testMode(){
-    m_desiredRPM = SmartDashboard.getNumber("DesiredShooterRPM", 0);
-    System.out.println("Shooter desired RPM: "  + m_desiredRPM);
-    /**
-			 * Convert Desired RPM to units / 100ms.
-			 * 2048 Units/Rev * m_DesiredRPM / 600 100ms/min in either direction:
-			 * velocity setpoint is in units/100ms
-			 */
-    double targetVelocity = m_desiredRPM *2048.0 / 600.0;
-    talon_shooter1.set(TalonFXControlMode.Velocity, targetVelocity);
-    System.out.println("Activating Test Mode");
+  /**
+   * retractHood() - lower the shooter hood
+   */
+  public void retractHood() {
+    RobotContainer.m_limelight.setPipeline(4);
+    m_lt_angle = m_lt_hoodDownAngle;
+    m_lt_feet = m_lt_hoodDownFeet;
   }
 
   /**
@@ -206,7 +200,6 @@ public class shooterSubsystem extends SubsystemBase {
    * @param kF, feed forward constant
    * @param iZone, need to be this close to target to activate I
    */
-
   public void setShooterPID (double P, double I, double D, double F, double iZ) {
     talon_shooter1.config_kP(0, P);
     talon_shooter1.config_kI(0, I);
@@ -215,9 +208,13 @@ public class shooterSubsystem extends SubsystemBase {
     talon_shooter1.config_IntegralZone(0, iZ);
   }
 
-  //Current limiting on the fly switching removed due to the SparkMAX API not supporting that sort of switch.
+  /**
+   * setPercentOutput() - override flywheel motor with percent output
+   * 
+   * @param percent, percent motor output -1.0 to 1.0
+   */
   public void setPercentOutput(double percent) {
-    talon_shooter1.set(TalonFXControlMode.PercentOutput, percent);
+    talon_shooter1.set(ControlMode.PercentOutput, percent);
   }
 
   /**
@@ -225,15 +222,18 @@ public class shooterSubsystem extends SubsystemBase {
    * 
    * @return true if at correct speed, else false
    */
-  public boolean isAtSpeed(){
-    double error = m_desiredRPM - (talon_shooter1.getSelectedSensorVelocity(0));
-    SmartDashboard.putNumber("RPM_Error", error);
-    
-    if (Math.abs(error) < 75) {
-      return true;
-    } else {
-      return false;
+  public boolean isAtSpeed() {
+    m_error = m_currentRPM - m_desiredRPM;
+
+    if (((m_error >= 0) && (m_error < 50)) ||
+        ((m_error < 0) && (m_error > -m_max_RPM_error))) {
+      m_atSpeed = true;
     }
+    else {
+      m_atSpeed = false;  
+    }
+
+    return m_atSpeed;
   }
 
   /**
@@ -243,7 +243,7 @@ public class shooterSubsystem extends SubsystemBase {
    * @return RPM for flywheel
    */
   public double getRPMforTY(double TY) {
-    return m_lt.getInterpolatedValue(TY);
+    return m_lt_angle.getInterpolatedValue(TY);
   }
 
   /**
@@ -253,7 +253,7 @@ public class shooterSubsystem extends SubsystemBase {
    * @return RPM for flywheel
    */
   public double getRPMforDistanceFeet(double distanceFeet) {
-    return m_lt.getInterpolatedValue(distanceFeet);
+    return m_lt_feet.getInterpolatedValue(distanceFeet);
   }
 
   /**
@@ -267,15 +267,24 @@ public class shooterSubsystem extends SubsystemBase {
   }
 
   /**
+   * getSetpoint() - return current target RPM
+   */
+  public double getSetPoint() {
+    return m_desiredRPM;
+  }
+
+  /**
    * idle()  - run the flywheel at pre-determined idle speed
    */
   public void idle() {
     setShooterRPM(m_idleRPM);   
   }
 
-
   public void stop() {
     m_desiredRPM = 0;
     setPercentOutput(0.0);
+
+    // zero the RPM change rate limit. No rate limit to stop the flywheel
+    m_rateLimiter = new SlewRateLimiter(m_rate_RPMpersecond, m_desiredRPM);
   }
 }
