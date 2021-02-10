@@ -59,8 +59,8 @@ public class hoodSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Max Output", kMaxOutput);
     SmartDashboard.putNumber("Min Output", kMinOutput);
     
-    // Display initial set hood position of 0 on SmartDashboard
-    SmartDashboard.putNumber("Set Hood Position", 0);
+    // Display initial set hood position on SmartDashboard
+    SmartDashboard.putNumber("Set Hood Position", m_encoder.getPosition());
 
   }
 
@@ -79,6 +79,14 @@ public class hoodSubsystem extends SubsystemBase {
 
     // Retrieve set hood position from SmartDashboard
     double hoodRotations = SmartDashboard.getNumber("Set Hood Position", 0);
+
+    // Make sure to not set hood rotations beyond min or max position
+    if(hoodRotations < 0) {
+      hoodRotations = 0;
+    }
+    else if(hoodRotations > 3.5) {
+      hoodRotations = 3.5;
+    }
 
     // if PID coefficients on SmartDashboard have changed, write new values to controller
     if(p != kP) {
@@ -111,6 +119,9 @@ public class hoodSubsystem extends SubsystemBase {
 
     // Display current hood position on SmartDashboard
     SmartDashboard.putNumber("Hood Position", m_encoder.getPosition());
+
+    // Display hood position error on SmartDashboard
+    SmartDashboard.putNumber("Hood Position Error", m_encoder.getPosition() - hoodRotations);
 
   }
 }
