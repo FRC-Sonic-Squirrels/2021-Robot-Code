@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.Constants.driveConstants;
 import frc.robot.subsystems.driveSubsystem;
+import frc.robot.subsystems.hoodSubsystem;
 import frc.robot.subsystems.indexerSubsystem;
 import frc.robot.subsystems.intakeSubsystem;
 import frc.robot.subsystems.turretSubsystem;
@@ -53,6 +54,7 @@ public class RobotContainer {
   public final shooterSubsystem m_shooter = new shooterSubsystem();
   public static final indexerSubsystem m_indexer = new indexerSubsystem();
   private final intakeSubsystem m_intake = new intakeSubsystem();
+  private final hoodSubsystem m_hood = new hoodSubsystem();
   public static XboxController m_driveController = new XboxController(driveConstants.driveController);
   public static XboxController m_operatorController = new XboxController(driveConstants.operatorController);
   public static boolean limelightOnTarget = false;
