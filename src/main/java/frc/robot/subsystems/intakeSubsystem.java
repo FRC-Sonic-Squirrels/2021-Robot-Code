@@ -11,12 +11,10 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.intakeConstants;
-import edu.wpi.first.wpilibj.Solenoid;
 
 public class intakeSubsystem extends SubsystemBase {
 
   private WPI_VictorSPX intakeC = new WPI_VictorSPX(intakeConstants.intakeMotor);
-  public static Solenoid intakeSolenoid = new Solenoid(intakeConstants.intakeSolenoid);
     
   public intakeSubsystem() {
   }
@@ -30,12 +28,11 @@ public class intakeSubsystem extends SubsystemBase {
   }
 
   public void deployIntake() {
-    intakeSolenoid.set(true);
+    // TODO: deploy intake
     setIntakePercentOutput(-0.8);
   }
 
   public void retractIntake() {
-    intakeSolenoid.set(false);
     setIntakePercentOutput(0);
   }
 }

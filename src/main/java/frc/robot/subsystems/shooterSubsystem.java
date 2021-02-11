@@ -11,7 +11,6 @@ import static frc.robot.Constants.shooterConstants.shooter1;
 import static frc.robot.Constants.shooterConstants.shooter2;
 
 import edu.wpi.first.wpilibj.SlewRateLimiter;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.CANEncoder;
@@ -32,7 +31,6 @@ public class shooterSubsystem extends SubsystemBase {
   
   private CANSparkMax neo_shooter1 = new CANSparkMax(shooter1, MotorType.kBrushless);
   private CANSparkMax neo_shooter2 = new CANSparkMax(shooter2, MotorType.kBrushless);
-  private Solenoid hood = new Solenoid(Constants.shooterConstants.shooterHood);
   private CANPIDController m_pidController;
   private CANEncoder m_encoder;
   private double kMaxOutput, kMinOutput;
@@ -196,10 +194,10 @@ public class shooterSubsystem extends SubsystemBase {
    * deployHood() - raise shooter hood
    */
   public void deployHood() {
+    // TODO: replace with set hood angle command
     RobotContainer.m_limelight.setPipeline(4);
     m_lt_angle = m_lt_hoodUpAngle;
     m_lt_feet = m_lt_hoodUpFeet;
-    hood.set(true);
   }
 
   /**
@@ -209,7 +207,6 @@ public class shooterSubsystem extends SubsystemBase {
     RobotContainer.m_limelight.setPipeline(4);
     m_lt_angle = m_lt_hoodDownAngle;
     m_lt_feet = m_lt_hoodDownFeet;
-    hood.set(false);
   }
 
   /**
