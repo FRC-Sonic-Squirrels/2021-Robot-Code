@@ -6,9 +6,14 @@ package frc.robot.subsystems;
 
 import static frc.robot.Constants.hoodConstants.hoodMotor;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANEncoder;
+
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.ControlType;
@@ -18,7 +23,11 @@ public class hoodSubsystem extends SubsystemBase {
   private CANSparkMax m_hood = new CANSparkMax(hoodMotor, MotorType.kBrushless);
   private CANEncoder m_encoder;
   private CANPIDController m_pidController;
-  public double kP, kI, kD, kF, kIz, kMaxOutput, kMinOutput;
+  private double kP, kI, kD, kF, kIz, kMaxOutput, kMinOutput;
+  private double minPos = 0;
+  private double maxPos = 3.5;
+
+  XboxController operatorController = RobotContainer.m_operatorController;
 
   /** Creates a new hoodSubsystem. */
   public hoodSubsystem() {
@@ -26,6 +35,7 @@ public class hoodSubsystem extends SubsystemBase {
     // TODO: Set current limit
 
     m_hood.restoreFactoryDefaults();
+    m_hood.setInverted(true);
 
     m_encoder = m_hood.getEncoder();
     m_encoder.setPosition(0);
@@ -34,11 +44,11 @@ public class hoodSubsystem extends SubsystemBase {
 
     // TODO: set and tune PID values
     // PID coefficients (currently default)
-    kP = 0.1;
+    kP = 0.2;
     kI = 1e-4;
-    kD = 1;
+    kD = 0;
     kF = 0;
-    kIz = 0; 
+    kIz = 100; 
     kMaxOutput = 1;
     kMinOutput = -1;
 
@@ -58,7 +68,9 @@ public class hoodSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("I Zone", kIz);
     SmartDashboard.putNumber("Max Output", kMaxOutput);
     SmartDashboard.putNumber("Min Output", kMinOutput);
-    
+
+    SmartDashboard.putNumber("Hood output", m_hood.getAppliedOutput());
+
     // Display initial set hood position on SmartDashboard
     SmartDashboard.putNumber("Set Hood Position", m_encoder.getPosition());
 
@@ -115,6 +127,8 @@ public class hoodSubsystem extends SubsystemBase {
       kMaxOutput = max; 
     }
 
+    hoodRotations = (0.95 * (maxPos - minPos) * operatorController.getTriggerAxis(Hand.kRight)) - minPos;
+
     m_pidController.setReference(hoodRotations, ControlType.kPosition);
 
     // Display current hood position on SmartDashboard
@@ -122,6 +136,7 @@ public class hoodSubsystem extends SubsystemBase {
 
     // Display hood position error on SmartDashboard
     SmartDashboard.putNumber("Hood Position Error", m_encoder.getPosition() - hoodRotations);
+    SmartDashboard.putNumber("Hood output", m_hood.getAppliedOutput());
 
   }
 }
