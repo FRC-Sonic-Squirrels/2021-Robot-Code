@@ -10,14 +10,10 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Robot;
 import static frc.robot.Constants.turretConstants.kSoftMaxTurretAngle;
 import static frc.robot.Constants.turretConstants.kSoftMinTurretAngle;
 import static frc.robot.Constants.turretConstants.kDegreesPerTick;
@@ -134,8 +130,7 @@ public class turretSubsystem extends SubsystemBase {
   public void periodic() {
     boolean turretLimit = !limit.get();
 
-    // TODO: research if we need to use a double here. 
-    int pos = (int) turretDrive.getSelectedSensorPosition();
+    double pos = turretDrive.getSelectedSensorPosition();
 
     SmartDashboard.putBoolean("TurretLimit", turretLimit);
     SmartDashboard.putNumber("Turret Pos", pos);
