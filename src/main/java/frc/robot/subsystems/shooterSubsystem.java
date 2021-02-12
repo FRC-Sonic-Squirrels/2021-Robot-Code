@@ -7,18 +7,14 @@
 
 package frc.robot.subsystems;
 
-import static frc.robot.Constants.shooterConstants.shooter1;
-import static frc.robot.Constants.shooterConstants.shooter2;
-
 import edu.wpi.first.wpilibj.SlewRateLimiter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import com.revrobotics.CANEncoder;
-import com.revrobotics.CANPIDController;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.ControlType;
-import com.revrobotics.EncoderType;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.TalonFXSensorCollection;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.team2930.lib.util.linearInterpolator;
 
 import frc.robot.Constants;
@@ -27,66 +23,48 @@ import frc.robot.RobotContainer;
 
 public class shooterSubsystem extends SubsystemBase {
 
-  //TODO: convert this to use Falcon 500s
+  private WPI_TalonFX talon_shooter1 = new WPI_TalonFX(Constants.shooterConstants.shooter1);
+  private WPI_TalonFX talon_shooter2 = new WPI_TalonFX(Constants.shooterConstants.shooter2);
   
-  private CANSparkMax neo_shooter1 = new CANSparkMax(shooter1, MotorType.kBrushless);
-  private CANSparkMax neo_shooter2 = new CANSparkMax(shooter2, MotorType.kBrushless);
-  private CANPIDController m_pidController;
-  private CANEncoder m_encoder;
+  //private CANSparkMax talon_shooter1 = new CANSparkMax(shooter1, MotorType.kBrushless);
+  //private CANSparkMax talon_shooter2 = new CANSparkMax(shooter2, MotorType.kBrushless);
+
+  private TalonFXSensorCollection m_encoder;
   private double kMaxOutput, kMinOutput;
   private double m_desiredRPM = 0;
   private boolean m_atSpeed = false;
   private linearInterpolator m_lt_angle;
   private linearInterpolator m_lt_feet;
-  private linearInterpolator m_lt_hoodDownAngle;
-  private linearInterpolator m_lt_hoodUpAngle;
   private linearInterpolator m_lt_hoodDownFeet;
   private linearInterpolator m_lt_hoodUpFeet;
-  private int m_idleRPM = 1500;
+  private int m_idleRPM = 2000;
   private double m_currentRPM = 0;
   private double m_error = 0;
   private double m_max_RPM_error = 15;
+  private final double RPMtoTicks = 2048 / 600;
 
   private double m_rate_RPMpersecond = 2000;
   private SlewRateLimiter m_rateLimiter;
 
   // based on the reported limelight angle
-  private double hoodDownAngle[][] = {
-    {24.7, 2750}, // 4 feet
-    {12.3, 2850}, // 7 feet
-    {1.0,  2500}, // 10 feet
-    {-2.85, 2700}, // 12 feet
-    {-5.7,  2800} // 13 feet
-  };
 
   private double hoodDownFeet[][] = {
-    {4.0, 2600},  // 4 feet  2750
-    {7.0, 2500},  // 7 feet
-    {10.0, 2650}, // 10 feet
-    {12.0, 2700}, // 12 feet
-    {13.0, 2800}  // 13 feet
-  };
-
-  // based on the reported limelight angle
-  private double hoodUpAngle[][] = {
-    {5, 3000}, // 9 feet
-    {-0.11, 3100}, // 10 ft
-    {-4.3, 3250}, // 13 feet
-    {-9.85, 3300}, // 17 feet
-    {-11, 3300}, // 17+ feet
-    {-16, 3600} // 25 feet
+    {4.0, 3500},  // 4 feet  2750
+    {7.0, 3350},  // 7 feet
+    {10.0, 3550}, // 10 feet
+    {12.0, 3600}, // 12 feet
+    {13.0, 3750}  // 13 feet
   };
 
   // RPM based on distance in feet from target
   private double hoodUpFeet[][] = {
-    {9,  3000},
-    {10, 3100},
-    {13, 3250},
-    {17, 3300},
-    {18, 3300},
-    {25, 3600}
+    {9,  4000},
+    {10, 4150},
+    {13, 4350},
+    {17, 4400},
+    {18, 4400},
+    {25, 4800}
   };
-
 
 
   /**
@@ -94,42 +72,41 @@ public class shooterSubsystem extends SubsystemBase {
    */
   public shooterSubsystem() {
 
-    neo_shooter1.restoreFactoryDefaults();
-    neo_shooter2.restoreFactoryDefaults();
+    talon_shooter1.configFactoryDefault();
+    talon_shooter2.configFactoryDefault();
 
     // set min time to go from neutral to full power
     // NOTE: closedloop ramp rate interacts poorly with closed loop control sometimes.
-    // neo_shooter1.setClosedLoopRampRate(0.5);
-    // neo_shooter2.setClosedLoopRampRate(0.5);
+    // talon_shooter1.setClosedLoopRampRate(0.5);
+    // talon_shooter2.setClosedLoopRampRate(0.5);
     
     // Set coast mode
-    neo_shooter1.setIdleMode(CANSparkMax.IdleMode.kCoast);
-    neo_shooter2.setIdleMode(CANSparkMax.IdleMode.kCoast);
+    talon_shooter1.setNeutralMode(NeutralMode.Coast);
+    talon_shooter2.setNeutralMode(NeutralMode.Coast);
     
-    neo_shooter1.setInverted(true);
+    talon_shooter1.setInverted(true);
 
-    neo_shooter2.follow(neo_shooter1, true);
-    m_pidController = neo_shooter1.getPIDController();
-    m_encoder = neo_shooter1.getEncoder(EncoderType.kHallSensor, 4096);
+    talon_shooter2.follow(talon_shooter1);
+    m_encoder = talon_shooter1.getSensorCollection();
     
     kMaxOutput = 1.0; 
     kMinOutput = -0.0;
-    m_pidController.setOutputRange(kMinOutput, kMaxOutput);
+    talon_shooter1.configPeakOutputForward(kMaxOutput);
+    talon_shooter1.configPeakOutputReverse(kMinOutput);
 
-    setShooterPID(0.0009, 0.000001, 0.0, 0.0002, 200);
+    setShooterPID(0.12, 0.0001, 0.0, 0.047, 100);
 
     // Build the linear Interpolators just once each.
-    m_lt_hoodUpAngle = new linearInterpolator(hoodUpAngle);
-    m_lt_hoodDownAngle = new linearInterpolator(hoodDownAngle);
     m_lt_hoodUpFeet = new linearInterpolator(hoodUpFeet);
     m_lt_hoodDownFeet = new linearInterpolator(hoodDownFeet);
 
     // pick a default, so that it is never undefined
-    m_lt_angle = m_lt_hoodDownAngle;
     m_lt_feet = m_lt_hoodDownFeet;
 
     m_desiredRPM = 0;
-    m_pidController.setReference(0, ControlType.kVelocity);
+    
+    /* Config sensor used for Primary PID [Velocity] */
+    talon_shooter1.set(ControlMode.Velocity, 0);
     m_rateLimiter = new SlewRateLimiter(m_rate_RPMpersecond, m_desiredRPM);
 
     SmartDashboard.putNumber("RPM set point", m_desiredRPM);
@@ -145,7 +122,7 @@ public class shooterSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
 
-    m_currentRPM = m_encoder.getVelocity();
+    m_currentRPM = m_encoder.getIntegratedSensorVelocity();
     m_error = m_currentRPM - m_desiredRPM;
 
     //if (Math.abs(m_error) < m_max_RPM_error) {
@@ -163,14 +140,15 @@ public class shooterSubsystem extends SubsystemBase {
       setPoint = m_desiredRPM;
     }
 
-    m_pidController.setReference(setPoint, ControlType.kVelocity);
+
+    talon_shooter1.set(ControlMode.Velocity, setPoint * RPMtoTicks);
  
 
     SmartDashboard.putNumber("RPM", m_currentRPM);
     SmartDashboard.putNumber("RPM set point", setPoint);
     SmartDashboard.putNumber("RPM error", m_error);
     SmartDashboard.putBoolean("isAtSpeed", m_atSpeed);
-    SmartDashboard.putNumber("Shooter Voltage", neo_shooter1.getAppliedOutput());
+    SmartDashboard.putNumber("Shooter Voltage", talon_shooter1.getMotorOutputVoltage());
   }
 
   /**
@@ -194,9 +172,7 @@ public class shooterSubsystem extends SubsystemBase {
    * deployHood() - raise shooter hood
    */
   public void deployHood() {
-    // TODO: replace with set hood angle command
     RobotContainer.m_limelight.setPipeline(4);
-    m_lt_angle = m_lt_hoodUpAngle;
     m_lt_feet = m_lt_hoodUpFeet;
   }
 
@@ -205,7 +181,6 @@ public class shooterSubsystem extends SubsystemBase {
    */
   public void retractHood() {
     RobotContainer.m_limelight.setPipeline(4);
-    m_lt_angle = m_lt_hoodDownAngle;
     m_lt_feet = m_lt_hoodDownFeet;
   }
 
@@ -219,11 +194,11 @@ public class shooterSubsystem extends SubsystemBase {
    * @param iZone, need to be this close to target to activate I
    */
   public void setShooterPID (double P, double I, double D, double F, double iZ) {
-    m_pidController.setP(P);
-    m_pidController.setI(I);
-    m_pidController.setD(D);
-    m_pidController.setFF(F);
-    m_pidController.setIZone(iZ);
+    talon_shooter1.config_kP(0, P);
+    talon_shooter1.config_kI(0, I);
+    talon_shooter1.config_kD(0, D);
+    talon_shooter1.config_kF(0, F);
+    talon_shooter1.config_IntegralZone(0, iZ);
   }
 
   /**
@@ -232,7 +207,7 @@ public class shooterSubsystem extends SubsystemBase {
    * @param percent, percent motor output -1.0 to 1.0
    */
   public void setPercentOutput(double percent) {
-    neo_shooter1.set(percent);
+    talon_shooter1.set(ControlMode.PercentOutput, percent);
   }
 
   /**

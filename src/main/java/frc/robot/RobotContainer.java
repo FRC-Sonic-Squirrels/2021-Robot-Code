@@ -116,16 +116,18 @@ public class RobotContainer {
       // D Pad Down - manually decrease ball count
       // Start Button - zero the turret
       // Back Button - spool up the shooter
-      opAButton.whileHeld(new intakeDeployCommand(m_intake));
-      opBButton.whenPressed(new indexerStageForShootingCommand(m_indexer));
-      opXButton.whenPressed(new indexerRestageCommand(m_indexer));
-      opYButton.whileHeld(new indexerReverseEjectCommand(m_indexer));
-      opRightBumper.whileHeld(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_limelight));
+      //opAButton.whileHeld(new intakeDeployCommand(m_intake));
+      //opBButton.whenPressed(new indexerStageForShootingCommand(m_indexer));
+      //opXButton.whenPressed(new indexerRestageCommand(m_indexer));
+      //opYButton.whileHeld(new indexerReverseEjectCommand(m_indexer));
+      //opRightBumper.whileHeld(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_limelight));
       //opLeftBumper.whileHeld(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_limelight));
-      opLeftBumper.whileHeld(new shooterUnderGoal(m_indexer, m_turret, m_shooter));
-      opDPadUp.whenPressed(() -> m_indexer.setBallCount(m_indexer.getBallCount() + 1));
-      opDPadDown.whenPressed(() -> m_indexer.setBallCount(m_indexer.getBallCount() - 1));
-      opBackButton.whenPressed(new shooterSpoolCommand(m_shooter));
+      //opLeftBumper.whileHeld(new shooterUnderGoal(m_indexer, m_turret, m_shooter));
+      //opDPadUp.whenPressed(() -> m_indexer.setBallCount(m_indexer.getBallCount() + 1));
+      //opDPadDown.whenPressed(() -> m_indexer.setBallCount(m_indexer.getBallCount() - 1));
+      //opBackButton.whenPressed(new shooterSpoolCommand(m_shooter));
+
+      
   }
   
 
