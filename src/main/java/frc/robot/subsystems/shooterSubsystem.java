@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FollowerType;
+import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXSensorCollection;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -84,13 +86,17 @@ public class shooterSubsystem extends SubsystemBase {
     talon_shooter1.setNeutralMode(NeutralMode.Coast);
     talon_shooter2.setNeutralMode(NeutralMode.Coast);
     
-    talon_shooter1.setInverted(true);
+    talon_shooter1.setInverted(false);
 
     talon_shooter2.follow(talon_shooter1);
-    m_encoder = talon_shooter1.getSensorCollection();
+    talon_shooter2.follow(talon_shooter1, FollowerType.PercentOutput);
+    // always spin opposite of the lead motor
+    talon_shooter2.setInverted(InvertType.OpposeMaster);
     
+    m_encoder = talon_shooter1.getSensorCollection();
+
     kMaxOutput = 1.0; 
-    kMinOutput = -0.0;
+    kMinOutput = -0.05;
     talon_shooter1.configPeakOutputForward(kMaxOutput);
     talon_shooter1.configPeakOutputReverse(kMinOutput);
 
