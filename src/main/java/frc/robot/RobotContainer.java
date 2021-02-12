@@ -127,6 +127,14 @@ public class RobotContainer {
       //opDPadDown.whenPressed(() -> m_indexer.setBallCount(m_indexer.getBallCount() - 1));
       //opBackButton.whenPressed(new shooterSpoolCommand(m_shooter));
 
+      opRightBumper.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(0)));
+
+      opAButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(1000)));
+      opBButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(2000)));
+      opXButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(3000)));
+      opYButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(5000)));
+
+
       
   }
   
