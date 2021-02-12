@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXSensorCollection;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.team2930.lib.util.linearInterpolator;
 
@@ -24,10 +23,8 @@ import frc.robot.RobotContainer;
 
 public class shooterSubsystem extends SubsystemBase {
 
-  //TODO: convert this to use Falcon 500s
-
-  private TalonFX talon_shooter1 = new WPI_TalonFX(Constants.shooterConstants.shooter1);
-  private TalonFX talon_shooter2 = new WPI_TalonFX(Constants.shooterConstants.shooter2);
+  private WPI_TalonFX talon_shooter1 = new WPI_TalonFX(Constants.shooterConstants.shooter1);
+  private WPI_TalonFX talon_shooter2 = new WPI_TalonFX(Constants.shooterConstants.shooter2);
   
   //private CANSparkMax talon_shooter1 = new CANSparkMax(shooter1, MotorType.kBrushless);
   //private CANSparkMax talon_shooter2 = new CANSparkMax(shooter2, MotorType.kBrushless);
@@ -38,8 +35,6 @@ public class shooterSubsystem extends SubsystemBase {
   private boolean m_atSpeed = false;
   private linearInterpolator m_lt_angle;
   private linearInterpolator m_lt_feet;
-  private linearInterpolator m_lt_hoodDownAngle;
-  private linearInterpolator m_lt_hoodUpAngle;
   private linearInterpolator m_lt_hoodDownFeet;
   private linearInterpolator m_lt_hoodUpFeet;
   private int m_idleRPM = 2000;
@@ -106,7 +101,6 @@ public class shooterSubsystem extends SubsystemBase {
     m_lt_hoodDownFeet = new linearInterpolator(hoodDownFeet);
 
     // pick a default, so that it is never undefined
-    m_lt_angle = m_lt_hoodDownAngle;
     m_lt_feet = m_lt_hoodDownFeet;
 
     m_desiredRPM = 0;
@@ -154,7 +148,7 @@ public class shooterSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("RPM set point", setPoint);
     SmartDashboard.putNumber("RPM error", m_error);
     SmartDashboard.putBoolean("isAtSpeed", m_atSpeed);
-    SmartDashboard.putNumber("Shooter Voltage", talon_shooter1.getBusVoltage());
+    SmartDashboard.putNumber("Shooter Voltage", talon_shooter1.getMotorOutputVoltage());
   }
 
   /**
@@ -187,7 +181,6 @@ public class shooterSubsystem extends SubsystemBase {
    */
   public void retractHood() {
     RobotContainer.m_limelight.setPipeline(4);
-    m_lt_angle = m_lt_hoodDownAngle;
     m_lt_feet = m_lt_hoodDownFeet;
   }
 
