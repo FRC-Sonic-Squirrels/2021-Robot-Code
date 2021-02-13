@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
+
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 
 /**
@@ -121,5 +123,16 @@ public final class Constants {
         //public static final int dio1_indexerSensor2 = 1;
         //public static final int dio2_indexerSensor3 = 2;
         public static final int dio7_turretLimit = 7;
+    }
+
+    public static final class indexConstants {
+        public static final int indexIntake = 8;
+        public static final int indexBelts = 10;
+        public static final int indexKicker = 11;
+    }
+
+    public static final class currentLimits {
+        public static SupplyCurrentLimitConfiguration m_currentlimitMain = new SupplyCurrentLimitConfiguration(true, 35, 1, 1);
+        public static SupplyCurrentLimitConfiguration m_currentlimitSecondary = new SupplyCurrentLimitConfiguration(true, 25, 1, 1);
     }
 }
