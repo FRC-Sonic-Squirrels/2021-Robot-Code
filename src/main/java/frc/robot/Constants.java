@@ -152,31 +152,13 @@ public final class Constants {
         public static final int shooterSlotIdx = 0;
         public static final int shooterHood = 6;
     }
-    public static final class elevatorConstants {
-        public static final int deploySolenoid1 = 0;
-        public static final int deploySolenoid2 = 2;
-        public static final int brakeSolenoid = 5;
-        public static final int elevatorWinch = 12;
-        public static final int elevatorPivotTimeout = 30;
-        public static final int elevatorSlotIdx = 1;
-    }
     public static final class indexConstants {
         public static final int indexIntake = 8;
         public static final int indexBelts = 10;
         public static final int indexKicker = 11;
     }
-    public static final class controlPanelConstants {
-        public static final int motor = 20;
-        public static final int controlPanelSlotIdx = 0;
-        public static final int PIDLoopIdx = 0;
-        public static final int timeoutMs = 30;
-        public static boolean sensorPhase = true;
-        public static boolean motorInvert = false;
-        public static final Gains gains = new Gains(0.15, 0.0, 0.0, 0.0, 0, 1.0);
-    }
     public static final class intakeConstants {
         public static final int intakeMotor = 9;
-        public static final int intakeSolenoid = 7;
     }
     public static final class pwmConstants {
         public static final int blinkin = 0;
@@ -187,5 +169,8 @@ public final class Constants {
         public static final int dio1_indexerSensor2 = 1;
         public static final int dio2_indexerSensor3 = 2;
         public static final int dio7_turretLimit = 7;
+    }
+    public static final class hoodConstants {
+        public static final int hoodMotor = canId.canId18;
     }
 }

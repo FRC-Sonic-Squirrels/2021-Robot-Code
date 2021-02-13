@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.Constants.driveConstants;
 import frc.robot.subsystems.driveSubsystem;
+import frc.robot.subsystems.hoodSubsystem;
 import frc.robot.subsystems.indexerSubsystem;
 import frc.robot.subsystems.intakeSubsystem;
 import frc.robot.subsystems.turretSubsystem;
@@ -53,6 +54,7 @@ public class RobotContainer {
   public final shooterSubsystem m_shooter = new shooterSubsystem();
   public static final indexerSubsystem m_indexer = new indexerSubsystem();
   private final intakeSubsystem m_intake = new intakeSubsystem();
+  private final hoodSubsystem m_hood = new hoodSubsystem();
   public static XboxController m_driveController = new XboxController(driveConstants.driveController);
   public static XboxController m_operatorController = new XboxController(driveConstants.operatorController);
   public static boolean limelightOnTarget = false;
@@ -114,16 +116,24 @@ public class RobotContainer {
       // D Pad Down - manually decrease ball count
       // Start Button - zero the turret
       // Back Button - spool up the shooter
-      opAButton.whileHeld(new intakeDeployCommand(m_intake));
-      opBButton.whenPressed(new indexerStageForShootingCommand(m_indexer));
-      opXButton.whenPressed(new indexerRestageCommand(m_indexer));
-      opYButton.whileHeld(new indexerReverseEjectCommand(m_indexer));
-      opRightBumper.whileHeld(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_limelight));
+      //opAButton.whileHeld(new intakeDeployCommand(m_intake));
+      //opBButton.whenPressed(new indexerStageForShootingCommand(m_indexer));
+      //opXButton.whenPressed(new indexerRestageCommand(m_indexer));
+      //opYButton.whileHeld(new indexerReverseEjectCommand(m_indexer));
+      //opRightBumper.whileHeld(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_limelight));
       //opLeftBumper.whileHeld(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_limelight));
-      opLeftBumper.whileHeld(new shooterUnderGoal(m_indexer, m_turret, m_shooter));
-      opDPadUp.whenPressed(() -> m_indexer.setBallCount(m_indexer.getBallCount() + 1));
-      opDPadDown.whenPressed(() -> m_indexer.setBallCount(m_indexer.getBallCount() - 1));
-      opBackButton.whenPressed(new shooterSpoolCommand(m_shooter));
+      //opLeftBumper.whileHeld(new shooterUnderGoal(m_indexer, m_turret, m_shooter));
+      //opDPadUp.whenPressed(() -> m_indexer.setBallCount(m_indexer.getBallCount() + 1));
+      //opDPadDown.whenPressed(() -> m_indexer.setBallCount(m_indexer.getBallCount() - 1));
+      //opBackButton.whenPressed(new shooterSpoolCommand(m_shooter));
+
+      opRightBumper.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(0)));
+
+      opAButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(5000)));
+      opBButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(5100)));
+      opXButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(5200)));
+      opYButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(5400)));
+      
   }
   
 
