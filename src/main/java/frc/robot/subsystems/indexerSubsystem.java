@@ -130,6 +130,9 @@ public class indexerSubsystem extends SubsystemBase {
           stopIndexer();
         }
         */
+      // Retrieve set belt RPM from SmartDashboard
+      double beltRPM = SmartDashboard.getNumber("Set Hood Position", 0);
+      setBeltsRPM(beltRPM);
 
       }
       else if (ejectBallStep2) {
