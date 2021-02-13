@@ -21,7 +21,6 @@ import com.fearxzombie.limelight;
 import frc.robot.subsystems.driveSubsystem;
 import frc.robot.Constants.driveConstants;
 import frc.robot.commands.driveCommand;
-import frc.robot.subsystems.shooterSubsystem;
 import frc.robot.commands.driveInvertCommand;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
@@ -42,7 +41,6 @@ public class RobotContainer {
   public static XboxController m_driveController = new XboxController(driveConstants.driveController);
   public static XboxController m_operatorController = new XboxController(driveConstants.operatorController);
   public static boolean limelightOnTarget = false;
-  public static shooterSubsystem m_shooter = new shooterSubsystem();
 
 
   public RobotContainer() {
@@ -109,11 +107,6 @@ public class RobotContainer {
       // Start Button - zero the turret
       // Back Button - spool up the shooter
       
-      opYButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(0)));
-
-      opAButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(1000)));
-      opBButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(2000)));
-      opXButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(3000)));
 
       /*
       opAButton.whileHeld(new intakeDeployCommand(m_intake));
