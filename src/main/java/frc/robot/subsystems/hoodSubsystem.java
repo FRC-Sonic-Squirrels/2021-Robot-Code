@@ -24,6 +24,7 @@ public class hoodSubsystem extends SubsystemBase {
   private CANEncoder m_encoder;
   private CANPIDController m_pidController;
   private double kP, kI, kD, kF, kIz, kMaxOutput, kMinOutput;
+  private double hoodPosition = 0;
   private double minPos = 0;
   private double maxPos = 3.5;
 
@@ -72,7 +73,8 @@ public class hoodSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Hood output", m_hood.getAppliedOutput());
 
     // Display initial set hood position on SmartDashboard
-    SmartDashboard.putNumber("Set Hood Position", m_encoder.getPosition());
+    SmartDashboard.putNumber("Set Hood Position", 0);
+    SmartDashboard.putNumber("Hood Position", m_encoder.getPosition());
 
   }
 
@@ -127,15 +129,18 @@ public class hoodSubsystem extends SubsystemBase {
       kMaxOutput = max; 
     }
 
-    hoodRotations = (0.95 * (maxPos - minPos) * operatorController.getTriggerAxis(Hand.kRight)) - minPos;
+    // hoodRotations = (0.95 * (maxPos - minPos) * operatorController.getTriggerAxis(Hand.kRight)) - minPos;
 
-    m_pidController.setReference(hoodRotations, ControlType.kPosition);
+    if (hoodPosition != hoodRotations) {
+      hoodPosition = hoodRotations;
+      m_pidController.setReference(hoodPosition, ControlType.kPosition);
+    }
 
     // Display current hood position on SmartDashboard
     SmartDashboard.putNumber("Hood Position", m_encoder.getPosition());
 
     // Display hood position error on SmartDashboard
-    SmartDashboard.putNumber("Hood Position Error", m_encoder.getPosition() - hoodRotations);
+    SmartDashboard.putNumber("Hood Position Error", m_encoder.getPosition() - hoodPosition);
     SmartDashboard.putNumber("Hood output", m_hood.getAppliedOutput());
 
   }
