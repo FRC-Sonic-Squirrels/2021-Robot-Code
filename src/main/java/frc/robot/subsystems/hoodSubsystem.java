@@ -72,8 +72,9 @@ public class hoodSubsystem extends SubsystemBase {
 
     SmartDashboard.putNumber("Hood output", m_hood.getAppliedOutput());
 
-    // Display initial set hood position on SmartDashboard
-    SmartDashboard.putNumber("Set Hood Position", 0);
+    // Display initial set hood angle on SmartDashboard
+    // SmartDashboard.putNumber("Set Hood Position", 0);
+    SmartDashboard.putNumber("Set Hood Angle", 46);
     SmartDashboard.putNumber("Hood Position", m_encoder.getPosition());
 
   }
@@ -91,8 +92,9 @@ public class hoodSubsystem extends SubsystemBase {
     double max = SmartDashboard.getNumber("Max Output", 0);
     double min = SmartDashboard.getNumber("Min Output", 0);
 
-    // Retrieve set hood position from SmartDashboard
-    double hoodRotations = SmartDashboard.getNumber("Set Hood Position", 0);
+    // Retrieve set hood angle from SmartDashboard and convert to motor rotations
+    // double hoodRotations = SmartDashboard.getNumber("Set Hood Position", 0);
+    double hoodRotations = (3.5 / 29) * (SmartDashboard.getNumber("Set Hood Angle", 46) - 46);
 
     // Make sure to not set hood rotations beyond min or max position
     if(hoodRotations < 0) {
