@@ -135,4 +135,7 @@ public final class Constants {
         public static SupplyCurrentLimitConfiguration m_currentlimitMain = new SupplyCurrentLimitConfiguration(true, 35, 1, 1);
         public static SupplyCurrentLimitConfiguration m_currentlimitSecondary = new SupplyCurrentLimitConfiguration(true, 25, 1, 1);
     }
+    public static final class intakeConstants {
+        public static final int intakeMotor = 9;
+    }
 }
