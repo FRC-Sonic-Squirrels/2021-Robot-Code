@@ -92,18 +92,6 @@ public class hoodSubsystem extends SubsystemBase {
     double max = SmartDashboard.getNumber("Max Output", 0);
     double min = SmartDashboard.getNumber("Min Output", 0);
 
-    // Retrieve set hood angle from SmartDashboard and convert to motor rotations
-    // double hoodRotations = SmartDashboard.getNumber("Set Hood Position", 0);
-    double hoodRotations = (3.5 / 29) * (SmartDashboard.getNumber("Set Hood Angle", 46) - 46);
-
-    // Make sure to not set hood rotations beyond min or max position
-    if(hoodRotations < 0) {
-      hoodRotations = 0;
-    }
-    else if(hoodRotations > 3.5) {
-      hoodRotations = 3.5;
-    }
-
     // if PID coefficients on SmartDashboard have changed, write new values to controller
     if(p != kP) {
       m_pidController.setP(p);
@@ -131,6 +119,18 @@ public class hoodSubsystem extends SubsystemBase {
       kMaxOutput = max; 
     }
 
+    // Retrieve set hood angle from SmartDashboard and convert to motor rotations
+    // double hoodRotations = SmartDashboard.getNumber("Set Hood Position", 0);
+    double hoodRotations = angleToRotations(SmartDashboard.getNumber("Set Hood Angle", 46));
+
+    // Make sure to not set hood rotations beyond min or max position
+    if(hoodRotations < 0) {
+      hoodRotations = 0;
+    }
+    else if(hoodRotations > 3.5) {
+      hoodRotations = 3.5;
+    }
+
     // hoodRotations = (0.95 * (maxPos - minPos) * operatorController.getTriggerAxis(Hand.kRight)) - minPos;
 
     if (hoodPosition != hoodRotations) {
@@ -144,6 +144,13 @@ public class hoodSubsystem extends SubsystemBase {
     // Display hood position error on SmartDashboard
     SmartDashboard.putNumber("Hood Position Error", m_encoder.getPosition() - hoodPosition);
     SmartDashboard.putNumber("Hood output", m_hood.getAppliedOutput());
+
+  }
+
+  // converts hood degrees (above horizontal) to motor rotations
+  private double angleToRotations(double angle) {
+
+    return (3.5 / 29) * (angle - 46);
 
   }
 }
