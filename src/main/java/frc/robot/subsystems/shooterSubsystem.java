@@ -158,6 +158,14 @@ public class shooterSubsystem extends SubsystemBase {
   }
 
   /**
+   * add to the current shooter RPM
+   */
+  public void addToShooterRPM(double deltaRPM) {
+    setShooterRPM(m_desiredRPM + deltaRPM);
+  }
+
+
+  /**
    * setShooterRPM - set desired flywheel RPM
    * 
    * @param desiredRPM
@@ -166,8 +174,9 @@ public class shooterSubsystem extends SubsystemBase {
     m_desiredRPM = desiredRPM;
     isAtSpeed();
 
-    if (m_desiredRPM == 0) {
+    if (m_desiredRPM <= 0) {
       setPercentOutput(0.0);
+      m_desiredRPM = 0;
 
       // zero the RPM change rate limit. No rate limit to stop the flywheel
       m_rateLimiter = new SlewRateLimiter(m_rate_RPMpersecond, m_desiredRPM);

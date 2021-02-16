@@ -129,11 +129,16 @@ public class RobotContainer {
 
       opRightBumper.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(0)));
 
-      opAButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(5000)));
-      opBButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(5100)));
-      opXButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(5200)));
-      opYButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(5400)));
+      //opAButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(5000)));
+      //opBButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(5100)));
+      //opXButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(5200)));
+      //opYButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(5400)));
+    
       
+      opAButton.whenPressed(new InstantCommand(() -> m_shooter.addToShooterRPM(1000)));
+      opBButton.whenPressed(new InstantCommand(() -> m_shooter.addToShooterRPM(-1000)));
+      opXButton.whenPressed(new InstantCommand(() -> m_shooter.addToShooterRPM(100)));
+      opYButton.whenPressed(new InstantCommand(() -> m_shooter.addToShooterRPM(-100)));
   }
   
 
