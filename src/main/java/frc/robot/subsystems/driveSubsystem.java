@@ -139,7 +139,7 @@ public class driveSubsystem extends SubsystemBase {
     // report the wheel speed, position, and pose
     SmartDashboard.putNumber("left_wheel_Velocity", getLeftVelocity());
     SmartDashboard.putNumber("right_wheel_Velocity", getRightVelocity());
-    SmartDashboard.putNumber("left_wheel_Distance", leftDist); 
+    SmartDashboard.putNumber("left_wheel_Distance", leftDist);
     SmartDashboard.putNumber("right_wheel_Distance", rightDist);
     
     Pose2d currentPose = m_odometry.getPoseMeters();
