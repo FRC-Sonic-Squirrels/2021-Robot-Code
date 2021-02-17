@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems;
 
-import java.util.ResourceBundle.Control;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
@@ -23,7 +21,7 @@ public class intakeSubsystem extends SubsystemBase {
   private double intakeRPM = 0.0;
   private boolean dynamicMode = true;
 
-  public intakeSubsystem() { 
+  public intakeSubsystem() {
     m_intake.configFactoryDefault();
     m_intake.setInverted(true);
   }
@@ -32,47 +30,59 @@ public class intakeSubsystem extends SubsystemBase {
   public void periodic() {
     boolean dynamic = SmartDashboard.getBoolean("Dynamic Mode", dynamicMode);
     dynamicMode = dynamic;
-    if (dynamicMode){ 
+    if (dynamicMode) {
       setIntakeToSpeed();
-    }
-    else {
+    } else {
       double ir = SmartDashboard.getNumber("Intake RPM", 0.0);
-      if (ir != intakeRPM){
+      if (ir != intakeRPM) {
         intakeRPM = ir;
         setIntakeRPM(intakeRPM);
       }
     }
     SmartDashboard.putNumber("Intake RPM", m_intake.getSensorCollection().getIntegratedSensorVelocity() * 600 / 2048);
   }
-
-  public void setIntakePercentOutput(double percent){
-      m_intake.set(ControlMode.PercentOutput, percent);
-  }
-
-  public void setIntakeRPM(double rpm){
-      m_intake.set(ControlMode.Velocity, rpm * 2048/600);
+   /**
+   * Sets Intake Percent output to designated Percent
+   */
+  public void setIntakePercentOutput(double percent) {
+    m_intake.set(ControlMode.PercentOutput, percent);
   }
 
   /**
-   * Takes the speed at which the Robot moves and makes the Intake move a relative speed
+   * Sets Intake RPM to designated RPM
    */
-  public void setIntakeToSpeed(){
-      double robotMetersPerSec = m_drive.getLeftVelocity() + m_drive.getRightVelocity() / 2;
-      double intakeRotationsPerSec = robotMetersPerSec / circOfIntake_meters;
-      //Going Twice as Fast as the Robot Speed
-      double intakeRPM = intakeRotationsPerSec * 60 * 2;
-      if(intakeRPM < minIntakeRPM){
-        setIntakeRPM(minIntakeRPM);
-      }
-      else if (intakeRPM > maxIntakeRPM){
-        setIntakeRPM(maxIntakeRPM);
-      }
-      else {
-        setIntakeRPM(intakeRPM);
-      }
+  public void setIntakeRPM(double rpm) {
+    m_intake.set(ControlMode.Velocity, rpm * 2048 / 600);
   }
 
-  public void enableDynamicSpeed(boolean dynamic){
-      dynamicMode = dynamic;
+  /**
+   * Takes the speed at which the Robot moves and makes the Intake move a relative
+   * speed
+   */
+  public void setIntakeToSpeed() {
+    double robotMetersPerSec = m_drive.getLeftVelocity() + m_drive.getRightVelocity() / 2;
+    double intakeRotationsPerSec = robotMetersPerSec / circOfIntake_meters;
+    // Going Twice as Fast as the Robot Speed
+    double intakeRPM = intakeRotationsPerSec * 60 * 2;
+    if (intakeRPM < minIntakeRPM) {
+      setIntakeRPM(minIntakeRPM);
+    } else if (intakeRPM > maxIntakeRPM) {
+      setIntakeRPM(maxIntakeRPM);
+    } else {
+      setIntakeRPM(intakeRPM);
+    }
+  }
+
+   /**
+   * Changes Intake Speed to Match double robot speed at all times
+   */
+  public void enableDynamicSpeed(boolean dynamic) {
+    dynamicMode = dynamic;
+  }
+
+  public void stop(){
+    enableDynamicSpeed(false);
+    m_intake.setVoltage(0.0);
+    setIntakeRPM(0.0);
   }
 }
