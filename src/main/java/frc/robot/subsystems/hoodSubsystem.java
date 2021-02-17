@@ -14,6 +14,7 @@ import com.revrobotics.CANEncoder;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
+import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.ControlType;
@@ -153,7 +154,6 @@ public class hoodSubsystem extends SubsystemBase {
   }
 
   public void zeroHoodPos(){
-
     m_encoder.setPosition(0);
   }
 

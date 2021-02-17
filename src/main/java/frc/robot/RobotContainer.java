@@ -14,6 +14,7 @@ import java.util.List;
 import com.fearxzombie.limelight;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
+import edu.wpi.first.wpilibj.command.WaitCommand;
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -65,6 +66,11 @@ public class RobotContainer {
     //m_elevator.setDefaultCommand(new elevatorWinchCommand(m_elevator));
     m_indexer.setDefaultCommand(new indexerDefaultCommand(m_indexer));
     m_turret.setDefaultCommand(new turretDefaultCommand(m_turret));
+    
+    new InstantCommand(() -> m_hood.setPercentOutput(-0.2)).
+    andThen(new WaitCommand(1)).
+    andThen(m_hood.setPercentOutput(0)).
+    andThen(m_hood.zeroHoodPos());
   }
 
   private void configureButtonBindings() {
