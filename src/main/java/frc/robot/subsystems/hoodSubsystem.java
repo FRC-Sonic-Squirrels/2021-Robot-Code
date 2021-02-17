@@ -149,8 +149,20 @@ public class hoodSubsystem extends SubsystemBase {
 
   // converts hood degrees (above horizontal) to motor rotations
   private double angleToRotations(double angle) {
-
     return (3.5 / 29) * (angle - 46);
+  }
 
+  public void zeroHoodPos(){
+
+    m_encoder.setPosition(0);
+  }
+
+  /**
+   * setPercentOutput()  - override Hood Motors with percent output
+   * 
+   * @param percent, percent motor output -1.0 to 1.0
+   */
+  public void setPercentOutput(double percent){
+      m_hood.set(percent);
   }
 }
