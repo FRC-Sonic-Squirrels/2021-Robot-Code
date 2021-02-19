@@ -15,7 +15,7 @@ public class intakeSubsystem extends SubsystemBase {
 
   private WPI_TalonFX m_intake = new WPI_TalonFX(Constants.intakeConstants.intakeMotor);
   private driveSubsystem m_drive = new driveSubsystem();
-  private double circOfIntake_meters = (2 * Math.PI) * 0.0254;
+  private double circOfIntake_meters = (1.4725 * Math.PI) * 0.0254;
   private double minIntakeRPM = 500;
   private double maxIntakeRPM = 6000;
   private double intakeRPM = 0.0;
@@ -52,7 +52,7 @@ public class intakeSubsystem extends SubsystemBase {
    * Sets Intake RPM to designated RPM
    */
   public void setIntakeRPM(double rpm) {
-    m_intake.set(ControlMode.Velocity, rpm * 2048 / 600);
+    m_intake.set(ControlMode.Velocity, rpm * 2048 / 600 * Constants.intakeConstants.intakeGearRatio);
   }
 
   /**
@@ -63,7 +63,7 @@ public class intakeSubsystem extends SubsystemBase {
     double robotMetersPerSec = m_drive.getLeftVelocity() + m_drive.getRightVelocity() / 2;
     double intakeRotationsPerSec = robotMetersPerSec / circOfIntake_meters;
     // Going Twice as Fast as the Robot Speed
-    double intakeRPM = intakeRotationsPerSec * 60 * 2;
+    double intakeRPM = intakeRotationsPerSec * 60 * 2 * Constants.intakeConstants.intakeGearRatio;
     if (intakeRPM < minIntakeRPM) {
       setIntakeRPM(minIntakeRPM);
     } else if (intakeRPM > maxIntakeRPM) {
