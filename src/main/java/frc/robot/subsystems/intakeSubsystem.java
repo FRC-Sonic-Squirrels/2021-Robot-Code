@@ -33,13 +33,13 @@ public class intakeSubsystem extends SubsystemBase {
     if (dynamicMode) {
       setIntakeToSpeed();
     } else {
-      double ir = SmartDashboard.getNumber("Intake RPM", 0.0);
+      double ir = SmartDashboard.getNumber("Intake Motor RPM", 0.0);
       if (ir != intakeRPM) {
         intakeRPM = ir;
         setIntakeRPM(intakeRPM);
       }
     }
-    SmartDashboard.putNumber("Intake RPM", m_intake.getSensorCollection().getIntegratedSensorVelocity() * 600 / 2048);
+    SmartDashboard.putNumber("Intake Motor RPM", m_intake.getSensorCollection().getIntegratedSensorVelocity() * 600 / 2048);
   }
    /**
    * Sets Intake Percent output to designated Percent
@@ -63,13 +63,14 @@ public class intakeSubsystem extends SubsystemBase {
     double robotMetersPerSec = m_drive.getLeftVelocity() + m_drive.getRightVelocity() / 2;
     double intakeRotationsPerSec = robotMetersPerSec / circOfIntake_meters;
     // Going Twice as Fast as the Robot Speed
-    double intakeRPM = intakeRotationsPerSec * 60 * 2 * Constants.intakeConstants.intakeGearRatio;
-    if (intakeRPM < minIntakeRPM) {
+    double intakeRPM = intakeRotationsPerSec * 60 * 2;
+    double desiredMotorRPM = intakeRPM * Constants.intakeConstants.intakeGearRatio;
+    if (desiredMotorRPM < minIntakeRPM) {
       setIntakeRPM(minIntakeRPM);
-    } else if (intakeRPM > maxIntakeRPM) {
+    } else if (desiredMotorRPM > maxIntakeRPM) {
       setIntakeRPM(maxIntakeRPM);
     } else {
-      setIntakeRPM(intakeRPM);
+      setIntakeRPM(desiredMotorRPM);
     }
   }
 
