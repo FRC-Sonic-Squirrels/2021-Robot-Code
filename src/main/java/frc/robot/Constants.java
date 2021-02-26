@@ -81,17 +81,10 @@ public final class Constants {
         public static final int kSoftMinTurretAngle = -90;
         public static final int kEncoderCPR = 4096; // CTRE Quadrature?
 
-        // BAG motor controlled by Talon
-        // Turret inner teeth = 264
-        // gear teeth = 20
-        // gearbox = 35:1
-        // Total motor to turret rotation ration: 1:462  (1:35 * 20:264)
-        // POST gearbox encoder ratio is:
-        // 20:264 or 1/13.2
-        //TODO: Change this Gear Ratio
-        public static final double kGearRation = 1 / 13.2; // turret rotations per encoder rotation
-        public static final double kTurretRotationsPerTick = kGearRation / kEncoderCPR;
-        public static final double kDegreesPerTick = 360 * kTurretRotationsPerTick;
+        //New Turret Gear Ratio = 132:1
+
+        public static final double turretGearRatio = 132.0;
+        
         // TODO: test and increase max velocity and acceleration
         // Max velocity: 90 deg/s
         // Max acceleration: 45 deg/s^2
