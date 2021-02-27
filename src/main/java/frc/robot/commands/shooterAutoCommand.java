@@ -12,22 +12,23 @@ import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
-//import frc.robot.subsystems.indexerSubsystem;
+import frc.robot.subsystems.hoodSubsystem;
+import frc.robot.subsystems.indexerSubsystem;
 import frc.robot.subsystems.shooterSubsystem;
 import frc.robot.subsystems.turretSubsystem;
 
 public class shooterAutoCommand extends CommandBase {
 
-  //private indexerSubsystem m_indexer;
+  private indexerSubsystem m_indexer;
   private turretSubsystem m_turret;
   private shooterSubsystem m_shooter;
+  private hoodSubsystem m_hood;
   private limelight m_limelight;
   private boolean m_stationary;
   private double steer_k = 0.075;
   private double tv;
   private double tx;
   private double limelightSteerCommand = 0;
-  private boolean m_hoodup_override = false;
 
   /**
    * shooterAutoCommand class constructor
@@ -36,37 +37,23 @@ public class shooterAutoCommand extends CommandBase {
    * @param turret,     turret subsystem
    * @param shooter,    shooter subsystem
    * @param ll_util,    limelight class
-   * @param hood_up,    boolean: true = hood up, false = hood down
    * @param stationary, boolean: true if robot is stationary
    */
-  public shooterAutoCommand(turretSubsystem turret, shooterSubsystem shooter, limelight ll_util, boolean hood_up, boolean stationary) {
+  public shooterAutoCommand(indexerSubsystem indexer, turretSubsystem turret, shooterSubsystem shooter, limelight ll_util, hoodSubsystem hood, boolean stationary) {
+    addRequirements(indexer);
     addRequirements(turret);
     addRequirements(shooter);
+    m_indexer = indexer;
     m_turret = turret;
     m_shooter = shooter;
     m_limelight = ll_util;
+    m_hood = hood;
     m_stationary = stationary;
-    m_hoodup_override = hood_up;
   }
 
-  /**
-   * shooterAutoCommand class constructor
-   * 
-   * @param indexer, indexer subsystem
-   * @param turret,  turret subsystem
-   * @param shooter, shooter subsystem
-   * @param ll_util, limelight class
-   * @param hood_up, boolean: true = hood up, false = hood down
-   */
-  public shooterAutoCommand(turretSubsystem turret, shooterSubsystem shooter, limelight ll_util, boolean hood_up) {
-
-    // call the main constructor, with stationary as "false"
-    this(turret, shooter, ll_util, hood_up, false);
-  }
-
-  public shooterAutoCommand(turretSubsystem turret, shooterSubsystem shooter, limelight ll_util) {
+  public shooterAutoCommand(indexerSubsystem indexer, turretSubsystem turret, shooterSubsystem shooter, limelight ll_util, hoodSubsystem hood) {
     // call main constructor, w/ stationary false, force hood up false
-     this(turret, shooter, ll_util, false, false);
+     this(indexer, turret, shooter, ll_util, hood, false);
   }
 
   @Override
@@ -103,6 +90,7 @@ public class shooterAutoCommand extends CommandBase {
 
       // m_shooter.setShooterRPM(m_shooter.getRPMforTY(m_limelight.getTY()));
       m_shooter.setShooterRPM(m_shooter.getRPMforDistanceMeter(Robot.distance_meters));
+      m_hood.setPositionRotations(m_hood.angleToRotations(m_hood.getAngleforDistanceMeter(Robot.distance_meters)));
       limelightSteerCommand = tx * steer_k;
       m_turret.setPercentOutput(limelightSteerCommand);
 
@@ -113,13 +101,19 @@ public class shooterAutoCommand extends CommandBase {
       }
     }
 
+    // shoot!
+    if (m_shooter.isAtSpeed() == true && RobotContainer.limelightOnTarget == true) {
+      m_indexer.ejectOneBall();
+    }
   }
   
   @Override
   public void end(boolean interrupted) {
+    m_indexer.stopIndexer();
     m_shooter.setShooterRPM(0);
     m_turret.stop();
     RobotContainer.limelightOnTarget = false;
+    m_hood.zeroHoodPos();
     //m_limelight.setLEDMode(1);
     m_stationary = false;
   }
