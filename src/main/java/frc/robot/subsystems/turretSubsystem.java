@@ -10,8 +10,6 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import static frc.robot.Constants.turretConstants.kSoftMaxTurretAngle;
@@ -22,12 +20,10 @@ import static frc.robot.Constants.turretConstants.kIndex;
 import static frc.robot.Constants.turretConstants.kMaxDegreesPerSecond;
 import static frc.robot.Constants.turretConstants.kMaxDegreesPerSecondSquared;
 import static frc.robot.Constants.turretConstants.turret;
-import static frc.robot.Constants.digitalIOConstants.dio7_turretLimit;
 
 public class turretSubsystem extends SubsystemBase {
 
   private TalonSRX turretDrive = new TalonSRX(turret);
-  private DigitalInput limit = new DigitalInput(dio7_turretLimit);
 
   public turretSubsystem() {
     turretDrive.configFactoryDefault();
@@ -125,33 +121,10 @@ public class turretSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    boolean turretLimit = !limit.get();
+    double pos = turretDrive.getSelectedSensorPosition();
 
-    // TODO: research if we need to use a double here. 
-    int pos = (int) turretDrive.getSelectedSensorPosition();
-
-    SmartDashboard.putBoolean("TurretLimit", turretLimit);
     SmartDashboard.putNumber("Turret Pos", pos);
     SmartDashboard.putNumber("Turret Angle", pos * kDegreesPerTick);
 
-    if (turretLimit == true) {
-      stop();
-      if (pos < 0) {
-        DriverStation.reportError("Min limit Reached on turret. motor stopped", false);
-        // check angle and reset position to kSoftMinTurretAngle if off by more than 1 deg
-        if (Math.abs(pos * kDegreesPerTick - kSoftMinTurretAngle) > 1.0) {
-          // TODO: magnetic limits switch may be outside software min/max set accordingly
-          turretDrive.setSelectedSensorPosition((int) (kSoftMinTurretAngle / kDegreesPerTick), kIndex, kTimeout);
-        }
-      }
-      else {
-        DriverStation.reportError("Max limit Reached on turret, motor stopped", false);
-        // check angle and reset position to kSoftMaxTurretAngle if off by more than 1 deg
-        if (Math.abs(pos * kDegreesPerTick - kSoftMaxTurretAngle) > 1.0) {
-          // TODO: magnetic limits switch may be outside software min/max set accordingly
-          turretDrive.setSelectedSensorPosition((int) (kSoftMaxTurretAngle / kDegreesPerTick), kIndex, kTimeout);
-        }
-      }
-    }
   }
 }

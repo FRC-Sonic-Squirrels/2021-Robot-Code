@@ -10,19 +10,16 @@ package frc.robot;
 import static frc.robot.Constants.AutoConstants.kRamseteB;
 import static frc.robot.Constants.AutoConstants.kRamseteZeta;
 import static frc.robot.Constants.driveConstants.kDriveKinematics;
-import static frc.robot.Constants.driveConstants;
+
 import java.util.List;
+
+import com.fearxzombie.limelight;
+
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.controller.RamseteController;
-import com.fearxzombie.limelight;
-import frc.robot.subsystems.driveSubsystem;
-import frc.robot.Constants.driveConstants;
-import frc.robot.commands.driveCommand;
-import frc.robot.commands.driveInvertCommand;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
@@ -30,22 +27,26 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
+import frc.robot.Constants.driveConstants;
+import frc.robot.commands.driveCommand;
+import frc.robot.commands.indexerDefaultCommand;
+import frc.robot.commands.indexerStageForShootingCommand;
+import frc.robot.commands.intakeDeployCommand;
+import frc.robot.commands.shooterAutoCommand;
+import frc.robot.commands.turretDefaultCommand;
 import frc.robot.subsystems.driveSubsystem;
 import frc.robot.subsystems.hoodSubsystem;
 import frc.robot.subsystems.indexerSubsystem;
 import frc.robot.subsystems.intakeSubsystem;
-import frc.robot.subsystems.turretSubsystem;
 import frc.robot.subsystems.shooterSubsystem;
-import frc.robot.commands.*;
+import frc.robot.subsystems.turretSubsystem;
 
 public class RobotContainer {
 
@@ -60,8 +61,8 @@ public class RobotContainer {
   public static final limelight m_limelight = new limelight("limelight-one");
   private final turretSubsystem m_turret = new turretSubsystem();
   public final shooterSubsystem m_shooter = new shooterSubsystem();
-  public static final indexerSubsystem m_indexer = new indexerSubsystem();
-  private final intakeSubsystem m_intake = new intakeSubsystem();
+  private static final indexerSubsystem m_indexer = new indexerSubsystem();
+  private final intakeSubsystem m_intake = new intakeSubsystem(m_drive);
   private final hoodSubsystem m_hood = new hoodSubsystem();
   public static XboxController m_driveController = new XboxController(driveConstants.driveController);
   public static XboxController m_operatorController = new XboxController(driveConstants.operatorController);
@@ -107,7 +108,7 @@ public class RobotContainer {
       // Right Trigger - forward throttle (Forza mode)
       // Right Bumper - invert drive controls
       // Left Bumper - turbo boost, FULL SPEED
-      driverRightBumper.whenPressed(new driveInvertCommand(m_drive));
+      driverRightBumper.whenPressed(new InstantCommand(() -> m_drive.toggleDriveInverted()));
       driverAButton.whenPressed(new InstantCommand(() -> m_drive.toggleForzaMode()));
       driverBButton.whenPressed(new InstantCommand(() -> m_drive.toggleSquaredInputs()));
 
@@ -181,68 +182,6 @@ public class RobotContainer {
    */
   public Command getNoAutonomousCommand() {
     return new RunCommand(() -> m_drive.tankDriveVolts(0, 0));
-  }
-
-  // Complex Example from 2020 Infinite Recharge autonomous
-  public Command rightSide6Ball_InfiniteRecharge() {
-
-    // power port is left of robot, 
-    // 1. front of frame over initiation line
-    // 2. robot lined up on row of balls
-    powerPortLocation = new Translation2d(feet2Meters(10.5), inches2Meters(66.91));
-
-    RamseteCommand moveBack1 = createTrajectoryCommand(new Pose2d(0, 0, new Rotation2d(0)), List.of(new Translation2d(-1.15, 0)), new Pose2d(-1.75, 0, new Rotation2d(0)), true, 3.0, 1.8); 
-    RamseteCommand moveBack2 = createTrajectoryCommand(new Pose2d(-1.75, 0, new Rotation2d(0)), List.of(new Translation2d(-2.6, 0)), new Pose2d(-4.35, 0, new Rotation2d(0)), true, 0.80, 0.5);
-    RamseteCommand moveForward = createTrajectoryCommand(new Pose2d(-4.35, 0, new Rotation2d(0)), List.of(new Translation2d(-4, 0)), new Pose2d(-2, 0, new Rotation2d(0)), false, 3.0, 1.8);
-
-    Command ac = new SequentialCommandGroup(
-      // Do these setup things in parallel
-      new ParallelCommandGroup(
-        new InstantCommand(() -> m_indexer.setBallCount(3), m_indexer),
-        new SequentialCommandGroup(
-          new InstantCommand(() -> m_shooter.setShooterRPM(3650), m_shooter),  // aprox rpm for 17'
-          new InstantCommand(() -> m_shooter.deployHood(), m_shooter)    // deploy hood, set ll pipeline
-        ),
-        new InstantCommand(() -> m_turret.setAngleDegrees(-3), m_turret), // look left
-        moveBack1),   // Move left
-
-      // shoot until all the balls are gone
-      new ParallelRaceGroup(
-        new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_limelight, true),
-        new WaitUntilCommand(() -> m_indexer.getBallCount() == 0)
-      ),
-
-      // Move back get 3 more balls
-      
-      new ParallelRaceGroup(
-        new indexerDefaultCommand(m_indexer).perpetually(), 
-        new intakeDeployCommand(m_intake),
-        new SequentialCommandGroup(
-          moveBack2                    // move back slow
-          //new WaitCommand(0.1)          // time to finish sucking in last ball
-        )
-      ),
-
-      // Move forward prepare to shoot
-      new ParallelCommandGroup(
-        new SequentialCommandGroup(
-          // no need to turn turret, should still be on target from last time
-          new InstantCommand(() -> m_shooter.setShooterRPM(3550), m_shooter),  // aprox rpm for 17'
-          new InstantCommand(() -> m_shooter.deployHood(), m_shooter)    // deploy hood, set ll pipeline
-        ),
-        new indexerStageForShootingCommand(m_indexer),
-        moveForward
-      ),
-
-      // shoot, finish when all the balls are gone
-      new ParallelRaceGroup(
-        new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_limelight, true),
-        new WaitUntilCommand(() -> m_indexer.getBallCount() == 0)
-      )
-
-    );
-
-    return  ac;
   }
 
 

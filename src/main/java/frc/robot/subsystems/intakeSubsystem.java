@@ -18,17 +18,18 @@ import edu.wpi.first.wpilibj.Relay;
 public class intakeSubsystem extends SubsystemBase {
 
   private WPI_TalonFX m_intake = new WPI_TalonFX(Constants.intakeConstants.intakeMotor);
-  private driveSubsystem m_drive = new driveSubsystem();
   private Relay intakeRelay = new Relay(0);
+  private driveSubsystem m_drive;
   private double circOfIntake_meters = (1.4725 * Math.PI) * 0.0254;
   private double minIntakeRPM = 1000;
   private double maxIntakeRPM = 6000;
   private double intakeRPM = 0.0;
   private boolean dynamicMode = true;
 
-  public intakeSubsystem() {
+  public intakeSubsystem(driveSubsystem drive) {
     m_intake.configFactoryDefault();
     m_intake.setInverted(true);
+    m_drive = drive;
     //intakeRelay.setDirection(Relay.Direction kForwardOnly);
     
   }
@@ -88,6 +89,17 @@ public class intakeSubsystem extends SubsystemBase {
   public void enableDynamicSpeed(boolean dynamic) {
     dynamicMode = dynamic;
   }
+
+  /**
+   * release and deploy the intake
+   */
+public void deployIntake() {
+  // TODO: retract solenoids
+}
+
+public void retractIntake() {
+  // There is no retract on this robot. 
+}
 
   public void stop(){
     enableDynamicSpeed(false);

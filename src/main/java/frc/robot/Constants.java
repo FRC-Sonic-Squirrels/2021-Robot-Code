@@ -66,6 +66,7 @@ public final class Constants {
         public static SupplyCurrentLimitConfiguration m_currentlimitMain = new SupplyCurrentLimitConfiguration(true, 35, 1, 1);
         public static SupplyCurrentLimitConfiguration m_currentlimitSecondary = new SupplyCurrentLimitConfiguration(true, 25, 1, 1);
     }
+
     public static final class driveConstants {
         public static final int falcon1_leftLead = 12;
         public static final int falcon2_leftFollow = 13;
@@ -171,16 +172,12 @@ public final class Constants {
         public static final int indexBelts = 10;
         public static final int indexKicker = 11;
     }
-
-    public static final class currentLimits {
-        public static SupplyCurrentLimitConfiguration m_currentlimitMain = new SupplyCurrentLimitConfiguration(true, 35, 1, 1);
-        public static SupplyCurrentLimitConfiguration m_currentlimitSecondary = new SupplyCurrentLimitConfiguration(true, 25, 1, 1);
-    }
   
     public static final class intakeConstants {
         public static final int intakeMotor = 9;
         //Geared up 16:24 
         public static final double intakeGearRatio = 16.0 / 24.0;
+    }
 
     public static final class pwmConstants {
         public static final int blinkin = 0;
