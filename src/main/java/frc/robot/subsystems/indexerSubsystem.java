@@ -13,21 +13,20 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.indexConstants;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Robot;
-import frc.robot.RobotContainer;
-import frc.robot.Constants.currentLimits;
-import frc.robot.Constants.digitalIOConstants;
+
+import static frc.robot.Constants.currentLimits;
+import static frc.robot.Constants.digitalIOConstants;
+import static frc.robot.Constants.canId;
 
 public class indexerSubsystem extends SubsystemBase {
 
-  private BaseMotorController indexIntake;
-  private BaseMotorController indexKicker;
-  private WPI_TalonFX indexBelts = new WPI_TalonFX(indexConstants.indexBelts);
+  private WPI_TalonSRX indexIntake;
+  private WPI_TalonFX indexKicker;
+  private WPI_TalonFX indexBelts;
   private DigitalInput Sensor1 = new DigitalInput(digitalIOConstants.dio0_indexerSensor1);
   private DigitalInput Sensor2 = new DigitalInput(digitalIOConstants.dio1_indexerSensor2);
   private DigitalInput Sensor3 = new DigitalInput(digitalIOConstants.dio2_indexerSensor3);
@@ -45,8 +44,9 @@ public class indexerSubsystem extends SubsystemBase {
 
   public indexerSubsystem() {
 
-    indexIntake = new WPI_VictorSPX(indexConstants.indexIntake);
-    indexKicker = new WPI_VictorSPX(indexConstants.indexKicker);
+    indexIntake = new WPI_TalonSRX(canId.canId8_indexo_intake_and_hopper);
+    indexBelts = new WPI_TalonFX(canId.canId10_indexo_belts);
+    indexKicker = new WPI_TalonFX(canId.canId11_indexo_kicker);
     
     indexBelts.configFactoryDefault();
     indexKicker.configFactoryDefault();
