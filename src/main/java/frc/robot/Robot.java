@@ -17,12 +17,12 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
   public static boolean manualMode = false;
   public static boolean turretHome = false;
+
   private RobotContainer m_robotContainer;
   public PowerDistributionPanel m_pdp = new PowerDistributionPanel();
-  // TODO: if we really aren't using a compressor, remove all references to compressor
-  public Compressor Compressor;
   SendableChooser <String> chooser = new SendableChooser<>();
   public static double distance_meters = 0.0;
+
 
   @Override
   public void robotInit() {

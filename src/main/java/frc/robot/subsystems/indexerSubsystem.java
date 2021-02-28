@@ -12,11 +12,14 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.indexConstants;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Robot;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.currentLimits;
 import frc.robot.Constants.digitalIOConstants;
 
@@ -36,6 +39,8 @@ public class indexerSubsystem extends SubsystemBase {
   private boolean ejectBallStep3 = false;
   private int ballCount = 0;
   private int restageState = 0;
+  // private blinkinSubsystem m_blinkin = RobotContainer.m_blinkin;
+
   private boolean finishedSingleFeed;
 
   public indexerSubsystem() {
@@ -211,6 +216,7 @@ public class indexerSubsystem extends SubsystemBase {
     setBeltsPercentOutput(0.0);
     setKickerPercentOutput(0.0);
     setIntakePercentOutput(0.0);
+    // m_blinkin.solid_orange();
   }
 
   /**
@@ -247,6 +253,8 @@ public class indexerSubsystem extends SubsystemBase {
       setIntakePercentOutput(1);
       setBeltsRPM(6380);
       setKickerPercentOutput(0.3);
+      // m_blinkin.solid_green();
+
   }
 
   /**
@@ -256,6 +264,7 @@ public class indexerSubsystem extends SubsystemBase {
       setIntakePercentOutput(0);
       setBeltsRPM(6380);
       setKickerPercentOutput(0);
+      // m_blinkin.solid_blue();
   }
 
   /**
@@ -265,6 +274,7 @@ public class indexerSubsystem extends SubsystemBase {
       setIntakePercentOutput(-1);
       setBeltsRPM(-6380);
       setKickerPercentOutput(-0.3);
+      // m_blinkin.strobe_red();
   }
 
   /**

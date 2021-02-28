@@ -8,6 +8,7 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
+
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 
 
@@ -25,7 +26,7 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
  * 
  *  ...
  * 
- * private WPI_TalonFX leftLeadFalcon  = new WPI_TalonFX(canId.leftLeadFalcon);
+ * private WPI_TalonFX leftLeadFalcon  = new WPI_TalonFX(canId.leftLeadFalcon);che
  * 
  */
 
@@ -97,6 +98,7 @@ public final class Constants {
         // TalonFX encoders have 2048, Rev Robotics have 4096
         public static final int kEncoderCPR = 2048;
 
+        //TODO: Look into these actual values
         // Aprox 6 inch (0.1524 meters) traction wheels, measured 0.15836 m
         // Measured circumference = 0.509 m
         public static final double kDistancePerWheelRevolutionMeters = 0.509;
@@ -107,15 +109,18 @@ public final class Constants {
         // Two stages 11:60 then 16:32 for a total gear reduction of 11:120
         public static final double kGearReduction = 11.0 / 120.0;
 
+
         // Assumes the encoders are directly mounted on the motor shafts
         public static final double kEncoderDistancePerPulseMeters =
                 (kDistancePerWheelRevolutionMeters * kGearReduction) / (double) kEncoderCPR;
     }
+
     public static final class AutoConstants {
         // Reasonable baseline values for a RAMSETE follower in units of meters and seconds
         public static final double kRamseteB = 2;
         public static final double kRamseteZeta = 0.7;
     }
+  
     public static final class turretConstants {
         public static final int turret = 5;
         public static final int kSoftMaxTurretAngle = 90;
@@ -140,37 +145,48 @@ public final class Constants {
         public static final int kTimeout = 30; // Talon command timeout
         public static final int kIndex = 0; // Talon PID index
     }
-    public static final class limeLightConstants {
-        public static final double limeLightHeight_meters = .68394;
-        public static final double targetHeight_meters = 2.5019;
-        public static final double limeLightAngle_degrees = 30;
-    }
+
     public static final class shooterConstants {
         public static final int shooter1 = 16;
         public static final int shooter2 = 17;
         public static final int shooterTimeout = 30;
         public static final int shooterSlotIdx = 0;
-        public static final int shooterHood = 6;
     }
-    public static final class indexConstants {
-        public static final int indexIntake = 8;
-        public static final int indexBelts = 10;
-        public static final int indexKicker = 11;
+
+    public static final class limeLightConstants {
+        public static final double limeLightHeight_meters = .68394;
+        public static final double targetHeight_meters = 2.5019;
+        public static final double limeLightAngle_degrees = 30;
     }
-    public static final class intakeConstants {
-        public static final int intakeMotor = 9;
-    }
-    public static final class pwmConstants {
-        public static final int blinkin = 0;
-    }
+
     public static final class digitalIOConstants {
         // assign digital IO (DIO) ports 0-9
         public static final int dio0_indexerSensor1 = 0;
         public static final int dio1_indexerSensor2 = 1;
         public static final int dio2_indexerSensor3 = 2;
-        public static final int dio7_turretLimit = 7;
     }
+
+    public static final class indexConstants {
+        public static final int indexIntake = 8;
+        public static final int indexBelts = 10;
+        public static final int indexKicker = 11;
+    }
+
+    public static final class currentLimits {
+        public static SupplyCurrentLimitConfiguration m_currentlimitMain = new SupplyCurrentLimitConfiguration(true, 35, 1, 1);
+        public static SupplyCurrentLimitConfiguration m_currentlimitSecondary = new SupplyCurrentLimitConfiguration(true, 25, 1, 1);
+    }
+  
+    public static final class intakeConstants {
+        public static final int intakeMotor = 9;
+        //Geared up 16:24 
+        public static final double intakeGearRatio = 16.0 / 24.0;
+
+    public static final class pwmConstants {
+        public static final int blinkin = 0;
+    }
+
     public static final class hoodConstants {
-        public static final int hoodMotor = canId.canId18;
+        public static final int hoodMotor = canId.canId6;
     }
 }

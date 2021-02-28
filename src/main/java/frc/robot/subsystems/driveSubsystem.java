@@ -48,6 +48,7 @@ public class driveSubsystem extends SubsystemBase {
   private boolean forzaModeEnabled = true;
   private boolean squaredInputs = false;
 
+
   // New Gyro, pigeon IMU on the CAN bus
   private PigeonIMU m_gyro = new PigeonIMU(driveConstants.pigeonCANid);
 
@@ -138,7 +139,7 @@ public class driveSubsystem extends SubsystemBase {
     // report the wheel speed, position, and pose
     SmartDashboard.putNumber("left_wheel_Velocity", getLeftVelocity());
     SmartDashboard.putNumber("right_wheel_Velocity", getRightVelocity());
-    SmartDashboard.putNumber("left_wheel_Distance", leftDist); 
+    SmartDashboard.putNumber("left_wheel_Distance", leftDist);
     SmartDashboard.putNumber("right_wheel_Distance", rightDist);
     SmartDashboard.putNumber("left volts", falcon1_leftLead.getMotorOutputVoltage());
     SmartDashboard.putNumber("right volts", falcon3_rightLead.getMotorOutputVoltage());

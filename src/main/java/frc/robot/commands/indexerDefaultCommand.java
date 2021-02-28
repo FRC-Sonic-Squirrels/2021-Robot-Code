@@ -44,6 +44,7 @@ public class indexerDefaultCommand extends CommandBase {
 
     // TODO: tune the speeds of these to not destory balls
     else if (opController.getTriggerAxis(Hand.kLeft) >= 0.1) {
+
       m_indexer.setIntakePercentOutput(-opController.getTriggerAxis(Hand.kLeft));
       m_indexer.setBeltsPercentOutput(-opController.getTriggerAxis(Hand.kLeft));
       m_indexer.setKickerPercentOutput(-opController.getTriggerAxis(Hand.kLeft));
@@ -57,6 +58,7 @@ public class indexerDefaultCommand extends CommandBase {
       // Always stop indexer if a ball is at the exit point.
       // Don't eject a ball unless we're shooting.
       m_indexer.stopIndexer();
+
     } else if (m_indexer.ballReadyForIndexer() == true) {
       // here we know ballExiting() == false
       // OK to pull in more balls and continue to fill indexer
@@ -82,3 +84,4 @@ public class indexerDefaultCommand extends CommandBase {
     return false;
   }
 }
+
