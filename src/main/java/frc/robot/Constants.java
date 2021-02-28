@@ -44,22 +44,23 @@ public final class Constants {
         public static final int canId1 = 1;
         public static final int canId2 = 2;
         public static final int canId3 = 3;
-        public static final int canId4 = 4;
-        public static final int canId5 = 5;
-        public static final int canId6 = 6;
+        public static final int canId4_hooper_agitator = 4;
+        public static final int canId5_turret = 5;
+        public static final int canId6_hood = 6;
         public static final int canId7 = 7;
-        public static final int canId8 = 8;
+        public static final int canId8_indexo_intake_and_hopper = 8;
         public static final int canId9 = 9;
-        public static final int canId10 = 10;
-        public static final int canId11 = 11;
-        public static final int canId12 = 12;
-        public static final int canId13 = 13;
-        public static final int canId14 = 14;
-        public static final int canId15 = 15;
-        public static final int canId16 = 16;
-        public static final int canId17 = 17;
-        public static final int canId18 = 18;
+        public static final int canId10_indexo_belts = 10;
+        public static final int canId11_indexo_kicker = 11;
+        public static final int canId12_drive_left_lead = 12;
+        public static final int canId13_drive_left_follow = 13;
+        public static final int canId14_drive_right_follow = 14;
+        public static final int canId15_drive_right_lead = 15;
+        public static final int canId16_flywheel_right = 16;
+        public static final int canId17_flywheel_left = 17;
+        public static final int canId18_intake = 18;
         public static final int canId19 = 19;
+        public static final int canId20_pigeon_imu = 20;
     }
 
     public static final class currentLimits {
