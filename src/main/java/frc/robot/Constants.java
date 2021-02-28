@@ -152,7 +152,7 @@ public final class Constants {
         public static final int hopperAgitator = canId.canId4_hopper_agitator;
         public static final int indexIntake = canId.canId8_indexo_intake_and_hopper;
         public static final int indexBelts = canId.canId10_indexo_belts;
-        public static final int indexKicker = CanID.canId11_indexo_kicker;
+        public static final int indexKicker = 11;
     }
   
     public static final class intakeConstants {
