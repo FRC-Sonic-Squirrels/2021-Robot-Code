@@ -271,6 +271,13 @@ public class driveSubsystem extends SubsystemBase {
     return left_PIDController;
   }
 
+  public void setCoastMode(){
+    falcon1_leftLead.setNeutralMode(NeutralMode.Coast);
+    falcon2_leftFollow.setNeutralMode(NeutralMode.Coast);
+    falcon3_rightLead.setNeutralMode(NeutralMode.Coast);
+    falcon4_rightFollow.setNeutralMode(NeutralMode.Coast);
+  }
+
   /**
    * Returns the right PIDController object
    *

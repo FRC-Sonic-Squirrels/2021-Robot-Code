@@ -79,6 +79,7 @@ public class driveCommand extends CommandBase {
 
   @Override
   public void end(boolean interrupted) {
+    m_drive.setCoastMode();
   }
 
   @Override
