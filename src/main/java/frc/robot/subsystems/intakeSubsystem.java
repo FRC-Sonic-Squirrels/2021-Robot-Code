@@ -10,13 +10,15 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import edu.wpi.first.wpilibj.Relay;
 
 public class intakeSubsystem extends SubsystemBase {
 
   private WPI_TalonFX m_intake = new WPI_TalonFX(Constants.intakeConstants.intakeMotor);
   private driveSubsystem m_drive = new driveSubsystem();
+  private Relay intakeRelay = new Relay(0);
   private double circOfIntake_meters = (1.4725 * Math.PI) * 0.0254;
-  private double minIntakeRPM = 500;
+  private double minIntakeRPM = 1000;
   private double maxIntakeRPM = 6000;
   private double intakeRPM = 0.0;
   private boolean dynamicMode = true;
@@ -24,6 +26,8 @@ public class intakeSubsystem extends SubsystemBase {
   public intakeSubsystem() {
     m_intake.configFactoryDefault();
     m_intake.setInverted(true);
+    //intakeRelay.setDirection(Relay.Direction kForwardOnly);
+    
   }
 
   @Override
@@ -85,5 +89,7 @@ public class intakeSubsystem extends SubsystemBase {
     enableDynamicSpeed(false);
     m_intake.setVoltage(0.0);
     setIntakeRPM(0.0);
+    //intakeRelay.setDirection(Relay.Direction kReverseOnly);
+
   }
 }
