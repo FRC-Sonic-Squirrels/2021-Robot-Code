@@ -44,7 +44,7 @@ public final class Constants {
         public static final int canId1 = 1;
         public static final int canId2 = 2;
         public static final int canId3 = 3;
-        public static final int canId4_hooper_agitator = 4;
+        public static final int canId4_hopper_agitator = 4;
         public static final int canId5_turret = 5;
         public static final int canId6_hood = 6;
         public static final int canId7 = 7;
@@ -149,6 +149,7 @@ public final class Constants {
     }
 
     public static final class indexConstants {
+        public static final int hopperAgitator = 4;
         public static final int indexIntake = 8;
         public static final int indexBelts = 10;
         public static final int indexKicker = 11;
