@@ -38,7 +38,6 @@ import frc.robot.Constants.driveConstants;
 import frc.robot.commands.driveCommand;
 import frc.robot.commands.indexerDefaultCommand;
 import frc.robot.commands.indexerStageForShootingCommand;
-import frc.robot.commands.intakeDeployCommand;
 import frc.robot.commands.shooterAutoCommand;
 import frc.robot.commands.turretDefaultCommand;
 import frc.robot.subsystems.driveSubsystem;
@@ -126,12 +125,12 @@ public class RobotContainer {
       // D Pad Down - manually decrease ball count
       // Start Button - zero the turret
       // Back Button - spool up the shooter
-      //opAButton.whileHeld(new intakeDeployCommand(m_intake));
       //opBButton.whenPressed(new indexerStageForShootingCommand(m_indexer));
       //opXButton.whenPressed(new indexerRestageCommand(m_indexer));
       //opYButton.whileHeld(new indexerReverseEjectCommand(m_indexer));
-      //opRightBumper.whileHeld(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_limelight));
-      //opLeftBumper.whileHeld(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_limelight));
+
+      //opRightBumper.whileHeld(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_hood, m_limelight));
+      
       //opLeftBumper.whileHeld(new shooterUnderGoal(m_indexer, m_turret, m_shooter));
       //opDPadUp.whenPressed(() -> m_indexer.setBallCount(m_indexer.getBallCount() + 1));
       //opDPadDown.whenPressed(() -> m_indexer.setBallCount(m_indexer.getBallCount() - 1));
