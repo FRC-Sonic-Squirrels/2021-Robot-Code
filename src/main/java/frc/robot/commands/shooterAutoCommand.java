@@ -91,6 +91,7 @@ public class shooterAutoCommand extends CommandBase {
 
       // m_shooter.setShooterRPM(m_shooter.getRPMforTY(m_limelight.getTY()));
       m_shooter.setShooterRPM(m_shooter.getRPMforDistanceMeter(Robot.distance_meters));
+      m_hood.setPositionRotations(m_hood.angleToRotations(m_hood.getAngleforDistanceMeter(Robot.distance_meters)));
       limelightSteerCommand = tx * steer_k;
       m_turret.setPercentOutput(limelightSteerCommand);
 

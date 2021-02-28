@@ -26,7 +26,7 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
  * 
  *  ...
  * 
- * private WPI_TalonFX leftLeadFalcon  = new WPI_TalonFX(canId.leftLeadFalcon);che
+ * private WPI_TalonFX leftLeadFalcon  = new WPI_TalonFX(canId.leftLeadFalcon);
  * 
  */
 

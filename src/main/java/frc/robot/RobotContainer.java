@@ -142,8 +142,14 @@ public class RobotContainer {
       opBButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(5000))); // 10 feet
       opXButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(5400))); // 15 feet
       opYButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(6000))); // 20 feet
-      
-  }
+
+  // alternative shooter speed debug
+  //    opAButton.whenPressed(new InstantCommand(() -> m_shooter.addToShooterRPM(1000)));
+  //    opBButton.whenPressed(new InstantCommand(() -> m_shooter.addToShooterRPM(-1000)));
+  //    opXButton.whenPressed(new InstantCommand(() -> m_shooter.addToShooterRPM(100)));
+  //    opYButton.whenPressed(new InstantCommand(() -> m_shooter.addToShooterRPM(-100)));
+
+ }
   
 
   /**
