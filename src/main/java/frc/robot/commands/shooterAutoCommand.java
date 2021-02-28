@@ -79,7 +79,7 @@ public class shooterAutoCommand extends CommandBase {
 
         RobotContainer.limelightOnTarget = false;
         limelightSteerCommand = 0;
-        var manualInput = RobotContainer.m_operatorController.getX(Hand.kLeft);
+        double manualInput = RobotContainer.m_operatorController.getX(Hand.kLeft);
         if (Math.abs(manualInput) > 0.05) {
           m_turret.setPercentOutput(manualInput * 0.5);
         } else {
