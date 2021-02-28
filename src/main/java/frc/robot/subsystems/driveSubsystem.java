@@ -18,7 +18,6 @@ import static frc.robot.Constants.driveConstants.kGearReduction;
 import static frc.robot.Constants.driveConstants.kGyroReversed;
 import static frc.robot.Constants.driveConstants.kDriveKinematics;
 import static frc.robot.Constants.driveConstants.driveTimeout;
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -35,9 +34,7 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpiutil.math.MathUtil;
-import frc.robot.Constants.driveConstants;
-import edu.wpi.first.wpilibj.drive.RobotDriveBase;
+import static frc.robot.Constants.driveConstants;
 
 public class driveSubsystem extends SubsystemBase {
 
@@ -46,7 +43,11 @@ public class driveSubsystem extends SubsystemBase {
   private WPI_TalonFX falcon3_rightLead   = new WPI_TalonFX(driveConstants.falcon3_rightLead);
   private WPI_TalonFX falcon4_rightFollow = new WPI_TalonFX(driveConstants.falcon4_rightFollow);
 
+  // teleop driver control fine tuning
   private boolean driveInvert = false;
+  private boolean forzaModeEnabled = true;
+  private boolean squaredInputs = false;
+
 
   // New Gyro, pigeon IMU on the CAN bus
   private PigeonIMU m_gyro = new PigeonIMU(driveConstants.pigeonCANid);
@@ -57,9 +58,12 @@ public class driveSubsystem extends SubsystemBase {
 
   private PIDController left_PIDController = new PIDController(kPDriveVel, 0.0, kDDriveVel);
   private PIDController right_PIDController =  new PIDController(kPDriveVel, 0.0, kDDriveVel);
- 
+
   // Odometry class for tracking robot pose
   private final DifferentialDriveOdometry m_odometry;
+ 
+  // robot drives opposite of built in motor encoders
+  private double invertEncoders = -1.0;
 
   // http://www.ctr-electronics.com/downloads/pdf/Falcon%20500%20User%20Guide.pdf
   // Peak power: 140A
@@ -72,7 +76,6 @@ public class driveSubsystem extends SubsystemBase {
 
     m_gyro.configFactoryDefault();
 
-    m_drive = new DifferentialDrive(falcon1_leftLead, falcon3_rightLead);
     falcon1_leftLead.configFactoryDefault();
     falcon2_leftFollow.configFactoryDefault();
     falcon3_rightLead.configFactoryDefault();
@@ -84,7 +87,7 @@ public class driveSubsystem extends SubsystemBase {
     // Voltage limits
     setVoltageLimit(11);
 
-    // set Ramp up speed, time in seconds (smaller is more responseive, 0 disables)
+    // set Ramp up speed, time in seconds (smaller is more responsive, 0 disables)
     // configOpenLoopRampRate(0.25);
     
     // set brake mode
@@ -112,11 +115,8 @@ public class driveSubsystem extends SubsystemBase {
     falcon1_leftLead.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, driveTimeout);
     falcon3_rightLead.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, driveTimeout);
 
+    m_drive = new DifferentialDrive(falcon1_leftLead, falcon3_rightLead);
     m_drive.setRightSideInverted(false);
-
-    // TODO: only set open loop ramp AFTER auton, so not to conflict with path follow
-    falcon1_leftLead.configOpenloopRamp(0.2);
-    falcon3_rightLead.configOpenloopRamp(0.2);
 
     resetEncoders();
     m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
@@ -131,7 +131,7 @@ public class driveSubsystem extends SubsystemBase {
     double rightDist = getRightPosition();
     m_odometry.update(Rotation2d.fromDegrees(getHeading()), leftDist, rightDist);
 
-    // log drive train and data to Smartdashboard
+    // log drive train and data to SmartDashboard
     /* Display 9-axis Heading (requires magnetometer calibration to be useful) */
     SmartDashboard.putNumber("IMU_FusedHeading", m_gyro.getFusedHeading());
     // NOTE: call getFusedHeading(FusionStatus) to detect gyro errors
@@ -141,31 +141,37 @@ public class driveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("right_wheel_Velocity", getRightVelocity());
     SmartDashboard.putNumber("left_wheel_Distance", leftDist);
     SmartDashboard.putNumber("right_wheel_Distance", rightDist);
-    
+    SmartDashboard.putNumber("left volts", falcon1_leftLead.getMotorOutputVoltage());
+    SmartDashboard.putNumber("right volts", falcon3_rightLead.getMotorOutputVoltage());
+
     Pose2d currentPose = m_odometry.getPoseMeters();
     SmartDashboard.putNumber("pose_x",currentPose.getTranslation().getX());
     SmartDashboard.putNumber("pose_y",currentPose.getTranslation().getY());
     SmartDashboard.putNumber("pose_theta", currentPose.getRotation().getDegrees());
+
+    // from https://github.com/CrossTheRoadElec/Phoenix-Examples-Languages/blob/master/Java%20General/DriveStraight_Pigeon/src/main/java/frc/robot/Robot.java
+		boolean angleIsGood = (m_gyro.getState() == PigeonIMU.PigeonState.Ready) ? true : false;
+    SmartDashboard.putBoolean("DEBUG pigeon angle is good", angleIsGood);
   }
   
   /**
-   * Returns the distance in Meteres the left wheel has travelled
+   * Returns the distance in Meters the left wheel has travelled
    *
    * @return distance in meters
    */
   double getLeftPosition() {
      // Native units are encoder ticks (2048 ticks per revolution)
-    return falcon1_leftLead.getSelectedSensorPosition() * kDistancePerWheelRevolutionMeters * kGearReduction / kEncoderCPR;
+    return invertEncoders * falcon1_leftLead.getSelectedSensorPosition() * kDistancePerWheelRevolutionMeters * kGearReduction / kEncoderCPR;
   }
 
   /**
-   * Returns the distance in Meteres the right wheel has travelled
+   * Returns the distance in Meters the right wheel has travelled
    *
    * @return distance in meters
    */
   double getRightPosition() {
     // Native units are encoder ticks (2048 ticks per revolution)
-    return falcon3_rightLead.getSelectedSensorPosition() * kDistancePerWheelRevolutionMeters * kGearReduction / kEncoderCPR;
+    return invertEncoders * falcon3_rightLead.getSelectedSensorPosition() * kDistancePerWheelRevolutionMeters * kGearReduction / kEncoderCPR;
   }
 
   /**
@@ -175,7 +181,7 @@ public class driveSubsystem extends SubsystemBase {
    */
   double getLeftVelocity() {
     // Native units are encoder ticks per 100ms
-    return falcon1_leftLead.getSelectedSensorVelocity() * kDistancePerWheelRevolutionMeters * kGearReduction * 10.0 / kEncoderCPR ;
+    return invertEncoders * falcon1_leftLead.getSelectedSensorVelocity() * kDistancePerWheelRevolutionMeters * kGearReduction * 10.0 / kEncoderCPR ;
   }
 
   /**
@@ -185,7 +191,7 @@ public class driveSubsystem extends SubsystemBase {
    */
   double getRightVelocity() {
     // Native units are encoder ticks per 100ms
-    return falcon3_rightLead.getSelectedSensorVelocity() * kDistancePerWheelRevolutionMeters * kGearReduction * 10.0 / kEncoderCPR ;
+    return invertEncoders * falcon3_rightLead.getSelectedSensorVelocity() * kDistancePerWheelRevolutionMeters * kGearReduction * 10.0 / kEncoderCPR ;
   }
 
   /**
@@ -214,7 +220,7 @@ public class driveSubsystem extends SubsystemBase {
       return current_pose;
     }
 
-    // new odometery class starting from current position
+    // new odometry class starting from current position
     Rotation2d current_heading = Rotation2d.fromDegrees(getHeading());
     DifferentialDriveOdometry future_odometry =
         new DifferentialDriveOdometry(current_heading, current_pose);
@@ -267,6 +273,13 @@ public class driveSubsystem extends SubsystemBase {
     return left_PIDController;
   }
 
+  public void setCoastMode(){
+    falcon1_leftLead.setNeutralMode(NeutralMode.Coast);
+    falcon2_leftFollow.setNeutralMode(NeutralMode.Coast);
+    falcon3_rightLead.setNeutralMode(NeutralMode.Coast);
+    falcon4_rightFollow.setNeutralMode(NeutralMode.Coast);
+  }
+
   /**
    * Returns the right PIDController object
    *
@@ -305,8 +318,8 @@ public class driveSubsystem extends SubsystemBase {
    * @param rightVolts the commanded right output
    */
   public void tankDriveVolts(double leftVolts, double rightVolts) {
-    falcon1_leftLead.setVoltage(leftVolts);
-    falcon3_rightLead.setVoltage(rightVolts);
+    falcon1_leftLead.setVoltage(invertEncoders * leftVolts);
+    falcon3_rightLead.setVoltage(invertEncoders * rightVolts);
     m_drive.feed();
   }
 
@@ -336,13 +349,26 @@ public class driveSubsystem extends SubsystemBase {
     m_drive.setMaxOutput(maxOutput);
   }
 
+    /**
+   * Set the heading of the robot. In degrees.
+   */
+  public void setHeadingRadians(double headingRadians) {
+    setHeadingDegrees(Math.toDegrees(headingRadians));
+  }
+
+  /**
+   * Set the heading of the robot. In degrees.
+   */
+  public void setHeadingDegrees(double headingDegrees) {
+    m_gyro.setAccumZAngle(headingDegrees);
+    m_gyro.setFusedHeading(headingDegrees);
+  }
+
   /**
    * Zeroes the heading of the robot.
    */
   public void zeroHeading() {
-    m_gyro.setFusedHeading(0.0);
-    m_gyro.setAccumZAngle(0.0);
-    // was m_gyro.reset();
+    setHeadingDegrees(0.0);
   }
 
   /**
@@ -423,10 +449,10 @@ public class driveSubsystem extends SubsystemBase {
   }
 
   /**
-   * Disablecurrent limiting for drivetrain.
+   * Disable current limiting for drivetrain.
    */
   public void disableCurrentLimit() {
-    // not completely disabled, 4x80 amps is 240Amps, wich is almost 100% of the battery output
+    // not completely disabled, 4x80 amps is 240Amps, which is almost 100% of the battery output
     setCurrentLimit(new SupplyCurrentLimitConfiguration(true, 80, 60, 1));
   }
 
@@ -436,6 +462,30 @@ public class driveSubsystem extends SubsystemBase {
 
   public void setDriveInvert(boolean invert) {
     driveInvert = invert;
+  }
+
+  public void toggleDriveInverted() {
+    driveInvert = ! driveInvert;
+  }
+
+  public boolean getForzaModeEnabled() {
+    return forzaModeEnabled;
+  }
+
+  public void setForzaModeEnabled(boolean forzaMode) {
+    forzaModeEnabled = forzaMode;
+  }
+
+  public void toggleForzaMode() {
+    forzaModeEnabled = ! forzaModeEnabled;
+  }
+
+  public boolean getSquaredInputs() {
+    return squaredInputs;
+  }
+
+  public void toggleSquaredInputs() {
+    squaredInputs = ! squaredInputs;
   }
 
 }

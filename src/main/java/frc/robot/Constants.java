@@ -1,12 +1,16 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
+/*----------------------------------------------------------------------------*/
+/* Copyright (c) 2018-2019 FIRST. All Rights Reserved. */
+/* Open Source Software - may be modified and shared by FRC teams. The code */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project. */
+/*----------------------------------------------------------------------------*/
 
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
+
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -25,10 +29,43 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
  * private WPI_TalonFX leftLeadFalcon  = new WPI_TalonFX(canId.leftLeadFalcon);che
  * 
  */
+
 public final class Constants {
 
     // Allocate CAN Ids from here. 
     // This avoids accidentally assigning the same CAN id to two different devices.
+    public static final class canId {
+        // CAN Id 0 is off limits. Typically unconfigured devices default to CAN id zero. This will 
+        // create problems if you already have a device using CAN id 0 on the CAN bus.
+        public static final int DoNotUse_canId0 = 0;
+
+       // When assigning a CAN ID, rename the constant to something descriptive. Such as
+       // when assigning CAN 1 rename "canId1" to "driveLeftLead" or "pigeonIMU"
+        public static final int canId1 = 1;
+        public static final int canId2 = 2;
+        public static final int canId3 = 3;
+        public static final int canId4 = 4;
+        public static final int canId5 = 5;
+        public static final int canId6 = 6;
+        public static final int canId7 = 7;
+        public static final int canId8 = 8;
+        public static final int canId9 = 9;
+        public static final int canId10 = 10;
+        public static final int canId11 = 11;
+        public static final int canId12 = 12;
+        public static final int canId13 = 13;
+        public static final int canId14 = 14;
+        public static final int canId15 = 15;
+        public static final int canId16 = 16;
+        public static final int canId17 = 17;
+        public static final int canId18 = 18;
+        public static final int canId19 = 19;
+    }
+
+    public static final class currentLimits {
+        public static SupplyCurrentLimitConfiguration m_currentlimitMain = new SupplyCurrentLimitConfiguration(true, 35, 1, 1);
+        public static SupplyCurrentLimitConfiguration m_currentlimitSecondary = new SupplyCurrentLimitConfiguration(true, 25, 1, 1);
+    }
     public static final class driveConstants {
         public static final int falcon1_leftLead = 12;
         public static final int falcon2_leftFollow = 13;
@@ -58,7 +95,7 @@ public final class Constants {
         public static final double kPDriveVel = 5.0; // frc-characterization 14.4
         public static final double kDDriveVel = 0.0; // frc-characterization 5.16
 
-        // TalonFX encoders have 2048, Rev Robitics have 4096
+        // TalonFX encoders have 2048, Rev Robotics have 4096
         public static final int kEncoderCPR = 2048;
 
         //TODO: Look into these actual values
@@ -69,15 +106,22 @@ public final class Constants {
                 kDistancePerWheelRevolutionMeters / Math.PI;
 
         // gear reduction from Falcon Gearbox:
-        // Two stages 11:60 then 16:31 for a total gear reduction of 8.68:1
-        public static final double kGearReduction = (50 / 12) * (50 / 24);
+        // Two stages 11:60 then 16:32 for a total gear reduction of 11:120
+        public static final double kGearReduction = 11.0 / 120.0;
+
 
         // Assumes the encoders are directly mounted on the motor shafts
         public static final double kEncoderDistancePerPulseMeters =
                 (kDistancePerWheelRevolutionMeters * kGearReduction) / (double) kEncoderCPR;
     }
-    public static final class turretConstants {
 
+    public static final class AutoConstants {
+        // Reasonable baseline values for a RAMSETE follower in units of meters and seconds
+        public static final double kRamseteB = 2;
+        public static final double kRamseteZeta = 0.7;
+    }
+  
+    public static final class turretConstants {
         public static final int turret = 5;
         public static final int kSoftMaxTurretAngle = 90;
         public static final int kSoftMinTurretAngle = -90;
@@ -90,7 +134,6 @@ public final class Constants {
         // Total motor to turret rotation ration: 1:462  (1:35 * 20:264)
         // POST gearbox encoder ratio is:
         // 20:264 or 1/13.2
-        //TODO: Change this Gear Ratio
         public static final double kGearRation = 1 / 13.2; // turret rotations per encoder rotation
         public static final double kTurretRotationsPerTick = kGearRation / kEncoderCPR;
         public static final double kDegreesPerTick = 360 * kTurretRotationsPerTick;
@@ -108,7 +151,6 @@ public final class Constants {
         public static final int shooter2 = 17;
         public static final int shooterTimeout = 30;
         public static final int shooterSlotIdx = 0;
-        public static final int shooterHood = 6;
     }
 
     public static final class limeLightConstants {
@@ -119,10 +161,9 @@ public final class Constants {
 
     public static final class digitalIOConstants {
         // assign digital IO (DIO) ports 0-9
-        //public static final int dio0_indexerSensor1 = 0;
-        //public static final int dio1_indexerSensor2 = 1;
-        //public static final int dio2_indexerSensor3 = 2;
-        public static final int dio7_turretLimit = 7;
+        public static final int dio0_indexerSensor1 = 0;
+        public static final int dio1_indexerSensor2 = 1;
+        public static final int dio2_indexerSensor3 = 2;
     }
 
     public static final class indexConstants {
@@ -135,9 +176,17 @@ public final class Constants {
         public static SupplyCurrentLimitConfiguration m_currentlimitMain = new SupplyCurrentLimitConfiguration(true, 35, 1, 1);
         public static SupplyCurrentLimitConfiguration m_currentlimitSecondary = new SupplyCurrentLimitConfiguration(true, 25, 1, 1);
     }
+  
     public static final class intakeConstants {
         public static final int intakeMotor = 9;
         //Geared up 16:24 
         public static final double intakeGearRatio = 16.0 / 24.0;
+
+    public static final class pwmConstants {
+        public static final int blinkin = 0;
+    }
+
+    public static final class hoodConstants {
+        public static final int hoodMotor = canId.canId6;
     }
 }

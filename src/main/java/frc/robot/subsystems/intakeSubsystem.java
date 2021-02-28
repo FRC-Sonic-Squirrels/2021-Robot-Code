@@ -1,6 +1,9 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
+/*----------------------------------------------------------------------------*/
+/* Copyright (c) 2019 FIRST. All Rights Reserved.                             */
+/* Open Source Software - may be modified and shared by FRC teams. The code   */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
+/*----------------------------------------------------------------------------*/
 
 package frc.robot.subsystems;
 
@@ -45,7 +48,8 @@ public class intakeSubsystem extends SubsystemBase {
     }
     SmartDashboard.putNumber("Intake Motor RPM", m_intake.getSensorCollection().getIntegratedSensorVelocity() * 600 / 2048);
   }
-   /**
+  
+  /**
    * Sets Intake Percent output to designated Percent
    */
   public void setIntakePercentOutput(double percent) {
@@ -78,7 +82,7 @@ public class intakeSubsystem extends SubsystemBase {
     }
   }
 
-   /**
+  /**
    * Changes Intake Speed to Match double robot speed at all times
    */
   public void enableDynamicSpeed(boolean dynamic) {
@@ -90,6 +94,5 @@ public class intakeSubsystem extends SubsystemBase {
     m_intake.setVoltage(0.0);
     setIntakeRPM(0.0);
     //intakeRelay.setDirection(Relay.Direction kReverseOnly);
-
   }
 }
