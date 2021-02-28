@@ -135,14 +135,13 @@ public class RobotContainer {
       //opLeftBumper.whileHeld(new shooterUnderGoal(m_indexer, m_turret, m_shooter));
       //opDPadUp.whenPressed(() -> m_indexer.setBallCount(m_indexer.getBallCount() + 1));
       //opDPadDown.whenPressed(() -> m_indexer.setBallCount(m_indexer.getBallCount() - 1));
-      //opBackButton.whenPressed(new shooterSpoolCommand(m_shooter));
 
       opRightBumper.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(0)));
 
-      opAButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(5000)));
-      opBButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(5100)));
-      opXButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(5200)));
-      opYButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(5400)));
+      opAButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(3700))); // 5 feet
+      opBButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(5000))); // 10 feet
+      opXButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(5400))); // 15 feet
+      opYButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(6000))); // 20 feet
       
   }
   
