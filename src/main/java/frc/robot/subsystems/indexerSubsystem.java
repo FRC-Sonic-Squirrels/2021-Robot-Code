@@ -29,7 +29,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 public class indexerSubsystem extends SubsystemBase {
 
   private BaseMotorController indexIntake;
-  private BaseMotorController indexKicker;
+  private WPI_TalonSRX indexKicker = new WPI_TalonSRX(indexConstants.indexKicker);
   private WPI_TalonFX indexBelts = new WPI_TalonFX(indexConstants.indexBelts);
   private CANSparkMax m_hopperAgitator = new CANSparkMax(indexConstants.hopperAgitator, MotorType.kBrushless);
   private DigitalInput Sensor1 = new DigitalInput(digitalIOConstants.dio0_indexerSensor1);
@@ -50,7 +50,6 @@ public class indexerSubsystem extends SubsystemBase {
   public indexerSubsystem() {
 
     indexIntake = new WPI_VictorSPX(indexConstants.indexIntake);
-    indexKicker = new WPI_VictorSPX(indexConstants.indexKicker);
     
     indexBelts.configFactoryDefault();
     indexKicker.configFactoryDefault();
