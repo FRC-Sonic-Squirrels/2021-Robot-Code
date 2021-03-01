@@ -43,13 +43,15 @@ public class turretSubsystem extends SubsystemBase {
 
     //turretDrive.configContinuousCurrentLimit(25);
 
-     // Set PID coefficients. Currently default
-     m_pidController.setP(0.2);
-     m_pidController.setI(1e-4);
-     m_pidController.setD(0);
-     m_pidController.setFF(0);
-     m_pidController.setIZone(100);
-     m_pidController.setOutputRange(-1, 1);
+    m_pidController = turretDrive.getPIDController();
+
+    // Set PID coefficients. Currently default
+    m_pidController.setP(0.2);
+    m_pidController.setI(1e-4);
+    m_pidController.setD(0);
+    m_pidController.setFF(0);
+    m_pidController.setIZone(100);
+    m_pidController.setOutputRange(-0.5, 0.5);
 
   }
 
@@ -98,7 +100,7 @@ public class turretSubsystem extends SubsystemBase {
    * @param percent, percent motor output -1.0 to 1.0
    */
   public void setPercentOutput(double percent) {
-    turretDrive.set(percent);
+    turretDrive.set(-percent);
   }
 
   /**

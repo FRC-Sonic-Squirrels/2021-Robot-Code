@@ -14,23 +14,35 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import edu.wpi.first.wpilibj.Relay;
+import static frc.robot.Constants.canId;
+
 
 public class intakeSubsystem extends SubsystemBase {
 
-  private WPI_TalonFX m_intake = new WPI_TalonFX(Constants.intakeConstants.intakeMotor);
+  private WPI_TalonFX m_intake = new WPI_TalonFX(canId.canId18_intake);
   private Relay intakeRelay = new Relay(0);
+
   private driveSubsystem m_drive;
   private double circOfIntake_meters = (1.4725 * Math.PI) * 0.0254;
-  private double minIntakeRPM = 1000;
+  private double minIntakeRPM = 2000;
   private double maxIntakeRPM = 6000;
   private double intakeRPM = 0.0;
-  private boolean dynamicMode = true;
+  private boolean dynamicMode = false;
 
   public intakeSubsystem(driveSubsystem drive) {
     m_intake.configFactoryDefault();
     m_intake.setInverted(true);
     m_drive = drive;
-    //intakeRelay.setDirection(Relay.Direction kForwardOnly);
+
+    m_intake.config_kP(0, 0.12);
+    m_intake.config_kI(0, 0.0005);
+    m_intake.config_kD(0, 0);
+    m_intake.config_kF(0, 0.047);
+    m_intake.config_IntegralZone(0, 100);
+    
+    intakeRelay.set(Relay.Value.kReverse);
+    SmartDashboard.putNumber("Set Intake Motor RPM", 0.0);
+    SmartDashboard.putNumber("Intake Motor RPM",0.0);
     
   }
 
@@ -41,7 +53,7 @@ public class intakeSubsystem extends SubsystemBase {
     if (dynamicMode) {
       setIntakeToSpeed();
     } else {
-      double ir = SmartDashboard.getNumber("Intake Motor RPM", 0.0);
+      double ir = SmartDashboard.getNumber("Set Intake Motor RPM", 0.0);
       if (ir != intakeRPM) {
         intakeRPM = ir;
         setIntakeRPM(intakeRPM);
@@ -105,6 +117,6 @@ public void retractIntake() {
     enableDynamicSpeed(false);
     m_intake.setVoltage(0.0);
     setIntakeRPM(0.0);
-    //intakeRelay.setDirection(Relay.Direction kReverseOnly);
+    intakeRelay.set(Relay.Value.kReverse);
   }
 }

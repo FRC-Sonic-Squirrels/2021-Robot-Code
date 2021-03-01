@@ -44,7 +44,7 @@ public final class Constants {
         public static final int canId1 = 1;
         public static final int canId2 = 2;
         public static final int canId3 = 3;
-        public static final int canId4_hooper_agitator = 4;
+        public static final int canId4_hopper_agitator = 4;
         public static final int canId5_turret = 5;
         public static final int canId6_hood = 6;
         public static final int canId7 = 7;
@@ -149,13 +149,13 @@ public final class Constants {
     }
 
     public static final class indexConstants {
-        public static final int indexIntake = 8;
-        public static final int indexBelts = 10;
+        public static final int hopperAgitator = canId.canId4_hopper_agitator;
+        public static final int indexIntake = canId.canId8_indexo_intake_and_hopper;
+        public static final int indexBelts = canId.canId10_indexo_belts;
         public static final int indexKicker = 11;
     }
   
     public static final class intakeConstants {
-        public static final int intakeMotor = 9;
         //Geared up 16:24 
         public static final double intakeGearRatio = 16.0 / 24.0;
     }
