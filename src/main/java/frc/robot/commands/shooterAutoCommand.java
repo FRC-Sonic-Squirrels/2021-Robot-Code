@@ -25,7 +25,7 @@ public class shooterAutoCommand extends CommandBase {
   private hoodSubsystem m_hood;
   private limelight m_limelight;
   private boolean m_stationary;
-  private double steer_k = 0.075;
+  private double steer_k = 0.02;
   private double tv;
   private double tx;
   private double limelightSteerCommand = 0;
