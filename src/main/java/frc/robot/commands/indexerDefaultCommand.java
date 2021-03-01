@@ -40,6 +40,7 @@ public class indexerDefaultCommand extends CommandBase {
       m_indexer.setIntakePercentOutput(opController.getTriggerAxis(Hand.kRight));
       m_indexer.setBeltsPercentOutput(opController.getTriggerAxis(Hand.kRight));
       m_indexer.setKickerPercentOutput(opController.getTriggerAxis(Hand.kRight));
+      m_indexer.setAgitatorPercentOutput(-pController.getTriggerAxis(Hand.kRight));
     }
 
     // TODO: tune the speeds of these to not destory balls
@@ -48,6 +49,7 @@ public class indexerDefaultCommand extends CommandBase {
       m_indexer.setIntakePercentOutput(-opController.getTriggerAxis(Hand.kLeft));
       m_indexer.setBeltsPercentOutput(-opController.getTriggerAxis(Hand.kLeft));
       m_indexer.setKickerPercentOutput(-opController.getTriggerAxis(Hand.kLeft));
+      m_indexer.setAgitatorPercentOutput(-opController.getTriggerAxis(Hand.kLeft));
     }
 
     if (m_indexer.ballStaged() == false) {
