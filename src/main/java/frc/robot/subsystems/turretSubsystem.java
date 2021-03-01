@@ -100,7 +100,7 @@ public class turretSubsystem extends SubsystemBase {
    * @param percent, percent motor output -1.0 to 1.0
    */
   public void setPercentOutput(double percent) {
-    turretDrive.set(percent);
+    turretDrive.set(-percent);
   }
 
   /**
