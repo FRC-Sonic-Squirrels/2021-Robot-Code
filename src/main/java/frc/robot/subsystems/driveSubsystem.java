@@ -35,6 +35,7 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import static frc.robot.Constants.driveConstants;
+import static frc.robot.Constants.canId;
 
 public class driveSubsystem extends SubsystemBase {
 
@@ -50,7 +51,7 @@ public class driveSubsystem extends SubsystemBase {
 
 
   // New Gyro, pigeon IMU on the CAN bus
-  private PigeonIMU m_gyro = new PigeonIMU(driveConstants.pigeonCANid);
+  private PigeonIMU m_gyro = new PigeonIMU(canId.canId20_pigeon_imu);
 
   private final DifferentialDrive m_drive;
   private final SimpleMotorFeedforward  m_feedforward = 

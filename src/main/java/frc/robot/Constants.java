@@ -156,7 +156,6 @@ public final class Constants {
     }
   
     public static final class intakeConstants {
-        public static final int intakeMotor = 9;
         //Geared up 16:24 
         public static final double intakeGearRatio = 16.0 / 24.0;
     }
