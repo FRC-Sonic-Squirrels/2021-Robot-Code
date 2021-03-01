@@ -35,15 +35,15 @@ public class indexerDefaultCommand extends CommandBase {
   @Override
   public void execute() {
 
-    // TODO: tune the speeds of these to not destory balls
+    // TODO: tune the speeds of these to not destroy balls
     if (opController.getTriggerAxis(Hand.kRight) >= 0.1) {
       m_indexer.setIntakePercentOutput(opController.getTriggerAxis(Hand.kRight));
       m_indexer.setBeltsPercentOutput(opController.getTriggerAxis(Hand.kRight));
       m_indexer.setKickerPercentOutput(opController.getTriggerAxis(Hand.kRight));
-      m_indexer.setAgitatorPercentOutput(-pController.getTriggerAxis(Hand.kRight));
+      m_indexer.setAgitatorPercentOutput(opController.getTriggerAxis(Hand.kRight));
     }
 
-    // TODO: tune the speeds of these to not destory balls
+    // TODO: tune the speeds of these to not destroy balls
     else if (opController.getTriggerAxis(Hand.kLeft) >= 0.1) {
 
       m_indexer.setIntakePercentOutput(-opController.getTriggerAxis(Hand.kLeft));
