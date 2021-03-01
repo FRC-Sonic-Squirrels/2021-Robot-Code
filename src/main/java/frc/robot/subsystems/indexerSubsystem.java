@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.indexConstants;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import com.revrobotics.CANPIDController;
 
 import static frc.robot.Constants.currentLimits;
 import static frc.robot.Constants.digitalIOConstants;
@@ -35,7 +36,7 @@ public class indexerSubsystem extends SubsystemBase {
   private WPI_TalonFX indexBelts;
 
   private CANSparkMax m_hopperAgitator = new CANSparkMax(indexConstants.hopperAgitator, MotorType.kBrushless);
-  private CANPIDController agitatorController = m_hopperAgitator.getPIDController();
+  private CANPIDController agitatorController = m_hopperAgitator.getPIDController();;
   private DigitalInput Sensor1 = new DigitalInput(digitalIOConstants.dio0_indexerSensor1);
   private DigitalInput Sensor2 = new DigitalInput(digitalIOConstants.dio1_indexerSensor2);
   private DigitalInput Sensor3 = new DigitalInput(digitalIOConstants.dio2_indexerSensor3);
