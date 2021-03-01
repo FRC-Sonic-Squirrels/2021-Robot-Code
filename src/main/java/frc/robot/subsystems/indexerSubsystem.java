@@ -330,7 +330,7 @@ public class indexerSubsystem extends SubsystemBase {
       setIntakePercentOutput(1);
       setBeltsRPM(0);
       setKickerPercentOutput(0);
-      setAgitatorPercentOutput(1);
+      setAgitatorPercentOutput(0.1);
   } 
 
   /**
