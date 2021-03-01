@@ -24,7 +24,7 @@ public class intakeSubsystem extends SubsystemBase {
 
   private driveSubsystem m_drive;
   private double circOfIntake_meters = (1.4725 * Math.PI) * 0.0254;
-  private double minIntakeRPM = 1000;
+  private double minIntakeRPM = 2000;
   private double maxIntakeRPM = 6000;
   private double intakeRPM = 0.0;
   private boolean dynamicMode = false;
@@ -33,8 +33,16 @@ public class intakeSubsystem extends SubsystemBase {
     m_intake.configFactoryDefault();
     m_intake.setInverted(true);
     m_drive = drive;
+
+    m_intake.config_kP(0, 0.12);
+    m_intake.config_kI(0, 0.0005);
+    m_intake.config_kD(0, 0);
+    m_intake.config_kF(0, 0.047);
+    m_intake.config_IntegralZone(0, 100);
     
-    intakeRelay.set(Relay.Value.kForward);
+    intakeRelay.set(Relay.Value.kReverse);
+    SmartDashboard.putNumber("Set Intake Motor RPM", 0.0);
+    SmartDashboard.putNumber("Intake Motor RPM",0.0);
     
   }
 
@@ -45,7 +53,7 @@ public class intakeSubsystem extends SubsystemBase {
     if (dynamicMode) {
       setIntakeToSpeed();
     } else {
-      double ir = SmartDashboard.getNumber("Intake Motor RPM", 0.0);
+      double ir = SmartDashboard.getNumber("Set Intake Motor RPM", 0.0);
       if (ir != intakeRPM) {
         intakeRPM = ir;
         setIntakeRPM(intakeRPM);
