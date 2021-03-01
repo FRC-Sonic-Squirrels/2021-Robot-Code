@@ -27,7 +27,7 @@ public class intakeSubsystem extends SubsystemBase {
   private double minIntakeRPM = 1000;
   private double maxIntakeRPM = 6000;
   private double intakeRPM = 0.0;
-  private boolean dynamicMode = true;
+  private boolean dynamicMode = false;
 
   public intakeSubsystem(driveSubsystem drive) {
     m_intake.configFactoryDefault();

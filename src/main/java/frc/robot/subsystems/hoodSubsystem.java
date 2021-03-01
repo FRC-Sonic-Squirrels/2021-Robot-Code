@@ -28,7 +28,7 @@ public class hoodSubsystem extends SubsystemBase {
   private double minAngle = 46.13;
   private double maxAngle = 75.76;
   private double minPos = 0;
-  private double maxPos = (maxAngle - minAngle) * (50.0 * 29.0) / 36.0;
+  private double maxPos = 36;  // (maxAngle - minAngle) * (50.0 * 29.0) / 36.0;
   // epsilon is how many rotations, we leave as a buffer at the top and bottom to avoid bottoming out on hard stops
   // 8 rotations is roughly 0.2 degrees.
   private double epsilon = 8;
