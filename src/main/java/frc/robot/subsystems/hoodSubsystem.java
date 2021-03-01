@@ -38,8 +38,8 @@ public class hoodSubsystem extends SubsystemBase {
 
   //Sets Hood position in Degrees using Feet
   private double [][] hoodPos = {
-    {4.0, 46},
-    {5.0, 46}, 
+    {4.0, 46.13},
+    {5.0, 46.13}, 
     {11.0, 60}, 
     {15.0, 65}, 
     {20.0, 70}
