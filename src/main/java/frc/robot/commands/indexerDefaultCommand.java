@@ -28,7 +28,7 @@ public class indexerDefaultCommand extends CommandBase {
   @Override
   public void initialize() {
     clearedSensor2 = false;
-    m_indexer.runOnlyIntake();
+    // m_indexer.runOnlyIntake();
     m_started = System.nanoTime();
   }
 
@@ -36,21 +36,20 @@ public class indexerDefaultCommand extends CommandBase {
   public void execute() {
 
     // TODO: tune the speeds of these to not destroy balls
-    if (opController.getTriggerAxis(Hand.kRight) >= 0.1) {
-      m_indexer.setIntakePercentOutput(opController.getTriggerAxis(Hand.kRight));
-      m_indexer.setBeltsPercentOutput(opController.getTriggerAxis(Hand.kRight));
-      m_indexer.setKickerPercentOutput(opController.getTriggerAxis(Hand.kRight));
-      m_indexer.setAgitatorPercentOutput(opController.getTriggerAxis(Hand.kRight));
-    }
+//    if (opController.getTriggerAxis(Hand.kRight) >= 0.1) {
+//      m_indexer.setIntakePercentOutput(opController.getTriggerAxis(Hand.kRight));
+//      m_indexer.setBeltsPercentOutput(opController.getTriggerAxis(Hand.kRight));
+//      m_indexer.setKickerPercentOutput(opController.getTriggerAxis(Hand.kRight));
+//      m_indexer.setAgitatorPercentOutput(opController.getTriggerAxis(Hand.kRight) * 0.2);
+//   }
 
     // TODO: tune the speeds of these to not destroy balls
-    else if (opController.getTriggerAxis(Hand.kLeft) >= 0.1) {
-
-      m_indexer.setIntakePercentOutput(-opController.getTriggerAxis(Hand.kLeft));
-      m_indexer.setBeltsPercentOutput(-opController.getTriggerAxis(Hand.kLeft));
-      m_indexer.setKickerPercentOutput(-opController.getTriggerAxis(Hand.kLeft));
-      m_indexer.setAgitatorPercentOutput(-opController.getTriggerAxis(Hand.kLeft));
-    }
+//    else if (opController.getTriggerAxis(Hand.kLeft) >= 0.1) {
+//      m_indexer.setIntakePercentOutput(-opController.getTriggerAxis(Hand.kLeft));
+//      m_indexer.setBeltsPercentOutput(-opController.getTriggerAxis(Hand.kLeft));
+//      m_indexer.setKickerPercentOutput(-opController.getTriggerAxis(Hand.kLeft));
+//      m_indexer.setAgitatorPercentOutput(-opController.getTriggerAxis(Hand.kLeft) * 0.2);
+//   }
 
     if (m_indexer.ballStaged() == false) {
       clearedSensor2 = true;
