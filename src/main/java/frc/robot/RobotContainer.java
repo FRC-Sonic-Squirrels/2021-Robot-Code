@@ -82,7 +82,7 @@ public class RobotContainer {
     // Driver Controller Buttons
     final JoystickButton driverAButton = new JoystickButton(m_driveController, Button.kA.value);
     final JoystickButton driverBButton = new JoystickButton(m_driveController, Button.kB.value);
-    //final JoystickButton driverXButton = new JoystickButton(m_driveController, Button.kX.value);
+    final JoystickButton driverXButton = new JoystickButton(m_driveController, Button.kX.value);
     //final JoystickButton driverYButton = new JoystickButton(m_driveController, Button.kY.value);
     //final JoystickButton driverStartButton = new JoystickButton(m_driveController, Button.kStart.value);
     //final JoystickButton driverBackButton = new JoystickButton(m_driveController, Button.kBack.value);
@@ -111,6 +111,7 @@ public class RobotContainer {
       driverRightBumper.whenPressed(new InstantCommand(() -> m_drive.toggleDriveInverted()));
       driverAButton.whenPressed(new InstantCommand(() -> m_drive.toggleForzaMode()));
       driverBButton.whenPressed(new InstantCommand(() -> m_drive.toggleSquaredInputs()));
+      driverXButton.whenPressed(new InstantCommand(() -> m_intake.toggleDynamicMode()));
 
     // Operator Controls
       // Left Joystick - manual turret control
