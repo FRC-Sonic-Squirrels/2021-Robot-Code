@@ -62,14 +62,14 @@ public class hoodSubsystem extends SubsystemBase {
 
     // TODO: tune PID values
     // PID coefficients (currently default)
-    kP = 0.2;
+    kP = 0.1;
     kI = 1e-4;
     kD = 0;
     kF = 0;
     kIz = 100; 
     // TODO: limit input voltage, until we debug PID
-    kMaxOutput = 0.5;
-    kMinOutput = -0.5;
+    kMaxOutput = 0.2;
+    kMinOutput = -0.2;
 
     // Set PID coefficients
     m_pidController.setP(kP);
