@@ -17,9 +17,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.indexConstants;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import com.revrobotics.CANPIDController;
 
 import static frc.robot.Constants.currentLimits;
 import static frc.robot.Constants.digitalIOConstants;
+
+import java.beans.Encoder;
+
 import static frc.robot.Constants.canId;
 
 import com.revrobotics.CANSparkMax;
@@ -32,6 +36,7 @@ public class indexerSubsystem extends SubsystemBase {
   private WPI_TalonFX indexBelts;
 
   private CANSparkMax m_hopperAgitator = new CANSparkMax(indexConstants.hopperAgitator, MotorType.kBrushless);
+  private CANPIDController agitatorController = m_hopperAgitator.getPIDController();;
   private DigitalInput Sensor1 = new DigitalInput(digitalIOConstants.dio0_indexerSensor1);
   private DigitalInput Sensor2 = new DigitalInput(digitalIOConstants.dio1_indexerSensor2);
   private DigitalInput Sensor3 = new DigitalInput(digitalIOConstants.dio2_indexerSensor3);
@@ -112,6 +117,13 @@ public class indexerSubsystem extends SubsystemBase {
     indexIntake.config_kI(0, 0.0, 10);
     indexIntake.config_kD(0, 0.0, 10);
     indexIntake.config_kF(0, 0.0, 10);
+
+     agitatorController.setP(0.1);
+     agitatorController.setI(1e-4);
+     agitatorController.setD(0);
+     agitatorController.setFF(0);
+     agitatorController.setIZone(100);
+     agitatorController.setOutputRange(-1, 1);
 
     // Note: if we add position control, then we need to add a second set of PID parameters
     // on PID index 1, and then switch between the Talon PID index when setting a and Position
@@ -318,6 +330,7 @@ public class indexerSubsystem extends SubsystemBase {
       setIntakePercentOutput(1);
       setBeltsRPM(0);
       setKickerPercentOutput(0);
+      setAgitatorPercentOutput(0.1);
   } 
 
   /**

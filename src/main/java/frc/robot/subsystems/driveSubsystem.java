@@ -45,7 +45,7 @@ public class driveSubsystem extends SubsystemBase {
   private WPI_TalonFX falcon4_rightFollow = new WPI_TalonFX(driveConstants.falcon4_rightFollow);
 
   // teleop driver control fine tuning
-  private boolean driveInvert = false;
+  private boolean driveInvert = true;
   private boolean forzaModeEnabled = true;
   private boolean squaredInputs = false;
 

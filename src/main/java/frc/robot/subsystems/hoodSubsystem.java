@@ -28,18 +28,18 @@ public class hoodSubsystem extends SubsystemBase {
   private double minAngle = 46.13;
   private double maxAngle = 75.76;
   private double minPos = 0;
-  private double maxPos = 36;  // (maxAngle - minAngle) * (50.0 * 29.0) / 36.0;
+  private double maxPos = 38;  //  (50.0 * 28.0) / 36.0;
   // epsilon is how many rotations, we leave as a buffer at the top and bottom to avoid bottoming out on hard stops
   // 8 rotations is roughly 0.2 degrees.
-  private double epsilon = 8;
+  private double epsilon = 0.5;
   private linearInterpolator m_hoodAngle;
 
   XboxController operatorController = RobotContainer.m_operatorController;
 
   //Sets Hood position in Degrees using Feet
   private double [][] hoodPos = {
-    {4.0, 46},
-    {5.0, 46}, 
+    {4.0, 46.13},
+    {5.0, 46.13}, 
     {11.0, 60}, 
     {15.0, 65}, 
     {20.0, 70}
@@ -174,8 +174,8 @@ public class hoodSubsystem extends SubsystemBase {
    */
   public double angleToRotations(double angleDegrees) {
     // 46.13  degrees ->  0 rotations
-    // 75.76  degrees ->  1289 rotations
-    return   50.0 * (29.0/36.0) * (angleDegrees - minAngle);
+    // 75.76  degrees ->  38 rotations
+    return  50.0 * (28.0/36.0) * (angleDegrees - minAngle)/(maxAngle - minAngle);
   }
 
   /**

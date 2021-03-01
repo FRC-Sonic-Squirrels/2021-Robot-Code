@@ -8,6 +8,9 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.TalonFXSensorCollection;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -20,6 +23,7 @@ import static frc.robot.Constants.canId;
 public class intakeSubsystem extends SubsystemBase {
 
   private WPI_TalonFX m_intake = new WPI_TalonFX(canId.canId18_intake);
+  private TalonFXSensorCollection m_encoder;
   private Relay intakeRelay = new Relay(0);
 
   private driveSubsystem m_drive;
@@ -28,22 +32,30 @@ public class intakeSubsystem extends SubsystemBase {
   private double maxIntakeRPM = 6000;
   private double intakeRPM = 0.0;
   private boolean dynamicMode = false;
+  private static int kPIDLoopIdx = 0;
+  private static int kTimeoutMs = 30;
 
   public intakeSubsystem(driveSubsystem drive) {
+    m_drive = drive;
+    
     m_intake.configFactoryDefault();
     m_intake.setInverted(true);
-    m_drive = drive;
+    m_intake.setNeutralMode(NeutralMode.Coast);
+    m_intake.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, kPIDLoopIdx, kTimeoutMs);
 
-    m_intake.config_kP(0, 0.12);
-    m_intake.config_kI(0, 0.0005);
-    m_intake.config_kD(0, 0);
-    m_intake.config_kF(0, 0.047);
-    m_intake.config_IntegralZone(0, 100);
+    m_intake.config_kP(kPIDLoopIdx, 0.2);
+    m_intake.config_kI(kPIDLoopIdx, 0.0005);
+    m_intake.config_kD(kPIDLoopIdx, 0);
+    m_intake.config_kF(kPIDLoopIdx, 0.05);
+    m_intake.config_IntegralZone(kPIDLoopIdx, 100);
+
+    m_encoder = m_intake.getSensorCollection();
     
-    intakeRelay.set(Relay.Value.kReverse);
+    deployIntake();
+    intakeRPM = 0.0;
     SmartDashboard.putNumber("Set Intake Motor RPM", 0.0);
-    SmartDashboard.putNumber("Intake Motor RPM",0.0);
-    
+    SmartDashboard.putNumber("Intake Motor RPM", 0.0);
+    SmartDashboard.putNumber("Robot Speed m per s", 0.0);
   }
 
   @Override
@@ -56,10 +68,11 @@ public class intakeSubsystem extends SubsystemBase {
       double ir = SmartDashboard.getNumber("Set Intake Motor RPM", 0.0);
       if (ir != intakeRPM) {
         intakeRPM = ir;
-        setIntakeRPM(intakeRPM);
+        setIntakeMotorRPM(intakeRPM);
       }
     }
-    SmartDashboard.putNumber("Intake Motor RPM", m_intake.getSensorCollection().getIntegratedSensorVelocity() * 600 / 2048);
+    SmartDashboard.putNumber("Intake Motor RPM", - m_encoder.getIntegratedSensorVelocity() * 600 / 2048);
+    SmartDashboard.putNumber("Robot Speed m per s", (m_drive.getLeftVelocity() + m_drive.getRightVelocity()) / 2.0);
   }
   
   /**
@@ -72,8 +85,9 @@ public class intakeSubsystem extends SubsystemBase {
   /**
    * Sets Intake RPM to designated RPM
    */
-  public void setIntakeRPM(double rpm) {
-    m_intake.set(ControlMode.Velocity, rpm * 2048 / 600 * Constants.intakeConstants.intakeGearRatio);
+  public void setIntakeMotorRPM(double desiredRPM) {
+    intakeRPM = desiredRPM;
+    m_intake.set(ControlMode.Velocity, desiredRPM * 2048 / 600.0);
   }
 
   /**
@@ -81,42 +95,53 @@ public class intakeSubsystem extends SubsystemBase {
    * speed
    */
   public void setIntakeToSpeed() {
-    double robotMetersPerSec = m_drive.getLeftVelocity() + m_drive.getRightVelocity() / 2;
+    double robotMetersPerSec = (m_drive.getLeftVelocity() + m_drive.getRightVelocity()) / 2.0;
     double intakeRotationsPerSec = robotMetersPerSec / circOfIntake_meters;
     // Going Twice as Fast as the Robot Speed
-    double intakeRPM = intakeRotationsPerSec * 60 * 2;
-    double desiredMotorRPM = intakeRPM * Constants.intakeConstants.intakeGearRatio;
+    double _intakeRPM = intakeRotationsPerSec * 60 * 4.0;
+    double desiredMotorRPM = _intakeRPM * Constants.intakeConstants.intakeGearRatio;
     if (desiredMotorRPM < minIntakeRPM) {
-      setIntakeRPM(minIntakeRPM);
+      desiredMotorRPM = minIntakeRPM;
     } else if (desiredMotorRPM > maxIntakeRPM) {
-      setIntakeRPM(maxIntakeRPM);
-    } else {
-      setIntakeRPM(desiredMotorRPM);
+      desiredMotorRPM = maxIntakeRPM;
     }
+
+    setIntakeMotorRPM(desiredMotorRPM);
   }
 
   /**
-   * Changes Intake Speed to Match double robot speed at all times
+   * Sets Intake Speed to Match double robot speed at all times
    */
-  public void enableDynamicSpeed(boolean dynamic) {
+  public void setDynamicSpeed(boolean dynamic) {
     dynamicMode = dynamic;
+  }
+
+ /**
+   * Toggle on/off intake dynamic speed mode
+   */
+  public void toggleDynamicMode() {
+    dynamicMode = ! dynamicMode;
   }
 
   /**
    * release and deploy the intake
    */
-public void deployIntake() {
-  // TODO: retract solenoids
-}
+  public void deployIntake() {
+    intakeRelay.set(Relay.Value.kReverse);
+  }
 
-public void retractIntake() {
-  // There is no retract on this robot. 
-}
+  /**
+   * reset solenoids
+   */
+  public void retractIntake() {
+    // There is no retract on this robot. Just reset solenoids
+    intakeRelay.set(Relay.Value.kForward);
+  }
 
-  public void stop(){
-    enableDynamicSpeed(false);
+  public void stop() {
+    setDynamicSpeed(false);
     m_intake.setVoltage(0.0);
-    setIntakeRPM(0.0);
+    setIntakeMotorRPM(0.0);
     intakeRelay.set(Relay.Value.kReverse);
   }
 }

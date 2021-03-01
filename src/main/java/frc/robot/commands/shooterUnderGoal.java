@@ -8,6 +8,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.hoodSubsystem;
 import frc.robot.subsystems.indexerSubsystem;
 import frc.robot.subsystems.shooterSubsystem;
 import frc.robot.subsystems.turretSubsystem;
@@ -17,6 +18,7 @@ public class shooterUnderGoal extends CommandBase {
   private indexerSubsystem m_indexer;
   private turretSubsystem m_turret;
   private shooterSubsystem m_shooter;
+  private hoodSubsystem m_hood;
 
   /**
    * shooterUnderGoal class constructor
@@ -24,14 +26,16 @@ public class shooterUnderGoal extends CommandBase {
    * @param indexer,    indexer subsystem
    * @param turret,     turret subsystem
    * @param shooter,    shooter subsystem
+   * @param hood,       hood subsystem
    */
-  public shooterUnderGoal(indexerSubsystem indexer, turretSubsystem turret, shooterSubsystem shooter) {
+  public shooterUnderGoal(indexerSubsystem indexer, turretSubsystem turret, shooterSubsystem shooter, hoodSubsystem hood) {
     addRequirements(indexer);
     addRequirements(turret);
     addRequirements(shooter);
     m_indexer = indexer;
     m_turret = turret;
     m_shooter = shooter;
+    m_hood = hood;
   }
 
 
@@ -56,7 +60,7 @@ public class shooterUnderGoal extends CommandBase {
     m_indexer.stopIndexer();
     m_shooter.setShooterRPM(0);
     m_turret.stop();
-    m_shooter.retractHood();
+    m_hood.zeroHoodPos();
   }
 
   @Override
