@@ -37,8 +37,6 @@ public class shooterSubsystem extends SubsystemBase {
   private boolean m_atSpeed = false;
   private linearInterpolator m_lt_angle;
   private linearInterpolator m_lt_feet;
-  private linearInterpolator m_lt_hoodDownFeet;
-  private linearInterpolator m_lt_hoodUpFeet;
   private int m_idleRPM = 2000;
   private double m_currentRPM = 0;
   private double m_error = 0;
@@ -50,24 +48,13 @@ public class shooterSubsystem extends SubsystemBase {
 
   // based on the reported limelight angle
 
-  private double hoodDownFeet[][] = {
-    {4.0, 3500},  // 4 feet  2750
-    {7.0, 3350},  // 7 feet
-    {10.0, 3550}, // 10 feet
-    {12.0, 3600}, // 12 feet
-    {13.0, 3750}  // 13 feet
+  private double shooterDistances[][] = {
+    {4.0, 3700},  // 4 feet 
+    {5.0, 3700},  // 5 feet
+    {11.0, 5000}, // 11 feet
+    {15.0, 5400}, // 15 feet
+    {20.0, 6000}  // 20 feet
   };
-
-  // RPM based on distance in feet from target
-  private double hoodUpFeet[][] = {
-    {9,  4000},
-    {10, 4150},
-    {13, 4350},
-    {17, 4400},
-    {18, 4400},
-    {25, 4800}
-  };
-
 
   /**
    * shooterSubsystem() - constructor for shooterSubsytem class
@@ -102,12 +89,8 @@ public class shooterSubsystem extends SubsystemBase {
 
     setShooterPID(0.12, 0.0005, 0.0, 0.047, 100);
 
-    // Build the linear Interpolators just once each.
-    m_lt_hoodUpFeet = new linearInterpolator(hoodUpFeet);
-    m_lt_hoodDownFeet = new linearInterpolator(hoodDownFeet);
-
-    // pick a default, so that it is never undefined
-    m_lt_feet = m_lt_hoodDownFeet;
+    // Build the linear Interpolator
+    m_lt_feet = new linearInterpolator(shooterDistances);
 
     m_desiredRPM = 0;
     
@@ -180,22 +163,6 @@ public class shooterSubsystem extends SubsystemBase {
       // zero the RPM change rate limit. No rate limit to stop the flywheel
       m_rateLimiter = new SlewRateLimiter(m_rate_RPMpersecond, m_desiredRPM);
     }
-  }
-
-  /**
-   * deployHood() - raise shooter hood
-   */
-  public void deployHood() {
-    RobotContainer.m_limelight.setPipeline(4);
-    m_lt_feet = m_lt_hoodUpFeet;
-  }
-
-  /**
-   * retractHood() - lower the shooter hood
-   */
-  public void retractHood() {
-    RobotContainer.m_limelight.setPipeline(4);
-    m_lt_feet = m_lt_hoodDownFeet;
   }
 
   /**
