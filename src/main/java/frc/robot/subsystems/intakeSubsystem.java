@@ -19,6 +19,7 @@ public class intakeSubsystem extends SubsystemBase {
 
   private WPI_TalonFX m_intake = new WPI_TalonFX(Constants.intakeConstants.intakeMotor);
   private Relay intakeRelay = new Relay(0);
+
   private driveSubsystem m_drive;
   private double circOfIntake_meters = (1.4725 * Math.PI) * 0.0254;
   private double minIntakeRPM = 1000;
@@ -30,7 +31,8 @@ public class intakeSubsystem extends SubsystemBase {
     m_intake.configFactoryDefault();
     m_intake.setInverted(true);
     m_drive = drive;
-    //intakeRelay.setDirection(Relay.Direction kForwardOnly);
+    
+    intakeRelay.set(Relay.Value.kForward);
     
   }
 
@@ -105,6 +107,6 @@ public void retractIntake() {
     enableDynamicSpeed(false);
     m_intake.setVoltage(0.0);
     setIntakeRPM(0.0);
-    //intakeRelay.setDirection(Relay.Direction kReverseOnly);
+    intakeRelay.set(Relay.Value.kReverse);
   }
 }
