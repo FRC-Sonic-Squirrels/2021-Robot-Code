@@ -8,6 +8,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -28,17 +29,21 @@ public class intakeSubsystem extends SubsystemBase {
   private double maxIntakeRPM = 6000;
   private double intakeRPM = 0.0;
   private boolean dynamicMode = false;
+  private static int kPIDLoopIdx = 0;
+  private static int kTimeoutMs = 30;
 
   public intakeSubsystem(driveSubsystem drive) {
     m_intake.configFactoryDefault();
     m_intake.setInverted(true);
     m_drive = drive;
 
-    m_intake.config_kP(0, 0.12);
-    m_intake.config_kI(0, 0.0005);
-    m_intake.config_kD(0, 0);
-    m_intake.config_kF(0, 0.047);
-    m_intake.config_IntegralZone(0, 100);
+    m_intake.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, kPIDLoopIdx, kTimeoutMs);
+
+    m_intake.config_kP(kPIDLoopIdx, 0.12);
+    m_intake.config_kI(kPIDLoopIdx, 0.0005);
+    m_intake.config_kD(kPIDLoopIdx, 0);
+    m_intake.config_kF(kPIDLoopIdx, 0.047);
+    m_intake.config_IntegralZone(kPIDLoopIdx, 100);
     
     intakeRelay.set(Relay.Value.kReverse);
     SmartDashboard.putNumber("Set Intake Motor RPM", 0.0);
