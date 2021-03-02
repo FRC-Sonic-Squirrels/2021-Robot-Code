@@ -118,17 +118,13 @@ public class indexerSubsystem extends SubsystemBase {
     indexIntake.config_kD(0, 0.0, 10);
     indexIntake.config_kF(0, 0.0, 10);
 
-     agitatorController.setP(0.1);
-     agitatorController.setI(1e-4);
-     agitatorController.setD(0);
-     agitatorController.setFF(0);
-     agitatorController.setIZone(100);
-     agitatorController.setOutputRange(-0.1, 0.1);
+    agitatorController.setP(0.1);
+    agitatorController.setI(1e-4);
+    agitatorController.setD(0);
+    agitatorController.setFF(0);
+    agitatorController.setIZone(100);
+    agitatorController.setOutputRange(-0.1, 0.1);
 
-    // Note: if we add position control, then we need to add a second set of PID parameters
-    // on PID index 1, and then switch between the Talon PID index when setting a and Position
-
-    
   }
 
   @Override
@@ -285,7 +281,6 @@ public class indexerSubsystem extends SubsystemBase {
       setBeltsRPM(6380);
       setKickerPercentOutput(0.3);
       // m_blinkin.solid_green();
-
   }
 
   /**
@@ -302,8 +297,8 @@ public class indexerSubsystem extends SubsystemBase {
    * reverseIndexer() - run all indexer motors backwards at staging speeds
    */
   public void reverseIndexer() {
-      setIntakePercentOutput(-1);
-      setBeltsRPM(-6380);
+      setIntakePercentOutput(-0.8);
+      setBeltsRPM(-3000);
       setKickerPercentOutput(-0.3);
       // m_blinkin.strobe_red();
   }
@@ -312,7 +307,7 @@ public class indexerSubsystem extends SubsystemBase {
    * ejectIndexer() - run all indexer motors at eject/shooting speeds
    */
   public void ejectIndexer() {
-      setIntakePercentOutput(1);
+      setIntakePercentOutput(0.8);
       setBeltsRPM(6380);
       setKickerPercentOutput(1);
   }
