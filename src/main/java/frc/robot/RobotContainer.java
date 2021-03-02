@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -74,7 +75,6 @@ public class RobotContainer {
   public RobotContainer() {
     configureButtonBindings();
     m_drive.setDefaultCommand(new driveCommand(m_drive));
-    //m_elevator.setDefaultCommand(new elevatorWinchCommand(m_elevator));
     m_indexer.setDefaultCommand(new indexerDefaultCommand(m_indexer));
     m_turret.setDefaultCommand(new turretDefaultCommand(m_turret));
   }
@@ -203,6 +203,12 @@ public class RobotContainer {
     }
     else if (autoName == "forward1") {
       return autonCalibrationForward(1.0);
+    }
+    else if (autoName == "forward2") {
+      return autonCalibrationForward(2.0);
+    }
+    else if (autoName == "forward3") {
+      return autonCalibrationForward(3.0);
     }
     else if (autoName == "curveLeft") {
       return autonCalibrationCurve(1.0, 1.0);
@@ -415,9 +421,8 @@ public class RobotContainer {
    * @return Command object
    */
   public Command getAutonomousBlueBCommand(){
-
-    // TODO: temporarily moving start from (20,90) to (40,90) to avoid moving goal
-    Pose2d startPose = new Pose2d(inches2Meters(40), inches2Meters(90), new Rotation2d(0));
+    //Changing start pose to 12 by 90 because of Orange 1 size
+    Pose2d startPose = new Pose2d(inches2Meters(12), inches2Meters(90), new Rotation2d(0));
     m_drive.resetOdometry(startPose);
 
 
@@ -444,8 +449,8 @@ public class RobotContainer {
    * @return Command object
    */
   public Command getAutonomousBlueACommand(){
-    // TODO: temporarily moving start from (20,90) to (40,90) to avoid moving goal
-    Pose2d startPose = new Pose2d(inches2Meters(40), inches2Meters(90), new Rotation2d(0));
+    //Changing start pose to 12 by 90 because of Orange 1 size
+    Pose2d startPose = new Pose2d(inches2Meters(12), inches2Meters(90), new Rotation2d(0));
     m_drive.resetOdometry(startPose);
 
 
@@ -472,8 +477,8 @@ public class RobotContainer {
    * @return Command object
    */
   public Command getAutonomousRedBCommand(){
-    // TODO: temporarily moving start from (20,90) to (40,90) to avoid moving goal
-    Pose2d startPose = new Pose2d(inches2Meters(40), inches2Meters(90), new Rotation2d(0));
+      //Changing start pose to 12 by 90 because of Orange 1 size
+    Pose2d startPose = new Pose2d(inches2Meters(12), inches2Meters(90), new Rotation2d(0));
     m_drive.resetOdometry(startPose);
 
 
@@ -487,7 +492,7 @@ public class RobotContainer {
     RamseteCommand ramseteCommand = createTrajectoryCommand(
       startPose,
       red_b_points,
-      new Pose2d(inches2Meters(340), inches2Meters(90), new Rotation2d(0)), false, 1.0, 0.25
+      new Pose2d(inches2Meters(320), inches2Meters(90), new Rotation2d(0)), false, 1.0, 0.25
     );
 
     // Run path following command, then stop at end. Turn off Drive train
@@ -500,13 +505,20 @@ public class RobotContainer {
    * @return Command object
    */
   public Command getAutonomousRedACommand(){
-    // TODO: temporarily moving start from (20,90) to (40,90) to avoid moving goal
-    Pose2d startPose = new Pose2d(inches2Meters(40), inches2Meters(90), new Rotation2d(0));
+    
+    Command intakeStart = new SequentialCommandGroup(
+      new InstantCommand(() -> m_intake.deployIntake()), 
+      new WaitCommand(0.5), 
+      new InstantCommand(() -> m_intake.setDynamicSpeed(true))
+    );
+
+    //Changing start pose to 12 by 90 because of Orange 1 size
+    Pose2d startPose = new Pose2d(inches2Meters(12), inches2Meters(90), new Rotation2d(0));
     m_drive.resetOdometry(startPose);
 
     List<Translation2d> red_a_points = List.of(
-      new Translation2d( inches2Meters(90), inches2Meters(90)),
-      new Translation2d( inches2Meters(150), inches2Meters(60)),
+      new Translation2d( inches2Meters(90), inches2Meters(85)),
+      new Translation2d( inches2Meters(150), inches2Meters(75)),
       new Translation2d( inches2Meters(180), inches2Meters(150))
       );
     
@@ -514,11 +526,11 @@ public class RobotContainer {
     RamseteCommand ramseteCommand = createTrajectoryCommand(
       startPose,
       red_a_points,
-      new Pose2d(inches2Meters(340), inches2Meters(90), new Rotation2d(0)), false, 1.0, 0.25
+      new Pose2d(inches2Meters(320), inches2Meters(90), new Rotation2d(0)), false, 1.5, 0.5
     );
 
     // Run path following command, then stop at end. Turn off Drive train
-    return ramseteCommand.andThen(() -> m_drive.tankDriveVolts(0, 0));
+    return new ParallelCommandGroup(intakeStart, ramseteCommand.andThen(() -> m_drive.tankDriveVolts(0, 0)).andThen(() -> m_intake.setDynamicSpeed(false))) ;
   }
 
 

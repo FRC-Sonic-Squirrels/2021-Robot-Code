@@ -28,7 +28,7 @@ public class intakeSubsystem extends SubsystemBase {
 
   private driveSubsystem m_drive;
   private double circOfIntake_meters = (1.4725 * Math.PI) * 0.0254;
-  private double minIntakeRPM = 2000;
+  private double minIntakeRPM = 2500;
   private double maxIntakeRPM = 6000;
   private double intakeRPM = 0.0;
   private boolean dynamicMode = false;
@@ -50,8 +50,8 @@ public class intakeSubsystem extends SubsystemBase {
     m_intake.config_IntegralZone(kPIDLoopIdx, 100);
 
     m_encoder = m_intake.getSensorCollection();
+    //deployIntake();
     
-    deployIntake();
     intakeRPM = 0.0;
     SmartDashboard.putNumber("Set Intake Motor RPM", 0.0);
     SmartDashboard.putNumber("Intake Motor RPM", 0.0);
@@ -142,6 +142,6 @@ public class intakeSubsystem extends SubsystemBase {
     setDynamicSpeed(false);
     m_intake.setVoltage(0.0);
     setIntakeMotorRPM(0.0);
-    intakeRelay.set(Relay.Value.kReverse);
+    intakeRelay.set(Relay.Value.kForward);
   }
 }

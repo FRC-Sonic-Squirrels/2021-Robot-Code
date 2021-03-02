@@ -123,15 +123,17 @@ public class indexerSubsystem extends SubsystemBase {
      agitatorController.setD(0);
      agitatorController.setFF(0);
      agitatorController.setIZone(100);
-     agitatorController.setOutputRange(-1, 1);
+     agitatorController.setOutputRange(-0.1, 0.1);
 
     // Note: if we add position control, then we need to add a second set of PID parameters
     // on PID index 1, and then switch between the Talon PID index when setting a and Position
+
+    
   }
 
   @Override
   public void periodic() {
-    boolean ballReady4Indexer = !Sensor1.get();
+    boolean ballReady4Indexer = true; // !Sensor1.get();
     boolean ballExiting = !Sensor3.get();
     SmartDashboard.putNumber("ball count", ballCount);
     SmartDashboard.putNumber("restage state", restageState);
@@ -196,6 +198,11 @@ public class indexerSubsystem extends SubsystemBase {
     m_hopperAgitator.set(percent);
   }
 
+  public void setHopperPercentOutput(double percent){
+    setAgitatorPercentOutput(percent);
+    setIntakePercentOutput(percent);
+  }
+
   public void setBeltsRPM(double rpm) {
     indexBelts.set(ControlMode.Velocity, rpm * 2048 / 600);
   }
@@ -248,7 +255,8 @@ public class indexerSubsystem extends SubsystemBase {
    * @return true if a ball is waiting to be indexed
    */
   public boolean ballReadyForIndexer() {
-    return ! Sensor1.get();
+    return true;
+    // return ! Sensor1.get();
   }
 
   /**
@@ -321,6 +329,13 @@ public class indexerSubsystem extends SubsystemBase {
    */
   public void stopIntake() {
     setIntakePercentOutput(0);
+  }
+
+  /**
+   * stopHopper() - stop's intake & Intake Agitator Motors
+   */
+  public void stopHopper() {
+    setHopperPercentOutput(0);
   }
   
   /**

@@ -59,6 +59,7 @@ public class indexerDefaultCommand extends CommandBase {
       // Always stop indexer if a ball is at the exit point.
       // Don't eject a ball unless we're shooting.
       m_indexer.stopIndexer();
+      m_indexer.stopHopper();
 
     } else if (m_indexer.ballReadyForIndexer() == true) {
       // here we know ballExiting() == false

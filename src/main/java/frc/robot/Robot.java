@@ -33,7 +33,15 @@ public class Robot extends TimedRobot {
     chooser.addOption("AutoNav Barrel", "barrel");
     chooser.addOption("AutoNav Slalom", "slalom");
     chooser.addOption("AutoNav Bounce", "bounce");
-    // TODO: put galactic search auton choices here
+    chooser.addOption("Galactic Search Red A", "reda");
+    chooser.addOption("Galactic Search Red B", "redb");
+    chooser.addOption("Galactic Search Blue A", "bluea");
+    chooser.addOption("Galactic Search Blue B", "blueb");
+    chooser.addOption("Go Forward 1", "forward1");
+    chooser.addOption("Go Forward 2", "forward2");
+    chooser.addOption("Go Forward 3", "forward3");
+    chooser.addOption("Curve Left", "curveLeft");
+    chooser.addOption("Curve Right", "curveRight");
     chooser.setDefaultOption("Do Nothing", "donothing");
     SmartDashboard.putData("Auto mode", chooser);
   }

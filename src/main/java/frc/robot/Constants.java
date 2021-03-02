@@ -81,7 +81,7 @@ public final class Constants {
         public static final boolean kLeftEncoderReversed = false;
         public static final boolean kRightEncoderReversed = false;
 
-        public static final boolean kGyroReversed = true;
+        public static final boolean kGyroReversed = false;
 
         // Comp bot track width (center of wheel to center of wheel) is 0.627m
         public static final double kTrackwidthMeters = 0.627;
@@ -102,7 +102,7 @@ public final class Constants {
 
         //TODO: Look into these actual values
         // Aprox 6 inch (0.1524 meters) traction wheels, measured 0.15836 m
-        // Measured circumference = 0.509 m
+        // Measured circumference = 0.500 m
         public static final double kDistancePerWheelRevolutionMeters = 0.509;
         public static final double kWheelDiameterMeters =
                 kDistancePerWheelRevolutionMeters / Math.PI;
