@@ -78,76 +78,85 @@ public class RobotContainer {
   }
 
   private void configureButtonBindings() {
-    
+
     // Driver Controller Buttons
     final JoystickButton driverAButton = new JoystickButton(m_driveController, Button.kA.value);
     final JoystickButton driverBButton = new JoystickButton(m_driveController, Button.kB.value);
     final JoystickButton driverXButton = new JoystickButton(m_driveController, Button.kX.value);
-    //final JoystickButton driverYButton = new JoystickButton(m_driveController, Button.kY.value);
-    //final JoystickButton driverStartButton = new JoystickButton(m_driveController, Button.kStart.value);
-    //final JoystickButton driverBackButton = new JoystickButton(m_driveController, Button.kBack.value);
-    //final JoystickButton driverLeftBumper = new JoystickButton(m_driveController, Button.kBumperLeft.value);
+    // final JoystickButton driverYButton = new JoystickButton(m_driveController,
+    // Button.kY.value);
+    // final JoystickButton driverStartButton = new
+    // JoystickButton(m_driveController, Button.kStart.value);
+    // final JoystickButton driverBackButton = new JoystickButton(m_driveController,
+    // Button.kBack.value);
+    // final JoystickButton driverLeftBumper = new JoystickButton(m_driveController,
+    // Button.kBumperLeft.value);
     final JoystickButton driverRightBumper = new JoystickButton(m_driveController, Button.kBumperRight.value);
-    
+
     // Operator Controller Buttons
     final JoystickButton opAButton = new JoystickButton(m_operatorController, Button.kA.value);
     final JoystickButton opBButton = new JoystickButton(m_operatorController, Button.kB.value);
     final JoystickButton opXButton = new JoystickButton(m_operatorController, Button.kX.value);
     final JoystickButton opYButton = new JoystickButton(m_operatorController, Button.kY.value);
-    //final JoystickButton opStartButton = new JoystickButton(m_operatorController, Button.kStart.value);
+    final JoystickButton opStartButton = new JoystickButton(m_operatorController, Button.kStart.value);
     final JoystickButton opBackButton = new JoystickButton(m_operatorController, Button.kBack.value);
     final JoystickButton opLeftBumper = new JoystickButton(m_operatorController, Button.kBumperLeft.value);
     final JoystickButton opRightBumper = new JoystickButton(m_operatorController, Button.kBumperRight.value);
     final POVButton opDPadUp = new POVButton(m_operatorController, 0);
     final POVButton opDPadDown = new POVButton(m_operatorController, 180);
-    
+
     // Driver Controls
-      // A Button toggle Forza mode
-      // B Button toggle square driver inputs
-      // Left Trigger - reverse throttle (Forza mode)
-      // Right Trigger - forward throttle (Forza mode)
-      // Right Bumper - invert drive controls
-      // Left Bumper - turbo boost, FULL SPEED
-      driverRightBumper.whenPressed(new InstantCommand(() -> m_drive.toggleDriveInverted()));
-      driverAButton.whenPressed(new InstantCommand(() -> m_drive.toggleForzaMode()));
-      driverBButton.whenPressed(new InstantCommand(() -> m_drive.toggleSquaredInputs()));
-      driverXButton.whenPressed(new InstantCommand(() -> m_intake.toggleDynamicMode()));
+    // A Button toggle Forza mode
+    // B Button toggle square driver inputs
+    // Left Trigger - reverse throttle (Forza mode)
+    // Right Trigger - forward throttle (Forza mode)
+    // Right Bumper - invert drive controls
+    // Left Bumper - turbo boost, FULL SPEED
+    driverRightBumper.whenPressed(new InstantCommand(() -> m_drive.toggleDriveInverted()));
+    driverAButton.whenPressed(new InstantCommand(() -> m_drive.toggleForzaMode()));
+    driverBButton.whenPressed(new InstantCommand(() -> m_drive.toggleSquaredInputs()));
+    driverXButton.whenPressed(new InstantCommand(() -> m_intake.toggleDynamicMode()));
 
     // Operator Controls
-      // Left Joystick - manual turret control
-      // Left Trigger - manually move the indexer backwards
-      // Right Trigger - manually move the indexer forwards
-      // A Button - hold to deploy intake
-      // B Button - stage balls for shooting
-      // X Button - restage balls
-      // Y Button - hold to eject balls out the back of the indexer
-      // Right Bumper - shoot
-      // Left Bumper - shoot
-      // D Pad Up - manually increase ball count
-      // D Pad Down - manually decrease ball count
-      // Start Button - zero the turret
-      // Back Button - spool up the shooter
-      //opBButton.whenPressed(new indexerStageForShootingCommand(m_indexer));
-      //opXButton.whenPressed(new indexerRestageCommand(m_indexer));
-      //opYButton.whileHeld(new indexerReverseEjectCommand(m_indexer));
+    // Left Joystick - manual turret control
+    // Left Trigger - manually move the indexer backwards
+    // Right Trigger - manually move the indexer forwards
+    // A Button - hold to deploy intake
+    // B Button - stage balls for shooting
+    // X Button - restage balls
+    // Y Button - hold to eject balls out the back of the indexer
+    // Right Bumper - shoot
+    // Left Bumper - shoot
+    // D Pad Up - manually increase ball count
+    // D Pad Down - manually decrease ball count
+    // Start Button - reset Odometry
+    // Back Button - spool up the shooter
 
-      opRightBumper.whileHeld(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_hood, m_limelight));
+    // opBButton.whenPressed(new indexerStageForShootingCommand(m_indexer));
+    // opXButton.whenPressed(new indexerRestageCommand(m_indexer));
+    // opYButton.whileHeld(new indexerReverseEjectCommand(m_indexer));
 
-      //opLeftBumper.whileHeld(new shooterUnderGoal(m_indexer, m_turret, m_shooter));
-      //opDPadUp.whenPressed(() -> m_indexer.setBallCount(m_indexer.getBallCount() + 1));
-      //opDPadDown.whenPressed(() -> m_indexer.setBallCount(m_indexer.getBallCount() - 1));
+    opRightBumper.whileHeld(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_hood, m_limelight));
 
-      opRightBumper.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(0)));
-      opAButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(3700))); // 5 feet
-      opBButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(5000))); // 10 feet
-      opXButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(5400))); // 15 feet
-      opYButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(6000))); // 20 feet
+    // opLeftBumper.whileHeld(new shooterUnderGoal(m_indexer, m_turret, m_shooter));
+    // opDPadUp.whenPressed(() -> m_indexer.setBallCount(m_indexer.getBallCount() + 1));
+    // opDPadDown.whenPressed(() -> m_indexer.setBallCount(m_indexer.getBallCount() - 1));
 
-  // alternative shooter speed debug
-  //    opAButton.whenPressed(new InstantCommand(() -> m_shooter.addToShooterRPM(1000)));
-  //    opBButton.whenPressed(new InstantCommand(() -> m_shooter.addToShooterRPM(-1000)));
-  //    opXButton.whenPressed(new InstantCommand(() -> m_shooter.addToShooterRPM(100)));
-  //    opYButton.whenPressed(new InstantCommand(() -> m_shooter.addToShooterRPM(-100)));
+    // Shooter debug
+    opRightBumper.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(0)));
+    opAButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(3700))); // 5 feet
+    opBButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(5000))); // 10 feet
+    opXButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(5400))); // 15 feet
+    opYButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(6000))); // 20 feet
+
+    // Start button zeros robot pose and heading. Zeros encoders and gyro heading.
+    opStartButton.whenPressed(() -> m_drive.resetOdometry(new Pose2d(0, 0, new Rotation2d(0))), m_drive);
+
+    // alternative shooter speed debug
+    // opAButton.whenPressed(new InstantCommand(() -> m_shooter.addToShooterRPM(1000)));
+    // opBButton.whenPressed(new InstantCommand(() -> m_shooter.addToShooterRPM(-1000)));
+    // opXButton.whenPressed(new InstantCommand(() -> m_shooter.addToShooterRPM(100)));
+    // opYButton.whenPressed(new InstantCommand(() -> m_shooter.addToShooterRPM(-100)));
 
  }
   
