@@ -10,7 +10,6 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -21,15 +20,19 @@ import com.revrobotics.CANPIDController;
 
 import static frc.robot.Constants.currentLimits;
 import static frc.robot.Constants.digitalIOConstants;
-
-import java.beans.Encoder;
-
 import static frc.robot.Constants.canId;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 public class indexerSubsystem extends SubsystemBase {
+
+  enum Mode {
+    INTAKE,
+    EJECT,
+    REVERSE,
+    STOP
+  };
 
   private WPI_TalonSRX indexIntake;
   private WPI_TalonFX indexKicker;
@@ -47,10 +50,9 @@ public class indexerSubsystem extends SubsystemBase {
   private boolean ejectBallStep2 = false;
   private boolean ejectBallStep3 = false;
   private int ballCount = 0;
-  private int restageState = 0;
+  private Mode mode = Mode.STOP;
   // private blinkinSubsystem m_blinkin = RobotContainer.m_blinkin;
-
-  private boolean finishedSingleFeed;
+  
 
   public indexerSubsystem() {
 
@@ -129,15 +131,22 @@ public class indexerSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    boolean ballReady4Indexer = true; // !Sensor1.get();
-    boolean ballExiting = !Sensor3.get();
+    boolean ballReady4Indexer = ballReadyForIndexer();
+    boolean ballExiting = ballExiting();
+    boolean ballStaged = ballStaged();
+
     SmartDashboard.putNumber("ball count", ballCount);
-    SmartDashboard.putNumber("restage state", restageState);
+    SmartDashboard.putString("indexer state", mode.name());
     SmartDashboard.putNumber("Belt RPM", indexBelts.getSelectedSensorVelocity() * 600 / 2048);
     SmartDashboard.putNumber("Kicker RPM", indexKicker.getSelectedSensorVelocity() * 600 / 2048);
 
-    // eject Mode runs the indexer 7 kicker until one ball has been ejected
-    if (ejectMode) {
+
+    if (mode == Mode.STOP) {
+      stopIndexer();
+    }
+    if (mode == Mode.EJECT) {
+      // eject Mode runs the indexer and kicker until one ball has been ejected
+
       if (ejectBallStep3) {
         // step 3, run indexer until next ball is waiting
         SmartDashboard.putNumber("Eject State", 3);
@@ -161,8 +170,55 @@ public class indexerSubsystem extends SubsystemBase {
         }
       }
     }
-    else {
+    else if (mode == Mode.REVERSE) {
+        setKickerPercentOutput(-0.5);
+        setBeltsPercentOutput(-0.6);
+        setHopperPercentOutput(-0.9);
+    }
+    else if (mode == Mode.INTAKE) {
+      // Normal, non-eject mode
       SmartDashboard.putNumber("Eject State", 0);
+
+      if (ballExiting) {
+        // ball exiting, but we're not shooting so stop the belts and kicker
+        stopKicker();
+        stopBelts();
+        if (ballReady4Indexer) {
+          stopHopper();
+        }
+        else {
+          // secondary intake is empty, so keep running the hopper
+          setHopperPercentOutput(0.8);
+        }
+      }
+      else if (ballStaged) {
+        // no ball exiting
+        // ball is staged mid indexo
+        stopKicker();
+        if (ballReady4Indexer) {
+          // another ball is ready in the secondary intake, pull it in to staged position
+          setBeltsPercentOutput(1.0);
+          setHopperPercentOutput(0.6);
+        }
+        else {
+          // no ball waiting in secondary intake, run hopper
+          stopBelts();
+          setHopperPercentOutput(0.9);
+        }
+      }
+      else if (ballReady4Indexer == false) {
+        // no ball exiting
+        // no ball staged
+        // no ball in secondary intake, run hopper
+        setHopperPercentOutput(0.9);
+      }
+      else {
+        // no ball exiting
+        // no ball staged
+        // ball in secondary intake, pull it into staged
+        setBeltsPercentOutput(1.0);
+        setIntakePercentOutput(0.6);
+      }
     }
 
     // increase ball count as balls enter the indexer
@@ -191,7 +247,8 @@ public class indexerSubsystem extends SubsystemBase {
   }
 
   public void setAgitatorPercentOutput(double percent) {
-    m_hopperAgitator.set(percent);
+    // TODO: fix agitator
+    m_hopperAgitator.set(0.0);
   }
 
   public void setHopperPercentOutput(double percent){
@@ -233,11 +290,32 @@ public class indexerSubsystem extends SubsystemBase {
     ejectIndexer();
   }
 
+  /**
+   * enable Intake mode, pull balls into intake
+   */
+  public void setIntakeMode(){
+    mode = Mode.INTAKE;
+  }
+
+  /**
+   * enable Eject mode - eject balls for firing
+   */
+  public void setEjectMode(){
+    mode = Mode.INTAKE;
+  }
+
+  /**
+   * enable Reverse mode - reverse balls out of indexo through hopper
+   */
+  public void setReverseMode(){
+    mode = Mode.REVERSE;
+  }
+
   /** 
    * Stop all motors
    */
   public void stopIndexer() {
-    ejectMode = false;
+    mode = Mode.STOP;
     setBeltsPercentOutput(0.0);
     setKickerPercentOutput(0.0);
     setIntakePercentOutput(0.0);
@@ -251,8 +329,7 @@ public class indexerSubsystem extends SubsystemBase {
    * @return true if a ball is waiting to be indexed
    */
   public boolean ballReadyForIndexer() {
-    return true;
-    // return ! Sensor1.get();
+    return ! Sensor1.get();
   }
 
   /**
@@ -373,35 +450,4 @@ public class indexerSubsystem extends SubsystemBase {
     ballCount = BallCount;
   }
 
-  /**
-   * getRestageState() - return the state number of the restage command
-   * 
-   * @return int restage state
-   */
-  public int getRestageState() {
-    return restageState;
-  }
-
-  /**
-   * setRestageState() - set the restage state
-   */
-  public void setRestageState(int RestageState) {
-    restageState = RestageState;
-  }
-
-  /**
-   * setFinishedSingleFeed() - set the status of the single feed command
-   */
-  public void setFinishedSingleFeed(boolean finished) {
-    finishedSingleFeed = finished;
-  }
-
-  /**
-   * getFinishedSingleFeed() - gets the status of the single feed command
-   * 
-   * @return boolean finished single feed
-   */
-  public boolean getFinishedSingleFeed() {
-    return finishedSingleFeed;
-  }
 }
