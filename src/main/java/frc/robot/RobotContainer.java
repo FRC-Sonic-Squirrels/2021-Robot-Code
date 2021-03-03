@@ -505,7 +505,8 @@ public class RobotContainer {
     
     Command intakeStart = new SequentialCommandGroup(
       new InstantCommand(() -> m_intake.deployIntake()), 
-      new WaitCommand(0.5), 
+      new indexerDefaultCommand(m_indexer),
+      new WaitCommand(0.75), 
       new InstantCommand(() -> m_intake.setDynamicSpeed(true))
     );
 
@@ -523,19 +524,18 @@ public class RobotContainer {
     RamseteCommand ramseteCommand = createTrajectoryCommand(
       startPose,
       red_a_points,
-      new Pose2d(inches2Meters(320), inches2Meters(90), new Rotation2d(0)), false, 1.5, 0.5
+      new Pose2d(inches2Meters(320), inches2Meters(95), new Rotation2d(0)), false, 1.5, 0.5
     );
 
     // Run path following command, then stop at end. Turn off Drive train
     return new ParallelCommandGroup(intakeStart, 
-    new SequentialCommandGroup(ramseteCommand, 
-    
-    getAutonomousToTarget()).andThen(() -> m_drive.tankDriveVolts(0, 0)).andThen(() -> m_intake.setDynamicSpeed(false))) ;
+      new SequentialCommandGroup(ramseteCommand, 
+      getAutonomousToTarget()).andThen(() -> m_drive.tankDriveVolts(0, 0)).andThen(() -> m_intake.setDynamicSpeed(false))) ;
   }
 
   public Command getAutonomousToTarget(){
     //Start of Shooting with Red A
-    Pose2d startPose = new Pose2d(inches2Meters(320), inches2Meters(90), new Rotation2d(0));
+    Pose2d startPose = new Pose2d(inches2Meters(320), inches2Meters(95), new Rotation2d(0));
 
     RamseteCommand ramseteCommand = createTrajectoryCommand(
       startPose,
