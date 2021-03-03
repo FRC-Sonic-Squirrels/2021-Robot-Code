@@ -150,8 +150,8 @@ public class indexerSubsystem extends SubsystemBase {
         // step 3, run indexer until next ball is waiting
         SmartDashboard.putNumber("Eject State", 3);
         if (ballExiting) {
-          mode = Mode.STOP;
-          stopIndexer();
+          mode = Mode.INTAKE;
+          // stopIndexer();
         }
       }
       else if (ejectBallStep2) {
@@ -269,6 +269,8 @@ public class indexerSubsystem extends SubsystemBase {
 
   public void ejectOneBall() {
 
+    ejectIndexer();
+
     if (mode == Mode.EJECT) {
       // we're already in ejectMode
       return;
@@ -285,8 +287,6 @@ public class indexerSubsystem extends SubsystemBase {
     ejectBallStep2 = ballExiting();
     ejectBallStep3 = false;
 
-    // start the indexer
-    ejectIndexer();
   }
 
   /**
@@ -314,7 +314,6 @@ public class indexerSubsystem extends SubsystemBase {
    * Stop all motors
    */
   public void stopIndexer() {
-    mode = Mode.STOP;
     setBeltsPercentOutput(0.0);
     setKickerPercentOutput(0.0);
     setIntakePercentOutput(0.0);
@@ -383,9 +382,9 @@ public class indexerSubsystem extends SubsystemBase {
    * ejectIndexer() - run all indexer motors at eject/shooting speeds
    */
   public void ejectIndexer() {
-      setIntakePercentOutput(0.8);
-      setBeltsRPM(5000);
-      setKickerPercentOutput(1);
+      setBeltsPercentOutput(1.0);
+      setKickerPercentOutput(1.0);
+      setHopperPercentOutput(0.6);
   }
 
   /**
