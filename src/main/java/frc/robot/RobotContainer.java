@@ -505,8 +505,8 @@ public class RobotContainer {
     
     Command intakeStart = new SequentialCommandGroup(
       new InstantCommand(() -> m_intake.deployIntake()), 
-      new indexerDefaultCommand(m_indexer),
       new WaitCommand(0.75), 
+      new InstantCommand(() -> m_indexer.setIntakeMode()),
       new InstantCommand(() -> m_intake.setDynamicSpeed(true))
     );
 
@@ -528,9 +528,12 @@ public class RobotContainer {
     );
 
     // Run path following command, then stop at end. Turn off Drive train
-    return new ParallelCommandGroup(intakeStart, 
-      new SequentialCommandGroup(ramseteCommand, 
-      getAutonomousToTarget()).andThen(() -> m_drive.tankDriveVolts(0, 0)).andThen(() -> m_intake.setDynamicSpeed(false))) ;
+    return new ParallelCommandGroup(
+      intakeStart, 
+      new SequentialCommandGroup(
+          ramseteCommand,
+          getAutonomousToTarget()
+          ));
   }
 
   public Command getAutonomousToTarget(){
@@ -542,8 +545,15 @@ public class RobotContainer {
       List.of(),
       new Pose2d(inches2Meters(90), inches2Meters(160), new Rotation2d(0)), true, 1.5, 0.5
     );
-    return new ParallelCommandGroup(ramseteCommand, new WaitCommand(2)).andThen(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_hood, m_limelight).withTimeout(15));
 
+    return new SequentialCommandGroup(
+      new InstantCommand(() -> m_intake.setDynamicSpeed(false)),
+      ramseteCommand, 
+      new InstantCommand(() -> m_drive.tankDriveVolts(0, 0)),
+      new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_hood, m_limelight).withTimeout(15),
+      new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_hood, m_limelight).withTimeout(5),
+      new InstantCommand(() -> m_indexer.stopIndexer())
+    );
 
   }
 
