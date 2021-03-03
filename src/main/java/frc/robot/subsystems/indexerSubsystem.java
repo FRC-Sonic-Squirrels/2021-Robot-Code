@@ -45,7 +45,6 @@ public class indexerSubsystem extends SubsystemBase {
   private DigitalInput Sensor3 = new DigitalInput(digitalIOConstants.dio2_indexerSensor3);
   private boolean ballReady4IndexerLast = false;
   private boolean ballExitingLast = false;
-  private boolean ejectMode = false;
   private boolean ejectBallStep1 = false;
   private boolean ejectBallStep2 = false;
   private boolean ejectBallStep3 = false;
@@ -151,7 +150,7 @@ public class indexerSubsystem extends SubsystemBase {
         // step 3, run indexer until next ball is waiting
         SmartDashboard.putNumber("Eject State", 3);
         if (ballExiting) {
-          ejectMode = false;
+          mode = Mode.STOP;
           stopIndexer();
         }
       }
@@ -248,7 +247,7 @@ public class indexerSubsystem extends SubsystemBase {
 
   public void setAgitatorPercentOutput(double percent) {
     // TODO: fix agitator
-    m_hopperAgitator.set(0.0);
+    m_hopperAgitator.set(0.1);
   }
 
   public void setHopperPercentOutput(double percent){
@@ -270,7 +269,7 @@ public class indexerSubsystem extends SubsystemBase {
 
   public void ejectOneBall() {
 
-    if (ejectMode) {
+    if (mode == Mode.EJECT) {
       // we're already in ejectMode
       return;
     }
@@ -281,7 +280,7 @@ public class indexerSubsystem extends SubsystemBase {
      * 2. run indexer until ball not exiting (shooting!)
      * 3. stop indexer when ball ready to exit (ready for next shot)
      */
-    ejectMode = true;
+    mode = Mode.EJECT;
     ejectBallStep1 = true;
     ejectBallStep2 = ballExiting();
     ejectBallStep3 = false;
@@ -354,7 +353,7 @@ public class indexerSubsystem extends SubsystemBase {
    * runIndexer() - run all indexer motors at ball staging speeds
    */
   public void runIndexer() {
-      setIntakePercentOutput(1);
+      setHopperPercentOutput(1);
       setBeltsRPM(6380);
       setKickerPercentOutput(0.3);
       // m_blinkin.solid_green();
@@ -385,7 +384,7 @@ public class indexerSubsystem extends SubsystemBase {
    */
   public void ejectIndexer() {
       setIntakePercentOutput(0.8);
-      setBeltsRPM(6380);
+      setBeltsRPM(5000);
       setKickerPercentOutput(1);
   }
 

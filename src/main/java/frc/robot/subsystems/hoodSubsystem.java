@@ -40,6 +40,7 @@ public class hoodSubsystem extends SubsystemBase {
   private double [][] hoodPos = {
     {4.0, 46.13},
     {5.0, 46.13}, 
+    {7.0, 50}, 
     {11.0, 60}, 
     {15.0, 65}, 
     {20.0, 70}

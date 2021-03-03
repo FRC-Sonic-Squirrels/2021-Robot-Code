@@ -210,6 +210,9 @@ public class RobotContainer {
     else if (autoName == "curveRight") {
       return autonCalibrationCurve(1.0, -1.0);
     }
+    else if(autoName == "shooterTest"){
+      return getAutonomousToTarget();
+    }
     else if (autoName == "nothing") {
       return getNoAutonomousCommand();
     }
@@ -513,7 +516,7 @@ public class RobotContainer {
     List<Translation2d> red_a_points = List.of(
       new Translation2d( inches2Meters(90), inches2Meters(85)),
       new Translation2d( inches2Meters(150), inches2Meters(75)),
-      new Translation2d( inches2Meters(180), inches2Meters(150))
+      new Translation2d( inches2Meters(180), inches2Meters(145))
       );
     
     // Start of Red A program
@@ -524,7 +527,24 @@ public class RobotContainer {
     );
 
     // Run path following command, then stop at end. Turn off Drive train
-    return new ParallelCommandGroup(intakeStart, ramseteCommand.andThen(() -> m_drive.tankDriveVolts(0, 0)).andThen(() -> m_intake.setDynamicSpeed(false))) ;
+    return new ParallelCommandGroup(intakeStart, 
+    new SequentialCommandGroup(ramseteCommand, 
+    
+    getAutonomousToTarget()).andThen(() -> m_drive.tankDriveVolts(0, 0)).andThen(() -> m_intake.setDynamicSpeed(false))) ;
+  }
+
+  public Command getAutonomousToTarget(){
+    //Start of Shooting with Red A
+    Pose2d startPose = new Pose2d(inches2Meters(320), inches2Meters(90), new Rotation2d(0));
+
+    RamseteCommand ramseteCommand = createTrajectoryCommand(
+      startPose,
+      List.of(),
+      new Pose2d(inches2Meters(90), inches2Meters(160), new Rotation2d(0)), true, 1.5, 0.5
+    );
+    return new ParallelCommandGroup(ramseteCommand, new WaitCommand(2)).andThen(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_hood, m_limelight).withTimeout(15));
+
+
   }
 
 
