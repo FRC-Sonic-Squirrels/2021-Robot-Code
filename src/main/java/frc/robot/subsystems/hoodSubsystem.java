@@ -33,6 +33,7 @@ public class hoodSubsystem extends SubsystemBase {
   // 8 rotations is roughly 0.2 degrees.
   private double epsilon = 0.5;
   private linearInterpolator m_hoodAngle;
+  private double m_hoodErrorRotations;
 
   XboxController operatorController = RobotContainer.m_operatorController;
 
@@ -161,6 +162,8 @@ public class hoodSubsystem extends SubsystemBase {
     // Display current hood position on SmartDashboard
     SmartDashboard.putNumber("Hood Position", m_encoder.getPosition());
 
+    m_hoodErrorRotations = m_encoder.getPosition() - hoodPosition;
+
     // Display hood position error on SmartDashboard
     SmartDashboard.putNumber("Hood Position Error", m_encoder.getPosition() - hoodPosition);
     SmartDashboard.putNumber("Hood output", m_hood.getAppliedOutput());
@@ -177,6 +180,10 @@ public class hoodSubsystem extends SubsystemBase {
     // 46.13  degrees ->  0 rotations
     // 75.76  degrees ->  38 rotations
     return  50.0 * (28.0/36.0) * (angleDegrees - minAngle)/(maxAngle - minAngle);
+  }
+
+  public double rotationsToAngle(double rotations){
+    return (rotations * (maxAngle - minAngle) / 38) + minAngle;
   }
 
   /**
@@ -229,6 +236,11 @@ public class hoodSubsystem extends SubsystemBase {
   public double getAngleforDistanceMeter(double distanceMeters) {
     return getAngleforDistanceFeet(distanceMeters * 3.28084);
   }
+
+  public boolean isAtPos(){
+    return Math.abs(rotationsToAngle(m_hoodErrorRotations)) < 1.0;
+  }
+
  /**
   * retract the hood to the full down position
   */

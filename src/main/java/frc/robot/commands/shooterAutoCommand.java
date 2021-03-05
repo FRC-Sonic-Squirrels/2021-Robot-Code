@@ -104,7 +104,7 @@ public class shooterAutoCommand extends CommandBase {
 
     // shoot!
     // TODO: make sure hood is in correct position as well
-    if (m_shooter.isAtSpeed() == true && RobotContainer.limelightOnTarget == true) {
+    if (m_shooter.isAtSpeed() && RobotContainer.limelightOnTarget && m_hood.isAtPos()) {
       m_indexer.ejectOneBall();
     }
   }
