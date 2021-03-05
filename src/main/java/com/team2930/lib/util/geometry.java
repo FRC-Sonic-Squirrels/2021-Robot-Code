@@ -63,11 +63,11 @@ public class geometry {
         return Math.toDegrees(angle2TargetRadians(robotPose, target));
     }
 
-    public double inches2Meters(double i) {
+    public static double inches2Meters(double i) {
         return i * 0.0254;
     }
 
-    public double feet2Meters(double feet) {
+    public static double feet2Meters(double feet) {
         return (feet * 0.3048);
     }
 
