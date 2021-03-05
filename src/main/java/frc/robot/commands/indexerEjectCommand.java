@@ -21,7 +21,7 @@ public class indexerEjectCommand extends CommandBase {
 
   @Override
   public void initialize() {
-    m_indexer.ejectIndexer();
+    m_indexer.setEjectMode();
   }
 
   @Override

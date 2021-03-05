@@ -40,6 +40,7 @@ public class Robot extends TimedRobot {
     chooser.addOption("Go Forward 1", "forward1");
     chooser.addOption("Go Forward 2", "forward2");
     chooser.addOption("Go Forward 3", "forward3");
+    chooser.addOption("Shooter Test", "shooterTest");
     chooser.addOption("Curve Left", "curveLeft");
     chooser.addOption("Curve Right", "curveRight");
     chooser.setDefaultOption("Do Nothing", "donothing");

@@ -10,52 +10,31 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.indexerSubsystem;
 
-public class indexerSingleFeedCommand extends CommandBase {
+public class indexerReverseCommand extends CommandBase {
+  
+  indexerSubsystem m_indexer;
 
-  private indexerSubsystem m_indexer;
-  private boolean clearedSensor3 = false;
-  private int startBallCount;
-
-  public indexerSingleFeedCommand(indexerSubsystem indexer) {
+  public indexerReverseCommand(indexerSubsystem indexer) {
     addRequirements(indexer);
-    m_indexer = indexer;
+    m_indexer = indexer; 
   }
 
   @Override
   public void initialize() {
-    clearedSensor3 = false;
-    startBallCount = m_indexer.getBallCount();
-    m_indexer.setFinishedSingleFeed(false);
+    m_indexer.setReverseMode();
   }
 
   @Override
   public void execute() {
-    
-    if (m_indexer.ballExiting() == false && startBallCount == m_indexer.getBallCount() + 1) {
-      clearedSensor3 = true;
-    }
-
-    if (m_indexer.ballExiting() == false && startBallCount == m_indexer.getBallCount()) {
-      m_indexer.ejectIndexer();
-    }
-
-    if (m_indexer.ballExiting() == true) {
-      m_indexer.ejectIndexer();
-    }
   }
 
   @Override
   public void end(boolean interrupted) {
     m_indexer.stopIndexer();
-    m_indexer.setFinishedSingleFeed(true);
   }
 
   @Override
   public boolean isFinished() {
-    if (clearedSensor3 == true && startBallCount == m_indexer.getBallCount() + 1) {
-      return true;
-    }
-    
     return false;
   }
 }

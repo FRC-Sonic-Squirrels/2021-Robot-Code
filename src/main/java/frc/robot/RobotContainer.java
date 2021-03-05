@@ -30,18 +30,16 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.Constants.driveConstants;
 import frc.robot.commands.driveCommand;
 import frc.robot.commands.indexerDefaultCommand;
-import frc.robot.commands.indexerStageForShootingCommand;
+import frc.robot.commands.indexerReverseCommand;
+import frc.robot.commands.indexerStopCommand;
 import frc.robot.commands.shooterAutoCommand;
 import frc.robot.commands.turretDefaultCommand;
 import frc.robot.subsystems.driveSubsystem;
@@ -54,7 +52,7 @@ import frc.robot.subsystems.turretSubsystem;
 public class RobotContainer {
 
   // Position of Power Port, needs to be set in each auton routine
-  public Translation2d powerPortLocation = new Translation2d(feet2Meters(10), 0);
+  public Translation2d powerPortLocation = new Translation2d(geometry.feet2Meters(10), 0);
 
   // Subsystems
   // All other subsystems should be private
@@ -71,7 +69,6 @@ public class RobotContainer {
   public static XboxController m_operatorController = new XboxController(driveConstants.operatorController);
   public static boolean limelightOnTarget = false;
 
-
   public RobotContainer() {
     configureButtonBindings();
     m_drive.setDefaultCommand(new driveCommand(m_drive));
@@ -85,14 +82,10 @@ public class RobotContainer {
     final JoystickButton driverAButton = new JoystickButton(m_driveController, Button.kA.value);
     final JoystickButton driverBButton = new JoystickButton(m_driveController, Button.kB.value);
     final JoystickButton driverXButton = new JoystickButton(m_driveController, Button.kX.value);
-    // final JoystickButton driverYButton = new JoystickButton(m_driveController,
-    // Button.kY.value);
-    // final JoystickButton driverStartButton = new
-    // JoystickButton(m_driveController, Button.kStart.value);
-    // final JoystickButton driverBackButton = new JoystickButton(m_driveController,
-    // Button.kBack.value);
-    // final JoystickButton driverLeftBumper = new JoystickButton(m_driveController,
-    // Button.kBumperLeft.value);
+    final JoystickButton driverYButton = new JoystickButton(m_driveController, Button.kY.value);
+    final JoystickButton driverStartButton = new JoystickButton(m_driveController, Button.kStart.value);
+    final JoystickButton driverBackButton = new JoystickButton(m_driveController, Button.kBack.value);
+    final JoystickButton driverLeftBumper = new JoystickButton(m_driveController, Button.kBumperLeft.value);
     final JoystickButton driverRightBumper = new JoystickButton(m_driveController, Button.kBumperRight.value);
 
     // Operator Controller Buttons
@@ -113,7 +106,7 @@ public class RobotContainer {
     // Left Trigger - reverse throttle (Forza mode)
     // Right Trigger - forward throttle (Forza mode)
     // Right Bumper - invert drive controls
-    // Left Bumper - turbo boost, FULL SPEED
+    // Left Bumper - turbo boost, FULL SPEED  
     driverRightBumper.whenPressed(new InstantCommand(() -> m_drive.toggleDriveInverted()));
     driverAButton.whenPressed(new InstantCommand(() -> m_drive.toggleForzaMode()));
     driverBButton.whenPressed(new InstantCommand(() -> m_drive.toggleSquaredInputs()));
@@ -123,10 +116,10 @@ public class RobotContainer {
     // Left Joystick - manual turret control
     // Left Trigger - manually move the indexer backwards
     // Right Trigger - manually move the indexer forwards
-    // A Button - hold to deploy intake
-    // B Button - stage balls for shooting
-    // X Button - restage balls
-    // Y Button - hold to eject balls out the back of the indexer
+    // A Button - deploy intake
+    // B Button - stop indexer
+    // X Button - reverse indexer to restage balls
+    // Y Button - enable normal indexer ball intake mode 
     // Right Bumper - shoot
     // Left Bumper - shoot
     // D Pad Up - manually increase ball count
@@ -134,25 +127,26 @@ public class RobotContainer {
     // Start Button - reset Odometry
     // Back Button - spool up the shooter
 
-    // opBButton.whenPressed(new indexerStageForShootingCommand(m_indexer));
-    // opXButton.whenPressed(new indexerRestageCommand(m_indexer));
-    // opYButton.whileHeld(new indexerReverseEjectCommand(m_indexer));
+    opAButton.whenPressed(new InstantCommand(() -> m_intake.deployIntake()));
+    opBButton.whenPressed(new indexerStopCommand(m_indexer)); 
+    opXButton.whileHeld(new indexerReverseCommand(m_indexer));
+    opYButton.whenPressed(new InstantCommand(() -> m_indexer.setIntakeMode(), m_indexer));
 
     opRightBumper.whileHeld(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_hood, m_limelight));
 
     // opLeftBumper.whileHeld(new shooterUnderGoal(m_indexer, m_turret, m_shooter));
-    // opDPadUp.whenPressed(() -> m_indexer.setBallCount(m_indexer.getBallCount() + 1));
-    // opDPadDown.whenPressed(() -> m_indexer.setBallCount(m_indexer.getBallCount() - 1));
-
-    // Shooter debug
-    opRightBumper.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(0)));
-    opAButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(3700))); // 5 feet
-    opBButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(5000))); // 10 feet
-    opXButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(5400))); // 15 feet
-    opYButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(6000))); // 20 feet
+    opDPadUp.whenPressed(() -> m_indexer.setBallCount(m_indexer.getBallCount() + 1));
+    opDPadDown.whenPressed(() -> m_indexer.setBallCount(m_indexer.getBallCount() - 1));
 
     // Start button zeros robot pose and heading. Zeros encoders and gyro heading.
     opStartButton.whenPressed(() -> m_drive.resetOdometry(new Pose2d(0, 0, new Rotation2d(0))), m_drive);
+
+    // Shooter debug
+    opRightBumper.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(0)));
+    //opAButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(3700))); // 5 feet
+    //opBButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(5000))); // 10 feet
+    //opXButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(5400))); // 15 feet
+    //opYButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(6000))); // 20 feet
 
     // alternative shooter speed debug
     // opAButton.whenPressed(new InstantCommand(() -> m_shooter.addToShooterRPM(1000)));
@@ -215,6 +209,9 @@ public class RobotContainer {
     }   
     else if (autoName == "curveRight") {
       return autonCalibrationCurve(1.0, -1.0);
+    }
+    else if(autoName == "shooterTest"){
+      return getAutonomousToTarget();
     }
     else if (autoName == "nothing") {
       return getNoAutonomousCommand();
@@ -508,7 +505,8 @@ public class RobotContainer {
     
     Command intakeStart = new SequentialCommandGroup(
       new InstantCommand(() -> m_intake.deployIntake()), 
-      new WaitCommand(0.5), 
+      new WaitCommand(0.75), 
+      new InstantCommand(() -> m_indexer.setIntakeMode()),
       new InstantCommand(() -> m_intake.setDynamicSpeed(true))
     );
 
@@ -519,18 +517,44 @@ public class RobotContainer {
     List<Translation2d> red_a_points = List.of(
       new Translation2d( inches2Meters(90), inches2Meters(85)),
       new Translation2d( inches2Meters(150), inches2Meters(75)),
-      new Translation2d( inches2Meters(180), inches2Meters(150))
+      new Translation2d( inches2Meters(180), inches2Meters(145))
       );
     
     // Start of Red A program
     RamseteCommand ramseteCommand = createTrajectoryCommand(
       startPose,
       red_a_points,
-      new Pose2d(inches2Meters(320), inches2Meters(90), new Rotation2d(0)), false, 1.5, 0.5
+      new Pose2d(inches2Meters(320), inches2Meters(95), new Rotation2d(0)), false, 1.5, 0.5
     );
 
     // Run path following command, then stop at end. Turn off Drive train
-    return new ParallelCommandGroup(intakeStart, ramseteCommand.andThen(() -> m_drive.tankDriveVolts(0, 0)).andThen(() -> m_intake.setDynamicSpeed(false))) ;
+    return new ParallelCommandGroup(
+      intakeStart, 
+      new SequentialCommandGroup(
+          ramseteCommand,
+          getAutonomousToTarget()
+          ));
+  }
+
+  public Command getAutonomousToTarget(){
+    //Start of Shooting with Red A
+    Pose2d startPose = new Pose2d(inches2Meters(320), inches2Meters(95), new Rotation2d(0));
+
+    RamseteCommand ramseteCommand = createTrajectoryCommand(
+      startPose,
+      List.of(),
+      new Pose2d(inches2Meters(90), inches2Meters(160), new Rotation2d(0)), true, 1.5, 0.5
+    );
+
+    return new SequentialCommandGroup(
+      new InstantCommand(() -> m_intake.setDynamicSpeed(false)),
+      ramseteCommand, 
+      new InstantCommand(() -> m_drive.tankDriveVolts(0, 0)),
+      new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_hood, m_limelight).withTimeout(15),
+      new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_hood, m_limelight).withTimeout(5),
+      new InstantCommand(() -> m_indexer.stopIndexer())
+    );
+
   }
 
 
