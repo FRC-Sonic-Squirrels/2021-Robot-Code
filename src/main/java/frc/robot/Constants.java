@@ -136,6 +136,8 @@ public final class Constants {
     }
 
     public static final class limeLightConstants {
+        //TODO: Check if this is correct Height
+        //Supposed to be correct Height: .582889
         public static final double limeLightHeight_meters = .68394;
         public static final double targetHeight_meters = 2.5019;
         public static final double limeLightAngle_degrees = 30;
