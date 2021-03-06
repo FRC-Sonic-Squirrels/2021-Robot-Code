@@ -505,7 +505,7 @@ public class RobotContainer {
     
     Command intakeStart = new SequentialCommandGroup(
       new InstantCommand(() -> m_intake.deployIntake()), 
-      new WaitCommand(0.75), 
+      new WaitCommand(0.7), 
       new InstantCommand(() -> m_indexer.setIntakeMode()),
       new InstantCommand(() -> m_intake.setDynamicSpeed(true))
     );
