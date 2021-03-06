@@ -13,6 +13,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.indexConstants;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -23,6 +24,7 @@ import static frc.robot.Constants.digitalIOConstants;
 import static frc.robot.Constants.canId;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 public class indexerSubsystem extends SubsystemBase {
@@ -63,6 +65,7 @@ public class indexerSubsystem extends SubsystemBase {
     indexKicker.configFactoryDefault();
     indexIntake.configFactoryDefault();
     m_hopperAgitator.restoreFactoryDefaults();
+    m_hopperAgitator.setInverted(true);
 
     // Voltage limits, percent output is scaled to this new max
     indexBelts.configVoltageCompSaturation(11);
@@ -143,31 +146,10 @@ public class indexerSubsystem extends SubsystemBase {
     if (mode == Mode.STOP) {
       stopIndexer();
     }
-    if (mode == Mode.EJECT) {
-      // eject Mode runs the indexer and kicker until one ball has been ejected
-
-      if (ejectBallStep3) {
-        // step 3, run indexer until next ball is waiting
-        SmartDashboard.putNumber("Eject State", 3);
-        if (ballExiting) {
-          mode = Mode.INTAKE;
-          // stopIndexer();
-        }
-      }
-      else if (ejectBallStep2) {
-        // step 2, run indexer until ball leaves
-        SmartDashboard.putNumber("Eject State", 2);
-        if (!ballExiting) {
-          ejectBallStep3 = true;
-        }
-      }
-      else if (ejectBallStep1) {
-        // Step 1, run indexer until ball is ready to shoot
-        SmartDashboard.putNumber("Eject State", 1);
-        if (ballExiting) {
-            ejectBallStep2 = true;
-        }
-      }
+    if(mode == Mode.EJECT){
+        setKickerPercentOutput(1);
+        setBeltsPercentOutput(1);
+        setHopperPercentOutput(0.5);
     }
     else if (mode == Mode.REVERSE) {
         setKickerPercentOutput(-0.5);
@@ -190,32 +172,19 @@ public class indexerSubsystem extends SubsystemBase {
           setHopperPercentOutput(0.8);
         }
       }
-      else if (ballStaged) {
-        // no ball exiting
-        // ball is staged mid indexo
-        stopKicker();
-        if (ballReady4Indexer) {
-          // another ball is ready in the secondary intake, pull it in to staged position
-          setBeltsPercentOutput(1.0);
-          setHopperPercentOutput(0.6);
-        }
-        else {
-          // no ball waiting in secondary intake, run hopper
-          stopBelts();
-          setHopperPercentOutput(0.9);
-        }
-      }
       else if (ballReady4Indexer == false) {
         // no ball exiting
         // no ball staged
         // no ball in secondary intake, run hopper
         setHopperPercentOutput(0.9);
+        setBeltsPercentOutput(0.0);
+        setKickerPercentOutput(0.0);
       }
       else {
         // no ball exiting
         // no ball staged
         // ball in secondary intake, pull it into staged
-        setBeltsPercentOutput(1.0);
+        setBeltsPercentOutput(0.6);
         setIntakePercentOutput(0.6);
       }
     }
@@ -245,13 +214,8 @@ public class indexerSubsystem extends SubsystemBase {
       indexIntake.set(ControlMode.PercentOutput, percent);
   }
 
-  public void setAgitatorPercentOutput(double percent) {
-    // TODO: fix agitator
-    m_hopperAgitator.set(0.1);
-  }
-
   public void setHopperPercentOutput(double percent){
-    setAgitatorPercentOutput(percent);
+    setAgitatorRPM(Constants.indexConstants.agitatorRPM);
     setIntakePercentOutput(percent);
   }
 
@@ -265,6 +229,10 @@ public class indexerSubsystem extends SubsystemBase {
 
   public void setIntakeRPM(double rpm) {
     indexIntake.set(ControlMode.Velocity, rpm * 2048 / 600);
+  }
+
+  public void setAgitatorRPM(double rpm){
+    agitatorController.setReference(rpm, ControlType.kVelocity);
   }
 
   public void ejectOneBall() {
@@ -317,7 +285,7 @@ public class indexerSubsystem extends SubsystemBase {
     setBeltsPercentOutput(0.0);
     setKickerPercentOutput(0.0);
     setIntakePercentOutput(0.0);
-    setAgitatorPercentOutput(0.0);
+    setAgitatorRPM(0.0);;
     // m_blinkin.solid_orange();
   }
 
@@ -415,7 +383,7 @@ public class indexerSubsystem extends SubsystemBase {
       setIntakePercentOutput(1);
       setBeltsRPM(0);
       setKickerPercentOutput(0);
-      setAgitatorPercentOutput(0.1);
+      setAgitatorRPM(Constants.indexConstants.agitatorRPM);
   } 
 
   /**
