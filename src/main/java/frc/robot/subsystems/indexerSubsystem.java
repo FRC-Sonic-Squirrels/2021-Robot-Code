@@ -65,6 +65,7 @@ public class indexerSubsystem extends SubsystemBase {
     indexKicker.configFactoryDefault();
     indexIntake.configFactoryDefault();
     m_hopperAgitator.restoreFactoryDefaults();
+    m_hopperAgitator.setInverted(true);
 
     // Voltage limits, percent output is scaled to this new max
     indexBelts.configVoltageCompSaturation(11);
