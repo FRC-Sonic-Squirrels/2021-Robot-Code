@@ -359,7 +359,7 @@ public class indexerSubsystem extends SubsystemBase {
   public void ejectIndexer() {
       setBeltsPercentOutput(1.0);
       setKickerPercentOutput(1.0);
-      setHopperPercentOutput(0.6);
+      setHopperPercentOutput(1.0);
   }
 
   /**
