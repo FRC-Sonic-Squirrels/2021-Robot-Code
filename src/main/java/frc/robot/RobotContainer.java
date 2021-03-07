@@ -128,7 +128,8 @@ public class RobotContainer {
     // Back Button - spool up the shooter
 
     opAButton.whenPressed(new InstantCommand(() -> m_intake.deployIntake()));
-    opBButton.whenPressed(new indexerStopCommand(m_indexer)); 
+    opBButton.whenPressed(new InstantCommand(() -> m_intake.toggleDynamicMode()));
+    //opBButton.whenPressed(new indexerStopCommand(m_indexer)); 
     opXButton.whileHeld(new indexerReverseCommand(m_indexer));
     opYButton.whenPressed(new InstantCommand(() -> m_indexer.setIntakeMode(), m_indexer));
 

@@ -150,6 +150,7 @@ public class hoodSubsystem extends SubsystemBase {
     if(hoodRotations < minPos) {
       hoodRotations = minPos;
     }
+    
     else if(hoodRotations > maxPos) {
       hoodRotations = maxPos;
     }
@@ -165,9 +166,10 @@ public class hoodSubsystem extends SubsystemBase {
     m_hoodErrorRotations = m_encoder.getPosition() - hoodPosition;
 
     // Display hood position error on SmartDashboard
-    SmartDashboard.putNumber("Hood Position Error", m_encoder.getPosition() - hoodPosition);
-    SmartDashboard.putNumber("Hood output", m_hood.getAppliedOutput());
+    SmartDashboard.putNumber("Hood Position Error", m_hoodErrorRotations);
 
+    //Display Hood Error Boolean
+    SmartDashboard.putBoolean("Hood at Position", isAtPos());
   }
 
   /**
@@ -238,7 +240,7 @@ public class hoodSubsystem extends SubsystemBase {
   }
 
   public boolean isAtPos(){
-    return Math.abs(rotationsToAngle(m_hoodErrorRotations)) < 1.0;
+    return Math.abs(m_hoodErrorRotations) < 1.0;
   }
 
  /**

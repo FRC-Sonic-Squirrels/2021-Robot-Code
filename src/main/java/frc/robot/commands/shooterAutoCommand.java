@@ -95,7 +95,7 @@ public class shooterAutoCommand extends CommandBase {
       limelightSteerCommand = tx * steer_k;
       m_turret.setPercentOutput(limelightSteerCommand);
 
-      if (Math.abs(m_limelight.getTX()) < 0.75) {
+      if (Math.abs(m_limelight.getTX()) < 1.0) {
         RobotContainer.limelightOnTarget = true;
       } else {
         RobotContainer.limelightOnTarget = false;
@@ -104,7 +104,7 @@ public class shooterAutoCommand extends CommandBase {
 
     // shoot!
     // TODO: make sure hood is in correct position as well
-    if (m_shooter.isAtSpeed() && RobotContainer.limelightOnTarget && m_hood.isAtPos()) {
+    if (m_shooter.isAtSpeed() && RobotContainer.limelightOnTarget /*&& m_hood.isAtPos() */ ) {
       m_indexer.ejectOneBall();
     }
   }

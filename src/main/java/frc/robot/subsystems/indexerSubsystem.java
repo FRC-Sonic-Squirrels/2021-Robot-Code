@@ -18,6 +18,7 @@ import frc.robot.Constants.indexConstants;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.revrobotics.CANPIDController;
+import com.revrobotics.CANEncoder;
 
 import static frc.robot.Constants.currentLimits;
 import static frc.robot.Constants.digitalIOConstants;
@@ -41,7 +42,8 @@ public class indexerSubsystem extends SubsystemBase {
   private WPI_TalonFX indexBelts;
 
   private CANSparkMax m_hopperAgitator = new CANSparkMax(indexConstants.hopperAgitator, MotorType.kBrushless);
-  private CANPIDController agitatorController = m_hopperAgitator.getPIDController();;
+  private CANEncoder m_agitator_encoder;
+  private CANPIDController agitatorController = m_hopperAgitator.getPIDController();
   private DigitalInput Sensor1 = new DigitalInput(digitalIOConstants.dio0_indexerSensor1);
   private DigitalInput Sensor2 = new DigitalInput(digitalIOConstants.dio1_indexerSensor2);
   private DigitalInput Sensor3 = new DigitalInput(digitalIOConstants.dio2_indexerSensor3);
@@ -60,6 +62,8 @@ public class indexerSubsystem extends SubsystemBase {
     indexIntake = new WPI_TalonSRX(canId.canId8_indexo_intake_and_hopper);
     indexBelts = new WPI_TalonFX(canId.canId10_indexo_belts);
     indexKicker = new WPI_TalonFX(canId.canId11_indexo_kicker);
+
+    m_agitator_encoder = m_hopperAgitator.getEncoder();
     
     indexBelts.configFactoryDefault();
     indexKicker.configFactoryDefault();
@@ -122,7 +126,7 @@ public class indexerSubsystem extends SubsystemBase {
     indexIntake.config_kD(0, 0.0, 10);
     indexIntake.config_kF(0, 0.0, 10);
 
-    agitatorController.setP(0.1);
+    agitatorController.setP(0.05);
     agitatorController.setI(1e-4);
     agitatorController.setD(0);
     agitatorController.setFF(0);
@@ -137,11 +141,14 @@ public class indexerSubsystem extends SubsystemBase {
     boolean ballExiting = ballExiting();
     boolean ballStaged = ballStaged();
 
+    //SmartDashboard.putNumber("Belt Amp", indexerBelts.getcurrent());
+
     SmartDashboard.putNumber("ball count", ballCount);
     SmartDashboard.putString("indexer state", mode.name());
     SmartDashboard.putNumber("Belt RPM", indexBelts.getSelectedSensorVelocity() * 600 / 2048);
     SmartDashboard.putNumber("Kicker RPM", indexKicker.getSelectedSensorVelocity() * 600 / 2048);
 
+    SmartDashboard.putNumber("Agitator RPM", m_agitator_encoder.getVelocity());
 
     if (mode == Mode.STOP) {
       stopIndexer();
@@ -215,7 +222,7 @@ public class indexerSubsystem extends SubsystemBase {
   }
 
   public void setHopperPercentOutput(double percent){
-    setAgitatorRPM(Constants.indexConstants.agitatorRPM);
+    //setAgitatorRPM(Constants.indexConstants.agitatorRPM);
     setIntakePercentOutput(percent);
   }
 
@@ -285,7 +292,7 @@ public class indexerSubsystem extends SubsystemBase {
     setBeltsPercentOutput(0.0);
     setKickerPercentOutput(0.0);
     setIntakePercentOutput(0.0);
-    setAgitatorRPM(0.0);;
+    setAgitatorRPM(0.0);
     // m_blinkin.solid_orange();
   }
 
@@ -374,6 +381,7 @@ public class indexerSubsystem extends SubsystemBase {
    */
   public void stopHopper() {
     setHopperPercentOutput(0);
+    setAgitatorRPM(0);
   }
   
   /**
