@@ -43,7 +43,8 @@ public class shooterSubsystem extends SubsystemBase {
   private double m_max_RPM_error = 15;
   private final double RPMtoTicks = 2048 / 600;
 
-  private double m_rate_RPMpersecond = 10000;
+  // lower number here, slows the rate of change and decreases the power spike 
+  private double m_rate_RPMpersecond = 2500;
   private SlewRateLimiter m_rateLimiter;
 
   // based on the reported limelight angle
@@ -87,7 +88,7 @@ public class shooterSubsystem extends SubsystemBase {
     talon_shooter1.configPeakOutputForward(kMaxOutput);
     talon_shooter1.configPeakOutputReverse(kMinOutput);
 
-    setShooterPID(0.12, 0.0005, 0.0, 0.047, 100);
+    setShooterPID(0.12, 0.0005, 0.0, 0.048, 100);
 
     // Build the linear Interpolator
     m_lt_feet = new linearInterpolator(shooterDistances);
@@ -131,7 +132,6 @@ public class shooterSubsystem extends SubsystemBase {
 
 
     talon_shooter1.set(ControlMode.Velocity, setPoint * RPMtoTicks);
- 
 
     SmartDashboard.putNumber("RPM", m_currentRPM);
     SmartDashboard.putNumber("RPM set point", setPoint);
