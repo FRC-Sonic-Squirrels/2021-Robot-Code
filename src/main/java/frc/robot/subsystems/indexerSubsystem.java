@@ -347,9 +347,9 @@ public class indexerSubsystem extends SubsystemBase {
    * reverseIndexer() - run all indexer motors backwards at staging speeds
    */
   public void reverseIndexer() {
-      setIntakePercentOutput(-0.8);
-      setBeltsRPM(-3000);
-      setKickerPercentOutput(-0.3);
+      setIntakePercentOutput(-0.3);
+      setBeltsPercentOutput(-0.3);
+      setKickerPercentOutput(-0.4);
       // m_blinkin.strobe_red();
   }
 
@@ -358,8 +358,9 @@ public class indexerSubsystem extends SubsystemBase {
    */
   public void ejectIndexer() {
       setBeltsPercentOutput(1.0);
-      setKickerPercentOutput(1.0);
-      setHopperPercentOutput(1.0);
+      setKickerPercentOutput(0.9);
+      setHopperPercentOutput(0.5);
+      setAgitatorRPM(0);
   }
 
   /**
