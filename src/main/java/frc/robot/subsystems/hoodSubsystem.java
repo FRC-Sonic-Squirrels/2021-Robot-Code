@@ -47,7 +47,8 @@ public class hoodSubsystem extends SubsystemBase {
     {11.0, 60},
     {12.7, 60}, 
     {15.0, 65}, 
-    {20.0, 70}
+    {20.0, 69},
+    {25.0, 70}
   };
 
   /** Creates a new hoodSubsystem. */
