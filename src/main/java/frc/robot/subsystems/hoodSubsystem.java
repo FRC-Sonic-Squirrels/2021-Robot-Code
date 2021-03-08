@@ -34,6 +34,8 @@ public class hoodSubsystem extends SubsystemBase {
   private double epsilon = 0.5;
   private linearInterpolator m_hoodAngle;
   private double m_hoodErrorRotations;
+  private double m_currentHoodPosition;
+  private boolean m_tune_PID = false;
 
   XboxController operatorController = RobotContainer.m_operatorController;
 
@@ -42,7 +44,8 @@ public class hoodSubsystem extends SubsystemBase {
     {4.0, 46.13},
     {5.0, 46.13}, 
     {7.0, 50}, 
-    {11.0, 60}, 
+    {11.0, 60},
+    {12.7, 60}, 
     {15.0, 65}, 
     {20.0, 70}
   };
@@ -64,14 +67,13 @@ public class hoodSubsystem extends SubsystemBase {
 
     // TODO: tune PID values
     // PID coefficients (currently default)
-    kP = 0.1;
+    kP = 0.15;
     kI = 1e-4;
     kD = 0;
     kF = 0;
     kIz = 100; 
-    // TODO: limit input voltage, until we debug PID
-    kMaxOutput = 0.2;
-    kMinOutput = -0.2;
+    kMaxOutput = 0.3;
+    kMinOutput = -0.3;
 
     // Set PID coefficients
     m_pidController.setP(kP);
@@ -84,7 +86,6 @@ public class hoodSubsystem extends SubsystemBase {
     // TODO: use limit switch!
     // TODO: configure limit switch to zero position
 
-
     // Display PID values on SmartDashboard
     SmartDashboard.putNumber("P Gain", kP);
     SmartDashboard.putNumber("I Gain", kI);
@@ -94,11 +95,12 @@ public class hoodSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Max Output", kMaxOutput);
     SmartDashboard.putNumber("Min Output", kMinOutput);
 
-    SmartDashboard.putNumber("Hood output", m_hood.getAppliedOutput());
+    // SmartDashboard.putNumber("Hood output", m_hood.getAppliedOutput());
 
     // Display initial set hood angle on SmartDashboard
     SmartDashboard.putNumber("Set Hood Angle", 46);
-    SmartDashboard.putNumber("Hood Position", m_encoder.getPosition());
+    SmartDashboard.putNumber("Hood Position Deg", rotationsToAngle(m_encoder.getPosition()));
+    SmartDashboard.putNumber("Hood Position Error Pos", 0.0);
 
   }
 
@@ -106,69 +108,72 @@ public class hoodSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
 
-    // Retrieve PID values from SmartDashboard
-    double p = SmartDashboard.getNumber("P Gain", 0);
-    double i = SmartDashboard.getNumber("I Gain", 0);
-    double d = SmartDashboard.getNumber("D Gain", 0);
-    double f = SmartDashboard.getNumber("Feed Forward", 0);
-    double iz = SmartDashboard.getNumber("I Zone", 0);
-    double max = SmartDashboard.getNumber("Max Output", 0);
-    double min = SmartDashboard.getNumber("Min Output", 0);
 
-    // if PID coefficients on SmartDashboard have changed, write new values to controller
-    if(p != kP) {
-      m_pidController.setP(p);
-      kP = p;
-    }
-    if(i != kI) {
-      m_pidController.setI(i);
-      kI = i;
-    }
-    if(d != kD) {
-      m_pidController.setD(d);
-      kD = d;
-    }
-    if(f != kF) {
-      m_pidController.setFF(f);
-      kF = f;
-    }
-    if(iz != kIz) {
-      m_pidController.setIZone(iz);
-      kIz = iz;
-    }
-    if((max != kMaxOutput) || (min != kMinOutput)) { 
-      m_pidController.setOutputRange(min, max); 
-      kMinOutput = min;
-      kMaxOutput = max; 
-    }
+    if (m_tune_PID) {
+      // Retrieve PID values from SmartDashboard
+      double p = SmartDashboard.getNumber("P Gain", 0);
+      double i = SmartDashboard.getNumber("I Gain", 0);
+      double d = SmartDashboard.getNumber("D Gain", 0);
+      double f = SmartDashboard.getNumber("Feed Forward", 0);
+      double iz = SmartDashboard.getNumber("I Zone", 0);
+      double max = SmartDashboard.getNumber("Max Output", 0);
+      double min = SmartDashboard.getNumber("Min Output", 0);
 
-    // Retrieve set hood angle from SmartDashboard and convert to motor rotations
-    // double hoodRotations = SmartDashboard.getNumber("Set Hood Position", 0);
-    double hoodRotations = angleToRotations(SmartDashboard.getNumber("Set Hood Angle", 46));
+      // if PID coefficients on SmartDashboard have changed, write new values to
+      // controller
+      if (p != kP) {
+        m_pidController.setP(p);
+        kP = p;
+      }
+      if (i != kI) {
+        m_pidController.setI(i);
+        kI = i;
+      }
+      if (d != kD) {
+        m_pidController.setD(d);
+        kD = d;
+      }
+      if (f != kF) {
+        m_pidController.setFF(f);
+        kF = f;
+      }
+      if (iz != kIz) {
+        m_pidController.setIZone(iz);
+        kIz = iz;
+      }
+      if ((max != kMaxOutput) || (min != kMinOutput)) {
+        m_pidController.setOutputRange(min, max);
+        kMinOutput = min;
+        kMaxOutput = max;
+      }
 
-    // Make sure to not set hood rotations beyond min or max position
-    if(hoodRotations < minPos) {
-      hoodRotations = minPos;
-    }
-    
-    else if(hoodRotations > maxPos) {
-      hoodRotations = maxPos;
-    }
+      // Retrieve set hood angle from SmartDashboard and convert to motor rotations
+      // double hoodRotations = SmartDashboard.getNumber("Set Hood Position", 0);
+      double hoodRotations = angleToRotations(SmartDashboard.getNumber("Set Hood Angle", 46));
 
-    if (hoodPosition != hoodRotations) {
-      hoodPosition = hoodRotations;
-      m_pidController.setReference(hoodPosition, ControlType.kPosition);
-    }
+      // Make sure to not set hood rotations beyond min or max position
+      if (hoodRotations < minPos) {
+        hoodRotations = minPos;
+      }
+
+      else if (hoodRotations > maxPos) {
+        hoodRotations = maxPos;
+      }
+
+      if (hoodPosition != hoodRotations) {
+        hoodPosition = hoodRotations;
+        m_pidController.setReference(hoodPosition, ControlType.kPosition);
+      }
+
+  }  // end if (m_debug_PID)
 
     // Display current hood position on SmartDashboard
-    SmartDashboard.putNumber("Hood Position", m_encoder.getPosition());
-
-    m_hoodErrorRotations = m_encoder.getPosition() - hoodPosition;
+    m_currentHoodPosition = m_encoder.getPosition();
+    m_hoodErrorRotations = m_currentHoodPosition - hoodPosition;
 
     // Display hood position error on SmartDashboard
-    SmartDashboard.putNumber("Hood Position Error", m_hoodErrorRotations);
-
-    //Display Hood Error Boolean
+    SmartDashboard.putNumber("Hood Position Deg",  rotationsToAngle(m_currentHoodPosition));
+    SmartDashboard.putNumber("Hood Position Error Pos", m_hoodErrorRotations);
     SmartDashboard.putBoolean("Hood at Position", isAtPos());
   }
 
@@ -207,6 +212,7 @@ public class hoodSubsystem extends SubsystemBase {
       if (rotations > maxPos - epsilon) {
         rotations = maxPos - epsilon;
       }
+      hoodPosition = rotations;
       m_pidController.setReference(rotations, ControlType.kPosition);
   }
 
