@@ -18,7 +18,7 @@ public class Robot extends TimedRobot {
   public static boolean turretHome = false;
 
   private RobotContainer m_robotContainer;
-  //public PowerDistributionPanel m_pdp = new PowerDistributionPanel(0);
+  public PowerDistributionPanel m_pdp = new PowerDistributionPanel(0);
   SendableChooser <String> chooser = new SendableChooser<>();
   public static double distance_meters = 0.0;
 
@@ -58,6 +58,7 @@ public class Robot extends TimedRobot {
       // distance_meters = ( 2.5019 - 0.603250) / Math.tan( Math.toRadians(30 + RobotContainer.m_limelight.getTY()));
       SmartDashboard.putNumber("distance ft", distance_meters * 3.28084);
     }
+
   }
 
   @Override
