@@ -69,7 +69,7 @@ public class indexerSubsystem extends SubsystemBase {
     indexKicker.configFactoryDefault();
     indexIntake.configFactoryDefault();
     m_hopperAgitator.restoreFactoryDefaults();
-    m_hopperAgitator.setInverted(true);
+    //m_hopperAgitator.setInverted(true);
 
     // Voltage limits, percent output is scaled to this new max
     indexBelts.configVoltageCompSaturation(11);
@@ -131,7 +131,7 @@ public class indexerSubsystem extends SubsystemBase {
     agitatorController.setD(0);
     agitatorController.setFF(0);
     agitatorController.setIZone(100);
-    agitatorController.setOutputRange(-0.1, 0.1);
+    agitatorController.setOutputRange(0, 0.1);
 
   }
 
@@ -222,7 +222,7 @@ public class indexerSubsystem extends SubsystemBase {
   }
 
   public void setHopperPercentOutput(double percent){
-    //setAgitatorRPM(Constants.indexConstants.agitatorRPM);
+    setAgitatorRPM(Constants.indexConstants.agitatorRPM);
     setIntakePercentOutput(percent);
   }
 
@@ -239,7 +239,8 @@ public class indexerSubsystem extends SubsystemBase {
   }
 
   public void setAgitatorRPM(double rpm){
-    agitatorController.setReference(rpm, ControlType.kVelocity);
+    //Run Agitator in reverse (Invert makes it oscilate)
+    agitatorController.setReference(-rpm, ControlType.kVelocity);
   }
 
   public void ejectOneBall() {
