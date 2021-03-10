@@ -25,7 +25,7 @@ public class shooterAutoCommand extends CommandBase {
   private hoodSubsystem m_hood;
   private limelight m_limelight;
   private double steer_kp = 0.03;
-  private double steer_ki = 0.0001;
+  private double steer_ki = 0.05;
   private double limelightSteerCommand = 0;
   private long startTimeNS = 0;
   private long shooterReadyTimeNS = 0;
@@ -75,7 +75,9 @@ public class shooterAutoCommand extends CommandBase {
     m_shooter.setShooterRPM(m_shooter.getRPMforDistanceMeter(Robot.distance_meters));
     m_hood.setPositionRotations(m_hood.angleToRotations(m_hood.getAngleforDistanceMeter(Robot.distance_meters)));
     double tx_angleError = m_limelight.getTX();
-    m_Integral += -tx_angleError * (0.02);
+    if (Math.abs(tx_angleError) < 2.0) {
+      m_Integral += tx_angleError * (0.02);
+    }
     limelightSteerCommand = (tx_angleError * steer_kp) + (m_Integral * steer_ki);
     m_turret.setPercentOutput(limelightSteerCommand);
 
