@@ -127,11 +127,11 @@ public class indexerSubsystem extends SubsystemBase {
     indexIntake.config_kF(0, 0.0, 10);
 
     agitatorController.setP(0.05);
-    agitatorController.setI(1e-4);
+    agitatorController.setI(0.0);
     agitatorController.setD(0);
     agitatorController.setFF(0);
     agitatorController.setIZone(100);
-    agitatorController.setOutputRange(0, 0.1);
+    agitatorController.setOutputRange(-0.2, 0.0);
 
   }
 
@@ -183,7 +183,8 @@ public class indexerSubsystem extends SubsystemBase {
         // no ball exiting
         // no ball staged
         // no ball in secondary intake, run hopper
-        setHopperPercentOutput(0.9);
+        setHopperPercentOutput(0.8);
+        setAgitatorRPM(Constants.indexConstants.agitatorRPM);
         setBeltsPercentOutput(0.0);
         setKickerPercentOutput(0.0);
       }
@@ -358,9 +359,9 @@ public class indexerSubsystem extends SubsystemBase {
    * ejectIndexer() - run all indexer motors at eject/shooting speeds
    */
   public void ejectIndexer() {
-      setBeltsPercentOutput(1.0);
-      setKickerPercentOutput(0.9);
-      setHopperPercentOutput(0.5);
+      setBeltsPercentOutput(0.8);
+      setKickerPercentOutput(0.8);
+      setHopperPercentOutput(0.3);
       setAgitatorRPM(0);
   }
 
