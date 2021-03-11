@@ -154,8 +154,8 @@ public class indexerSubsystem extends SubsystemBase {
       stopIndexer();
     }
     if(mode == Mode.EJECT){
-        setKickerPercentOutput(1);
-        setBeltsPercentOutput(1);
+        setKickerPercentOutput(0.9);
+        setBeltsPercentOutput(0.9);
         setHopperPercentOutput(0.5);
     }
     else if (mode == Mode.REVERSE) {
@@ -176,14 +176,14 @@ public class indexerSubsystem extends SubsystemBase {
         }
         else {
           // secondary intake is empty, so keep running the hopper
-          setHopperPercentOutput(0.8);
+          setHopperPercentOutput(0.7);
         }
       }
       else if (ballReady4Indexer == false) {
         // no ball exiting
         // no ball staged
         // no ball in secondary intake, run hopper
-        setHopperPercentOutput(0.8);
+        setHopperPercentOutput(0.7);
         setAgitatorRPM(Constants.indexConstants.agitatorRPM);
         setBeltsPercentOutput(0.0);
         setKickerPercentOutput(0.0);
