@@ -92,12 +92,12 @@ public class shooterAutoCommand extends CommandBase {
   
   @Override
   public void end(boolean interrupted) {
+    // turn off motor and coast down.
+    m_shooter.setPercentOutput(0.0);
     m_indexer.stopIndexer();
-    m_shooter.setShooterRPM(0);
     m_turret.stop();
     m_hood.retractHood();
     //m_limelight.setLEDMode(1);
-    //m_stationary = false;
     startTimeNS = 0;
     shooterReadyTimeNS = 0;
   }
