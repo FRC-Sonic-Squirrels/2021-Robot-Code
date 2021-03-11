@@ -19,6 +19,7 @@ public class driveCommand extends CommandBase {
   driveSubsystem m_drive;
   XboxController driveController = RobotContainer.m_driveController;
   private double speedMultiplier = 0.7;
+  private double rotationMultiplier = 0.75;
 
   public driveCommand(driveSubsystem drive) {
     addRequirements(drive);
@@ -54,15 +55,15 @@ public class driveCommand extends CommandBase {
     if (m_drive.getSquaredInputs()) {
       // square the joystick inputs, give much more control at lower speed and rotation inputs
       speed = speed * Math.abs(speed);
-      rotation = rotation * Math.abs(rotation);
+      // rotation = rotation * Math.abs(rotation);
     }
 
     if (driveController.getBumper(Hand.kLeft) == false) {
       // drive slower, press button in engage turbo mode
 
       speed = speed * speedMultiplier;
-      rotation = rotation * speedMultiplier;
     }
+    rotation = rotation * rotationMultiplier;
 
     if (m_drive.getDriveInvert() == true) {
       // invert driving direction

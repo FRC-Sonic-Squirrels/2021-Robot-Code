@@ -269,6 +269,13 @@ public class indexerSubsystem extends SubsystemBase {
   /**
    * enable Intake mode, pull balls into intake
    */
+  public void setStopMode(){
+    mode = Mode.STOP;
+  }
+
+  /**
+   * enable Intake mode, pull balls into intake
+   */
   public void setIntakeMode(){
     mode = Mode.INTAKE;
   }

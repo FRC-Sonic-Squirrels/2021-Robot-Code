@@ -110,7 +110,14 @@ public class RobotContainer {
     driverRightBumper.whenPressed(new InstantCommand(() -> m_drive.toggleDriveInverted()));
     driverAButton.whenPressed(new InstantCommand(() -> m_drive.toggleForzaMode()));
     driverBButton.whenPressed(new InstantCommand(() -> m_drive.toggleSquaredInputs()));
-    driverXButton.whenPressed(new InstantCommand(() -> m_intake.toggleDynamicMode()));
+    
+    // driverXButton.whenPressed(new InstantCommand(() -> m_intake.toggleDynamicMode()));
+
+    driverYButton.whenPressed(new ParallelCommandGroup(
+        new InstantCommand(() -> m_indexer.setStopMode()), 
+        new InstantCommand(() -> m_limelight.setLEDMode(1))));
+
+
 
     // Operator Controls
     // Left Joystick - manual turret control
@@ -142,9 +149,10 @@ public class RobotContainer {
 
     // Start button zeros robot pose and heading. Zeros encoders and gyro heading.
     opStartButton.whenPressed(() -> m_drive.resetOdometry(new Pose2d(0, 0, new Rotation2d(0))), m_drive);
+    opBackButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(0)));
 
     // Shooter debug
-    opRightBumper.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(0)));
+    //opRightBumper.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(0)));
     //opAButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(3700))); // 5 feet
     //opBButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(5000))); // 10 feet
     //opXButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(5400))); // 15 feet
