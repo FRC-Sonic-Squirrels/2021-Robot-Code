@@ -133,6 +133,7 @@ public class RobotContainer {
     opXButton.whileHeld(new indexerReverseCommand(m_indexer));
     opYButton.whenPressed(new InstantCommand(() -> m_indexer.setIntakeMode(), m_indexer));
 
+    opLeftBumper.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(3000), m_shooter));
     opRightBumper.whileHeld(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_hood, m_limelight));
 
     // opLeftBumper.whileHeld(new shooterUnderGoal(m_indexer, m_turret, m_shooter));
