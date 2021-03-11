@@ -159,8 +159,8 @@ public final class Constants {
     }
   
     public static final class intakeConstants {
-        //Geared up 16:24 
-        public static final double intakeGearRatio = 16.0 / 24.0;
+        // Geared up 18:36 
+        public static final double intakeGearRatio =  18.0 / 36.0;
     }
 
     public static final class pwmConstants {
