@@ -113,6 +113,7 @@ public class RobotContainer {
     
     // driverXButton.whenPressed(new InstantCommand(() -> m_intake.toggleDynamicMode()));
 
+    // turn off indexo and limelight LED for drive challenges 
     driverYButton.whenPressed(new ParallelCommandGroup(
         new InstantCommand(() -> m_indexer.setStopMode()), 
         new InstantCommand(() -> m_limelight.setLEDMode(1))));
@@ -140,7 +141,10 @@ public class RobotContainer {
     opXButton.whileHeld(new indexerReverseCommand(m_indexer));
     opYButton.whenPressed(new InstantCommand(() -> m_indexer.setIntakeMode(), m_indexer));
 
+    // spin up flywheel to idle RPM
     opLeftBumper.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(3000), m_shooter));
+    opBackButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(0)));
+
     opRightBumper.whileHeld(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_hood, m_limelight));
 
     // opLeftBumper.whileHeld(new shooterUnderGoal(m_indexer, m_turret, m_shooter));
@@ -149,7 +153,6 @@ public class RobotContainer {
 
     // Start button zeros robot pose and heading. Zeros encoders and gyro heading.
     opStartButton.whenPressed(() -> m_drive.resetOdometry(new Pose2d(0, 0, new Rotation2d(0))), m_drive);
-    opBackButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(0)));
 
     // Shooter debug
     //opRightBumper.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(0)));
