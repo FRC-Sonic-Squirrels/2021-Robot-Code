@@ -155,7 +155,7 @@ public final class Constants {
         public static final int indexIntake = canId.canId8_indexo_intake_and_hopper;
         public static final int indexBelts = canId.canId10_indexo_belts;
         public static final int indexKicker = 11;
-        public static final double agitatorRPM = 150.0;
+        public static final double agitatorRPM = 250.0;
     }
   
     public static final class intakeConstants {
