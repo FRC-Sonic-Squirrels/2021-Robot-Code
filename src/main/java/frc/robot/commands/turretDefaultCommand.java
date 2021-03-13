@@ -36,9 +36,10 @@ public class turretDefaultCommand extends CommandBase {
       m_turret.setPercentOutput(0);
     }
 
-    if (opController.getStartButton() == true) {
-      m_turret.turretHome();
-    }
+    // The start button is used in RobotContainer.java
+    // if (opController.getStartButton() == true) {
+    //   m_turret.turretHome();
+    // }
   }
 
   @Override

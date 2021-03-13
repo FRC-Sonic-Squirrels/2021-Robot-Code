@@ -10,23 +10,23 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.cameraserver.CameraServer;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
-  public static boolean manualMode = false;
-  public static boolean turretHome = false;
 
   private RobotContainer m_robotContainer;
-  //public PowerDistributionPanel m_pdp = new PowerDistributionPanel();
+  public PowerDistributionPanel m_pdp = new PowerDistributionPanel(0);
   SendableChooser <String> chooser = new SendableChooser<>();
   public static double distance_meters = 0.0;
+
+  private double turretErrorDeg = 0.0;
 
 
   @Override
   public void robotInit() {
     m_robotContainer = new RobotContainer();
-  
+
+
     SmartDashboard.putNumber("distance ft", 0);
     //RobotContainer.m_limelight.setLEDMode(1);
     //CameraServer.getInstance().startAutomaticCapture();
@@ -50,13 +50,26 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
-    SmartDashboard.putBoolean("limelight on target", RobotContainer.limelightOnTarget);
-    if (RobotContainer.m_limelight.getTV() == 1 ) {
-      // limelight can see a target
-      distance_meters = RobotContainer.m_limelight.getDist(targetHeight_meters, limeLightHeight_meters , limeLightAngle_degrees);
-      // distance_meters = ( 2.5019 - 0.603250) / Math.tan( Math.toRadians(30 + RobotContainer.m_limelight.getTY()));
-      SmartDashboard.putNumber("distance ft", distance_meters * 3.28084);
+
+    if (RobotContainer.m_limelight != null) {
+      if (RobotContainer.m_limelight.getTV() == 1.0) {
+        turretErrorDeg = RobotContainer.m_limelight.getTX();
+        if (Math.abs(turretErrorDeg) < 0.75) {
+          RobotContainer.limelightOnTarget = true;
+        } else {
+          RobotContainer.limelightOnTarget = false;
+        }
+        distance_meters = RobotContainer.m_limelight.getDist(targetHeight_meters, limeLightHeight_meters , limeLightAngle_degrees);
+        SmartDashboard.putNumber("distance ft", distance_meters * 3.28084);
+      }
+      else {
+        RobotContainer.limelightOnTarget = false;
+      }
     }
+
+    SmartDashboard.putBoolean("limelight on target", RobotContainer.limelightOnTarget);
+    SmartDashboard.putNumber("turret Error Deg", turretErrorDeg);
+
   }
 
   @Override

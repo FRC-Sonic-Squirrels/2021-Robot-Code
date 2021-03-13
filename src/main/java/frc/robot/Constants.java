@@ -136,6 +136,8 @@ public final class Constants {
     }
 
     public static final class limeLightConstants {
+        //TODO: Check if this is correct Height
+        //Supposed to be correct Height: .582889
         public static final double limeLightHeight_meters = .68394;
         public static final double targetHeight_meters = 2.5019;
         public static final double limeLightAngle_degrees = 30;
@@ -153,11 +155,12 @@ public final class Constants {
         public static final int indexIntake = canId.canId8_indexo_intake_and_hopper;
         public static final int indexBelts = canId.canId10_indexo_belts;
         public static final int indexKicker = 11;
+        public static final double agitatorRPM = 150.0;
     }
   
     public static final class intakeConstants {
-        //Geared up 16:24 
-        public static final double intakeGearRatio = 16.0 / 24.0;
+        // Geared up 18:36 
+        public static final double intakeGearRatio =  18.0 / 36.0;
     }
 
     public static final class pwmConstants {

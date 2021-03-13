@@ -40,7 +40,7 @@ public class intakeSubsystem extends SubsystemBase {
     
     m_intake.configFactoryDefault();
     m_intake.setInverted(true);
-    m_intake.setNeutralMode(NeutralMode.Coast);
+    m_intake.setNeutralMode(NeutralMode.Coast); 
     m_intake.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, kPIDLoopIdx, kTimeoutMs);
 
     m_intake.config_kP(kPIDLoopIdx, 0.2);

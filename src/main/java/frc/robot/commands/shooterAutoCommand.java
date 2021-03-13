@@ -8,7 +8,7 @@
 package frc.robot.commands;
 
 import com.fearxzombie.limelight;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
@@ -24,11 +24,12 @@ public class shooterAutoCommand extends CommandBase {
   private shooterSubsystem m_shooter;
   private hoodSubsystem m_hood;
   private limelight m_limelight;
-  private boolean m_stationary;
-  private double steer_k = 0.02;
-  private double tv;
-  private double tx;
+  private double steer_kp = 0.03;
+  private double steer_ki = 0.05;
   private double limelightSteerCommand = 0;
+  private long startTimeNS = 0;
+  private long shooterReadyTimeNS = 0;
+  private double m_Integral = 0;
 
   /**
    * shooterAutoCommand class constructor
@@ -50,7 +51,8 @@ public class shooterAutoCommand extends CommandBase {
     m_shooter = shooter;
     m_hood = hood;
     m_limelight = ll_util;
-    m_stationary = stationary;
+    // m_stationary = stationary;
+    SmartDashboard.putNumber("Time to Shoot", 0.0);
   }
 
   public shooterAutoCommand(indexerSubsystem indexer, turretSubsystem turret, shooterSubsystem shooter, hoodSubsystem hood, limelight ll_util) {
@@ -61,63 +63,43 @@ public class shooterAutoCommand extends CommandBase {
   @Override
   public void initialize() {
     m_limelight.setLEDMode(0);
+    m_Integral = 0;
   }
 
   @Override
   public void execute() {
-    tv = m_limelight.getTV();
-    tx = m_limelight.getTX();
-
-    if (m_stationary && RobotContainer.limelightOnTarget) {
-      // we're stationary and we saw the target
-      // Trust that the target didn't move
-      m_turret.setPercentOutput(0);
-    } else {
-
-      if (tv != 1) {
-        // no target seen, use manual turret input
-
-        RobotContainer.limelightOnTarget = false;
-        limelightSteerCommand = 0;
-        double manualInput = RobotContainer.m_operatorController.getX(Hand.kLeft);
-        if (Math.abs(manualInput) > 0.05) {
-          m_turret.setPercentOutput(manualInput * 0.5);
-        } else {
-          // if we don't see a target stop the turret
-          m_turret.setPercentOutput(0);
-        }
-        return;
-      }
-
-      // m_shooter.setShooterRPM(m_shooter.getRPMforTY(m_limelight.getTY()));
-      m_shooter.setShooterRPM(m_shooter.getRPMforDistanceMeter(Robot.distance_meters));
-      m_hood.setPositionRotations(m_hood.angleToRotations(m_hood.getAngleforDistanceMeter(Robot.distance_meters)));
-      limelightSteerCommand = tx * steer_k;
-      m_turret.setPercentOutput(limelightSteerCommand);
-
-      if (Math.abs(m_limelight.getTX()) < 0.75) {
-        RobotContainer.limelightOnTarget = true;
-      } else {
-        RobotContainer.limelightOnTarget = false;
-      }
+    if (startTimeNS == 0) {
+      startTimeNS = System.nanoTime();
     }
 
+    m_shooter.setShooterRPM(m_shooter.getRPMforDistanceMeter(Robot.distance_meters));
+    m_hood.setPositionRotations(m_hood.angleToRotations(m_hood.getAngleforDistanceMeter(Robot.distance_meters)));
+    double tx_angleError = m_limelight.getTX();
+    if (Math.abs(tx_angleError) < 2.0) {
+      m_Integral += tx_angleError * (0.02);
+    }
+    limelightSteerCommand = (tx_angleError * steer_kp) + (m_Integral * steer_ki);
+    m_turret.setPercentOutput(limelightSteerCommand);
+
     // shoot!
-    // TODO: make sure hood is in correct position as well
-    if (m_shooter.isAtSpeed() == true && RobotContainer.limelightOnTarget == true) {
+    if ( m_shooter.isAtSpeed() && RobotContainer.limelightOnTarget && m_hood.isAtPos() ) {
       m_indexer.ejectOneBall();
+      if (shooterReadyTimeNS == 0)
+        shooterReadyTimeNS = System.nanoTime();
+        SmartDashboard.putNumber("Time to Shoot", (double) (shooterReadyTimeNS - startTimeNS) / 1_000_000_000);
     }
   }
   
   @Override
   public void end(boolean interrupted) {
+    // turn off motor and coast down.
+    m_shooter.setPercentOutput(0.0);
     m_indexer.stopIndexer();
-    m_shooter.setShooterRPM(0);
     m_turret.stop();
     m_hood.retractHood();
-    RobotContainer.limelightOnTarget = false;
     //m_limelight.setLEDMode(1);
-    m_stationary = false;
+    startTimeNS = 0;
+    shooterReadyTimeNS = 0;
   }
 
   @Override

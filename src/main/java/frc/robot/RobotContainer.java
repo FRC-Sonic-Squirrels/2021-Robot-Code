@@ -110,7 +110,15 @@ public class RobotContainer {
     driverRightBumper.whenPressed(new InstantCommand(() -> m_drive.toggleDriveInverted()));
     driverAButton.whenPressed(new InstantCommand(() -> m_drive.toggleForzaMode()));
     driverBButton.whenPressed(new InstantCommand(() -> m_drive.toggleSquaredInputs()));
-    driverXButton.whenPressed(new InstantCommand(() -> m_intake.toggleDynamicMode()));
+    
+    // driverXButton.whenPressed(new InstantCommand(() -> m_intake.toggleDynamicMode()));
+
+    // turn off indexo and limelight LED for drive challenges 
+    driverYButton.whenPressed(new ParallelCommandGroup(
+        new InstantCommand(() -> m_indexer.setStopMode()), 
+        new InstantCommand(() -> m_limelight.setLEDMode(1))));
+
+
 
     // Operator Controls
     // Left Joystick - manual turret control
@@ -128,9 +136,14 @@ public class RobotContainer {
     // Back Button - spool up the shooter
 
     opAButton.whenPressed(new InstantCommand(() -> m_intake.deployIntake()));
-    opBButton.whenPressed(new indexerStopCommand(m_indexer)); 
+    opBButton.whenPressed(new InstantCommand(() -> m_intake.toggleDynamicMode()));
+    //opBButton.whenPressed(new indexerStopCommand(m_indexer)); 
     opXButton.whileHeld(new indexerReverseCommand(m_indexer));
     opYButton.whenPressed(new InstantCommand(() -> m_indexer.setIntakeMode(), m_indexer));
+
+    // spin up flywheel to idle RPM
+    opLeftBumper.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(3000), m_shooter));
+    opBackButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(0)));
 
     opRightBumper.whileHeld(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_hood, m_limelight));
 
@@ -142,7 +155,7 @@ public class RobotContainer {
     opStartButton.whenPressed(() -> m_drive.resetOdometry(new Pose2d(0, 0, new Rotation2d(0))), m_drive);
 
     // Shooter debug
-    opRightBumper.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(0)));
+    //opRightBumper.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(0)));
     //opAButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(3700))); // 5 feet
     //opBButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(5000))); // 10 feet
     //opXButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(5400))); // 15 feet
@@ -505,7 +518,7 @@ public class RobotContainer {
     
     Command intakeStart = new SequentialCommandGroup(
       new InstantCommand(() -> m_intake.deployIntake()), 
-      new WaitCommand(0.75), 
+      new WaitCommand(0.7), 
       new InstantCommand(() -> m_indexer.setIntakeMode()),
       new InstantCommand(() -> m_intake.setDynamicSpeed(true))
     );

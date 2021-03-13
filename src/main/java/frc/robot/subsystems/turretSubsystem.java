@@ -46,7 +46,7 @@ public class turretSubsystem extends SubsystemBase {
     m_pidController = turretDrive.getPIDController();
 
     // Set PID coefficients. Currently default
-    m_pidController.setP(0.2);
+    m_pidController.setP(0.4);
     m_pidController.setI(1e-4);
     m_pidController.setD(0);
     m_pidController.setFF(0);
