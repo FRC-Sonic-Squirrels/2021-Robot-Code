@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -60,6 +61,7 @@ public class RobotContainer {
 
   // public so that it can get the right instance.
   public static final limelight m_limelight = new limelight("limelight-one");
+  public static final limelight m_limelightPowerCell = new limelight("limelight");
   private final turretSubsystem m_turret = new turretSubsystem();
   public final shooterSubsystem m_shooter = new shooterSubsystem();
   private static final indexerSubsystem m_indexer = new indexerSubsystem();
@@ -195,6 +197,12 @@ public class RobotContainer {
     }
     else if (autoName == "bounce") {
       return getAutonomousBounceCommand();
+    }
+    else if(autoName == "galacticSearchA"){
+      return getAutonomousGalacticSearchA();
+    }
+    else if(autoName == "galacticSearchB"){
+      return getAutonomousGalacticSearchB();
     }
     else if (autoName == "reda") {
       return getAutonomousRedACommand();
@@ -515,14 +523,6 @@ public class RobotContainer {
    * @return Command object
    */
   public Command getAutonomousRedACommand(){
-    
-    Command intakeStart = new SequentialCommandGroup(
-      new InstantCommand(() -> m_intake.deployIntake()), 
-      new WaitCommand(0.7), 
-      new InstantCommand(() -> m_indexer.setIntakeMode()),
-      new InstantCommand(() -> m_intake.setDynamicSpeed(true))
-    );
-
     //Changing start pose to 12 by 90 because of Orange 1 size
     Pose2d startPose = new Pose2d(inches2Meters(12), inches2Meters(90), new Rotation2d(0));
     m_drive.resetOdometry(startPose);
@@ -541,14 +541,59 @@ public class RobotContainer {
     );
 
     // Run path following command, then stop at end. Turn off Drive train
-    return new ParallelCommandGroup(
-      intakeStart, 
-      new SequentialCommandGroup(
-          ramseteCommand,
-          getAutonomousToTarget()
-          ));
+    return ramseteCommand;
   }
 
+  /**
+   * getAutonomousGalacicSearchA - Generate Auton Command used in Galactic Search A Challenge
+   * 
+   * @return Command object
+   */
+  public Command getAutonomousGalacticSearchA() {
+    Command RedA = getAutonomousRedACommand();
+    Command BlueA = getAutonomousBlueACommand();
+
+    Command intakeStart = new SequentialCommandGroup(
+      new InstantCommand(() -> m_intake.deployIntake()), 
+      new WaitCommand(0.7), 
+      new InstantCommand(() -> m_indexer.setIntakeMode()),
+      new InstantCommand(() -> m_intake.setDynamicSpeed(true))
+    );
+
+    //If it sees the powercell, we run Red A, if not, then we run Blue A
+    return new ConditionalCommand(new ParallelCommandGroup(intakeStart, RedA), new ParallelCommandGroup(intakeStart, BlueA), m_intake::seesPowerCell);
+  }
+
+  /**
+   * getAutonomousGalacicSearchB - Generate Auton Command used in Galactic Search B Challenge
+   * 
+   * @return Command object
+   */
+  public Command getAutonomousGalacticSearchB() {
+    Command RedB = getAutonomousRedBCommand();
+    Command BlueB = getAutonomousBlueBCommand();
+
+    Command intakeStart = new SequentialCommandGroup(
+      new InstantCommand(() -> m_intake.deployIntake()), 
+      new WaitCommand(0.7), 
+      new InstantCommand(() -> m_indexer.setIntakeMode()),
+      new InstantCommand(() -> m_intake.setDynamicSpeed(true))
+    );
+
+    if(m_limelightPowerCell.getTX() != 0.0){
+      return new ParallelCommandGroup(intakeStart, RedB);
+    }
+    else {
+      return new ParallelCommandGroup(intakeStart, BlueB);
+    }
+  }
+
+
+  /**
+   * getAutonomousToTarget - Generate Auton Command used in Autonomous Challenge
+   * 
+   * @return Command object
+   */
   public Command getAutonomousToTarget(){
     //Start of Shooting with Red A
     Pose2d startPose = new Pose2d(inches2Meters(320), inches2Meters(95), new Rotation2d(0));

@@ -33,9 +33,11 @@ public class Robot extends TimedRobot {
     chooser.addOption("AutoNav Barrel", "barrel");
     chooser.addOption("AutoNav Slalom", "slalom");
     chooser.addOption("AutoNav Bounce", "bounce");
+    chooser.addOption("Galactic Search A", "galacticSearchA");
+    chooser.addOption("Galactic Search B", "galacticSearchB");
     chooser.addOption("Galactic Search Red A", "reda");
-    chooser.addOption("Galactic Search Red B", "redb");
     chooser.addOption("Galactic Search Blue A", "bluea");
+    chooser.addOption("Galactic Search Red B", "redb");
     chooser.addOption("Galactic Search Blue B", "blueb");
     chooser.addOption("Go Forward 1", "forward1");
     chooser.addOption("Go Forward 2", "forward2");
@@ -122,4 +124,5 @@ public class Robot extends TimedRobot {
   @Override
   public void testPeriodic() {
   }
+
 }
