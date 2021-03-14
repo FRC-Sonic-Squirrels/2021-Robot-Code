@@ -67,7 +67,7 @@ public class indexerSubsystem extends SubsystemBase {
     m_hopperAgitator.restoreFactoryDefaults();
     agitatorController = m_hopperAgitator.getPIDController();
     m_agitator_encoder = m_hopperAgitator.getEncoder();
-    m_hopperAgitator.setInverted(true);
+    m_hopperAgitator.setInverted(false);
 
     indexBelts.configFactoryDefault();
     indexKicker.configFactoryDefault();
@@ -131,7 +131,7 @@ public class indexerSubsystem extends SubsystemBase {
     agitatorController.setI(0.0);
     agitatorController.setD(0);
     agitatorController.setFF(0.00012);
-    agitatorController.setIZone(10);
+    agitatorController.setIZone(0);
     agitatorController.setOutputRange(-0.8, 0.8);
 
   }
