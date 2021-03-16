@@ -146,13 +146,4 @@ public class intakeSubsystem extends SubsystemBase {
     intakeRelay.set(Relay.Value.kForward);
   }
 
-    /**
-   * seesPowerCell - Checks if we can see the powercell and returns a boolean based on that
-   * 
-   * @return Boolean
-   */
-  public boolean seesPowerCell(){
-    return RobotContainer.m_limelightPowerCell.getTX() != 0.0;
-  }
-
 }
