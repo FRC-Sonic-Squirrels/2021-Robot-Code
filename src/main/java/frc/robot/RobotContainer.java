@@ -586,12 +586,12 @@ public class RobotContainer {
       new InstantCommand(() -> m_intake.setDynamicSpeed(true))
     );
 
-    if(m_limelightPowerCell.getTX() != 0.0){
-      return new ParallelCommandGroup(intakeStart, RedB);
-    }
-    else {
-      return new ParallelCommandGroup(intakeStart, BlueB);
-    }
+    BooleanSupplier seesPowerCell = () -> (m_limelightPowerCell.getTV() == 1.0);
+
+    // If it sees the Power Cell, we run Red B, if not, then we run Blue B
+    return new ParallelCommandGroup(
+      intakeStart,
+      new ConditionalCommand(RedB, BlueB, seesPowerCell));
   }
 
 
