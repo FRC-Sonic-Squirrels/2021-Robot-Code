@@ -561,7 +561,7 @@ public class RobotContainer {
       new InstantCommand(() -> m_intake.setDynamicSpeed(true))
     );
 
-    BooleanSupplier seesPowerCell = () -> (m_limelightPowerCell.getTX() == 1.0);
+    BooleanSupplier seesPowerCell = () -> (m_limelightPowerCell.getTV() == 1.0);
 
     // If it sees the Power Cell, we run Red A, if not, then we run Blue A
     return new ConditionalCommand(

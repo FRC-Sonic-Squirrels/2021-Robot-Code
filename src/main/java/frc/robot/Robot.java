@@ -71,7 +71,7 @@ public class Robot extends TimedRobot {
 
     SmartDashboard.putBoolean("limelight on target", RobotContainer.limelightOnTarget);
     SmartDashboard.putNumber("turret Error Deg", turretErrorDeg);
-    SmartDashboard.putBoolean("Sees PowerCell", (RobotContainer.m_limelightPowerCell.getTX() == 1))
+    SmartDashboard.putBoolean("Sees PowerCell", (RobotContainer.m_limelightPowerCell.getTV() == 1.0));
 
   }
 
