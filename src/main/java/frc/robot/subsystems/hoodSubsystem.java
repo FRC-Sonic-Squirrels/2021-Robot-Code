@@ -87,16 +87,6 @@ public class hoodSubsystem extends SubsystemBase {
     // TODO: use limit switch!
     // TODO: configure limit switch to zero position
 
-    // Display PID values on SmartDashboard
-    SmartDashboard.putNumber("P Gain", kP);
-    SmartDashboard.putNumber("I Gain", kI);
-    SmartDashboard.putNumber("D Gain", kD);
-    SmartDashboard.putNumber("Feed Forward", kF);
-    SmartDashboard.putNumber("I Zone", kIz);
-    SmartDashboard.putNumber("Max Output", kMaxOutput);
-    SmartDashboard.putNumber("Min Output", kMinOutput);
-
-    // SmartDashboard.putNumber("Hood output", m_hood.getAppliedOutput());
 
     // Display initial set hood angle on SmartDashboard
     SmartDashboard.putNumber("Set Hood Angle", 46);

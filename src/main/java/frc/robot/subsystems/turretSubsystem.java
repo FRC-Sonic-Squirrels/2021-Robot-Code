@@ -125,7 +125,7 @@ public class turretSubsystem extends SubsystemBase {
   public void periodic() {
 
     double pos = m_encoder.getPosition();
-    SmartDashboard.putNumber("Turret Pos", pos);
+    // SmartDashboard.putNumber("Turret Pos", pos);
     SmartDashboard.putNumber("Turret Angle", pos * 360 / Constants.turretConstants.turretGearRatio);
   }
 }

@@ -564,10 +564,9 @@ public class RobotContainer {
     BooleanSupplier seesPowerCell = () -> (m_limelightPowerCell.getTV() == 1.0);
 
     // If it sees the Power Cell, we run Red A, if not, then we run Blue A
-    return new ConditionalCommand(
-        new ParallelCommandGroup(intakeStart, RedA),
-        new ParallelCommandGroup(intakeStart, BlueA),
-        seesPowerCell);
+    return new ParallelCommandGroup(
+      intakeStart,
+      new ConditionalCommand(RedA, BlueA, seesPowerCell));
 
   }
 

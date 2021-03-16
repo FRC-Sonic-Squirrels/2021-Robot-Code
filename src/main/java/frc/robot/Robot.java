@@ -6,6 +6,7 @@ import static frc.robot.Constants.limeLightConstants.limeLightAngle_degrees;
 
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -26,7 +27,8 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     m_robotContainer = new RobotContainer();
 
-
+    LiveWindow.disableAllTelemetry();
+    
     SmartDashboard.putNumber("distance ft", 0);
     //RobotContainer.m_limelight.setLEDMode(1);
     //CameraServer.getInstance().startAutomaticCapture();
