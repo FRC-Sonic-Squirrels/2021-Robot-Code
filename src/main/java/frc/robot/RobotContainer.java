@@ -12,6 +12,7 @@ import static frc.robot.Constants.AutoConstants.kRamseteZeta;
 import static frc.robot.Constants.driveConstants.kDriveKinematics;
 
 import java.util.List;
+import java.util.function.BooleanSupplier;
 
 import com.fearxzombie.limelight;
 import com.team2930.lib.util.geometry;
@@ -545,7 +546,7 @@ public class RobotContainer {
   }
 
   /**
-   * getAutonomousGalacicSearchA - Generate Auton Command used in Galactic Search A Challenge
+   * getAutonomousGalacticSearchA - Generate Auton Command used in Galactic Search A Challenge
    * 
    * @return Command object
    */
@@ -560,12 +561,18 @@ public class RobotContainer {
       new InstantCommand(() -> m_intake.setDynamicSpeed(true))
     );
 
-    //If it sees the powercell, we run Red A, if not, then we run Blue A
-    return new ConditionalCommand(new ParallelCommandGroup(intakeStart, RedA), new ParallelCommandGroup(intakeStart, BlueA), m_intake::seesPowerCell);
+    BooleanSupplier seesPowerCell = () -> (m_limelightPowerCell.getTX() == 1.0);
+
+    // If it sees the Power Cell, we run Red A, if not, then we run Blue A
+    return new ConditionalCommand(
+        new ParallelCommandGroup(intakeStart, RedA),
+        new ParallelCommandGroup(intakeStart, BlueA),
+        seesPowerCell);
+
   }
 
   /**
-   * getAutonomousGalacicSearchB - Generate Auton Command used in Galactic Search B Challenge
+   * getAutonomousGalacticSearchB - Generate Auton Command used in Galactic Search B Challenge
    * 
    * @return Command object
    */
