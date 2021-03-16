@@ -446,16 +446,17 @@ public class RobotContainer {
 
 
     List<Translation2d> blue_b_points = List.of(
-      new Translation2d( inches2Meters(180), inches2Meters(60)),
+      new Translation2d( inches2Meters(180), inches2Meters(66)),
       new Translation2d( inches2Meters(240), inches2Meters(120)),
-      new Translation2d( inches2Meters(300), inches2Meters(60))
+      new Translation2d( inches2Meters(270), inches2Meters(30))
+      new Translation2d( inches2Meters(315), inches2Meters(90))
       );
     
     // Start of Blue B program
     RamseteCommand ramseteCommand = createTrajectoryCommand(
       startPose,
       blue_b_points,
-      new Pose2d(inches2Meters(340), inches2Meters(90), new Rotation2d(0)), false, 1.0, 0.25
+      new Pose2d(inches2Meters(330), inches2Meters(90), new Rotation2d(20)), false, 1.0, 0.25
     );
 
     // Run path following command, then stop at end. Turn off Drive train
