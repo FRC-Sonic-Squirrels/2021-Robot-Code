@@ -448,7 +448,7 @@ public class RobotContainer {
     List<Translation2d> blue_b_points = List.of(
       new Translation2d( inches2Meters(180), inches2Meters(66)),
       new Translation2d( inches2Meters(240), inches2Meters(120)),
-      new Translation2d( inches2Meters(270), inches2Meters(30))
+      new Translation2d( inches2Meters(270), inches2Meters(30)),
       new Translation2d( inches2Meters(315), inches2Meters(90))
       );
     
