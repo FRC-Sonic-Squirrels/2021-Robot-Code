@@ -51,7 +51,8 @@ public class shooterSubsystem extends SubsystemBase {
 
   private double shooterDistances[][] = {
     {4.0, 3700},  // 4 feet 
-    {5.0, 3700},  // 5 feet
+    {5.0, 3850},  // 5 feet
+    {6.6, 3900},
     {11.0, 5000}, // 11 feet
     {15.0, 5400}, // 15 feet
     {20.0, 6000},  // 20 feet
@@ -89,7 +90,9 @@ public class shooterSubsystem extends SubsystemBase {
     talon_shooter1.configPeakOutputForward(kMaxOutput);
     talon_shooter1.configPeakOutputReverse(kMinOutput);
 
-    setShooterPID(0.12, 0.0005, 0.0, 0.048, 100);
+    //setShooterPID(0.12, 0.0005, 0.0, 0.048, 100);
+
+    setShooterPID(0.14, 0.0005, 0.0, 0.048, 100);
 
     // Build the linear Interpolator
     m_lt_feet = new linearInterpolator(shooterDistances);

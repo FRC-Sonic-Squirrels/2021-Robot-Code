@@ -41,9 +41,9 @@ public class indexerSubsystem extends SubsystemBase {
   private WPI_TalonFX indexKicker;
   private WPI_TalonFX indexBelts;
 
-  private CANSparkMax m_hopperAgitator = new CANSparkMax(indexConstants.hopperAgitator, MotorType.kBrushless);
+  private CANSparkMax m_hopperAgitator;
   private CANEncoder m_agitator_encoder;
-  private CANPIDController agitatorController = m_hopperAgitator.getPIDController();
+  private CANPIDController agitatorController;
   private DigitalInput Sensor1 = new DigitalInput(digitalIOConstants.dio0_indexerSensor1);
   private DigitalInput Sensor2 = new DigitalInput(digitalIOConstants.dio1_indexerSensor2);
   private DigitalInput Sensor3 = new DigitalInput(digitalIOConstants.dio2_indexerSensor3);
@@ -63,13 +63,15 @@ public class indexerSubsystem extends SubsystemBase {
     indexBelts = new WPI_TalonFX(canId.canId10_indexo_belts);
     indexKicker = new WPI_TalonFX(canId.canId11_indexo_kicker);
 
+    m_hopperAgitator = new CANSparkMax(indexConstants.hopperAgitator, MotorType.kBrushless);
+    m_hopperAgitator.restoreFactoryDefaults();
+    agitatorController = m_hopperAgitator.getPIDController();
     m_agitator_encoder = m_hopperAgitator.getEncoder();
-    
+    m_hopperAgitator.setInverted(false);
+
     indexBelts.configFactoryDefault();
     indexKicker.configFactoryDefault();
     indexIntake.configFactoryDefault();
-    m_hopperAgitator.restoreFactoryDefaults();
-    //m_hopperAgitator.setInverted(true);
 
     // Voltage limits, percent output is scaled to this new max
     indexBelts.configVoltageCompSaturation(11);
@@ -109,7 +111,6 @@ public class indexerSubsystem extends SubsystemBase {
     //indexBelts.configClosedloopRamp(0.1);
     //indexIntake.configClosedloopRamp(0.1);
 
-
     // Config PID values to control RPM
     indexBelts.config_kP(0, 0.15, 10);
     indexBelts.config_kI(0, 0.0, 10);
@@ -126,12 +127,12 @@ public class indexerSubsystem extends SubsystemBase {
     indexIntake.config_kD(0, 0.0, 10);
     indexIntake.config_kF(0, 0.0, 10);
 
-    agitatorController.setP(0.05);
+    agitatorController.setP(0.00003);
     agitatorController.setI(0.0);
     agitatorController.setD(0);
-    agitatorController.setFF(0);
-    agitatorController.setIZone(100);
-    agitatorController.setOutputRange(-0.2, 0.0);
+    agitatorController.setFF(0.00012);
+    agitatorController.setIZone(0);
+    agitatorController.setOutputRange(-0.8, 0.8);
 
   }
 
@@ -147,8 +148,8 @@ public class indexerSubsystem extends SubsystemBase {
     //SmartDashboard.putString("indexer state", mode.name());
     //SmartDashboard.putNumber("Belt RPM", indexBelts.getSelectedSensorVelocity() * 600 / 2048);
     //SmartDashboard.putNumber("Kicker RPM", indexKicker.getSelectedSensorVelocity() * 600 / 2048);
-
     //SmartDashboard.putNumber("Agitator RPM", m_agitator_encoder.getVelocity());
+
 
     if (mode == Mode.STOP) {
       stopIndexer();
@@ -240,8 +241,8 @@ public class indexerSubsystem extends SubsystemBase {
   }
 
   public void setAgitatorRPM(double rpm){
-    //Run Agitator in reverse (Invert makes it oscilate)
-    agitatorController.setReference(-rpm, ControlType.kVelocity);
+    agitatorController.setIAccum(0.0);
+    agitatorController.setReference(rpm, ControlType.kVelocity);
   }
 
   public void ejectOneBall() {
