@@ -11,12 +11,16 @@ import static frc.robot.Constants.AutoConstants.kRamseteB;
 import static frc.robot.Constants.AutoConstants.kRamseteZeta;
 import static frc.robot.Constants.driveConstants.kDriveKinematics;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
 import com.fearxzombie.limelight;
 import com.team2930.lib.util.geometry;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -29,6 +33,7 @@ import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -216,6 +221,9 @@ public class RobotContainer {
     }
     else if (autoName == "blueb") {
       return getAutonomousBlueBCommand();
+    }
+    else if (autoName == "blueb_pathweaver") {
+      return loadPathWeaverTrajectoryCommand("paths/GalacticSearchBlueB.wpilib.json");
     }
     else if (autoName == "forward1") {
       return autonCalibrationForward(1.0);
@@ -707,6 +715,48 @@ public class RobotContainer {
     return ramseteCommand;
   }
   
+  /**
+   * loadPathWeaverTrajectoryCommand - load a PathWeaver generated JSON file with
+   * a trajectory and convert that to a Ramsete Command.
+   * 
+   * PathWeaver places JSON files in src/main/deploy/paths which will
+   * automatically be placed on the roboRIO file system in
+   * /home/lvuser/deploy/paths and can be accessed using getDeployDirectory.
+   * 
+   * Filename should be a string in the form of "paths/RobotPath1.json"
+   * 
+   * @param filename
+   * @return RamsetCommand
+   */
+  public RamseteCommand loadPathWeaverTrajectoryCommand(String filename) {
+
+    long initialTime = System.nanoTime();
+    Trajectory trajectory = new Trajectory();
+    try {
+      Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(filename);
+      trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+    } catch (IOException ex) {
+      DriverStation.reportError("Unable to open trajectory: " + filename, ex.getStackTrace());
+    }
+
+    RamseteCommand ramseteCommand =
+        new RamseteCommand(trajectory, 
+            m_drive::getPose,
+            new RamseteController(kRamseteB, kRamseteZeta),
+            m_drive.getFeedforward(),
+            kDriveKinematics,
+            m_drive::getWheelSpeeds,
+            m_drive.getLeftPidController(),
+            m_drive.getRightPidController(),
+            m_drive::tankDriveVolts,
+            m_drive);
+
+    double dt = (System.nanoTime() - initialTime) / 1E6;
+    System.out.println("RamseteCommand from file " + filename + " generation time: " + dt + "ms");
+
+    // Run path following command, then stop at the end.
+    return ramseteCommand;
+  }
 
   // TODO: this should be in com/team2930/utils/units.java or a new Units.java under Utils
   public double inches2Meters(double i) {
