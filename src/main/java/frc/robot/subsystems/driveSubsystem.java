@@ -66,6 +66,8 @@ public class driveSubsystem extends SubsystemBase {
   // robot drives opposite of built in motor encoders
   private double invertEncoders = -1.0;
 
+  private boolean m_debug = false;
+
   // http://www.ctr-electronics.com/downloads/pdf/Falcon%20500%20User%20Guide.pdf
   // Peak power: 140A
   // Stall:      257A  (more than the battery can supply)
@@ -132,27 +134,30 @@ public class driveSubsystem extends SubsystemBase {
     double rightDist = getRightPosition();
     m_odometry.update(Rotation2d.fromDegrees(getHeading()), leftDist, rightDist);
 
-    // log drive train and data to SmartDashboard
-    /* Display 9-axis Heading (requires magnetometer calibration to be useful) */
-    SmartDashboard.putNumber("IMU_FusedHeading", m_gyro.getFusedHeading());
-    // NOTE: call getFusedHeading(FusionStatus) to detect gyro errors
+    if (m_debug) {
+      // log drive train and data to SmartDashboard
+      /* Display 9-axis Heading (requires magnetometer calibration to be useful) */
+      SmartDashboard.putNumber("IMU_FusedHeading", m_gyro.getFusedHeading());
+      // NOTE: call getFusedHeading(FusionStatus) to detect gyro errors
 
-    // report the wheel speed, position, and pose
-    SmartDashboard.putNumber("left_wheel_Velocity", getLeftVelocity());
-    SmartDashboard.putNumber("right_wheel_Velocity", getRightVelocity());
-    SmartDashboard.putNumber("left_wheel_Distance", leftDist);
-    SmartDashboard.putNumber("right_wheel_Distance", rightDist);
-    SmartDashboard.putNumber("left volts", falcon1_leftLead.getMotorOutputVoltage());
-    SmartDashboard.putNumber("right volts", falcon3_rightLead.getMotorOutputVoltage());
+      // report the wheel speed, position, and pose
+      SmartDashboard.putNumber("left_wheel_Velocity", getLeftVelocity());
+      SmartDashboard.putNumber("right_wheel_Velocity", getRightVelocity());
+      SmartDashboard.putNumber("left_wheel_Distance", leftDist);
+      SmartDashboard.putNumber("right_wheel_Distance", rightDist);
+      SmartDashboard.putNumber("left volts", falcon1_leftLead.getMotorOutputVoltage());
+      SmartDashboard.putNumber("right volts", falcon3_rightLead.getMotorOutputVoltage());
 
-    Pose2d currentPose = m_odometry.getPoseMeters();
-    SmartDashboard.putNumber("pose_x",currentPose.getTranslation().getX());
-    SmartDashboard.putNumber("pose_y",currentPose.getTranslation().getY());
-    SmartDashboard.putNumber("pose_theta", currentPose.getRotation().getDegrees());
+      Pose2d currentPose = m_odometry.getPoseMeters();
+      SmartDashboard.putNumber("pose_x", currentPose.getTranslation().getX());
+      SmartDashboard.putNumber("pose_y", currentPose.getTranslation().getY());
+      SmartDashboard.putNumber("pose_theta", currentPose.getRotation().getDegrees());
 
-    // from https://github.com/CrossTheRoadElec/Phoenix-Examples-Languages/blob/master/Java%20General/DriveStraight_Pigeon/src/main/java/frc/robot/Robot.java
-		boolean angleIsGood = (m_gyro.getState() == PigeonIMU.PigeonState.Ready) ? true : false;
-    SmartDashboard.putBoolean("DEBUG pigeon angle is good", angleIsGood);
+      // from
+      // https://github.com/CrossTheRoadElec/Phoenix-Examples-Languages/blob/master/Java%20General/DriveStraight_Pigeon/src/main/java/frc/robot/Robot.java
+      boolean angleIsGood = (m_gyro.getState() == PigeonIMU.PigeonState.Ready) ? true : false;
+      SmartDashboard.putBoolean("DEBUG pigeon angle is good", angleIsGood);
+    }
   }
   
   /**

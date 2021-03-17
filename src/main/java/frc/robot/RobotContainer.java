@@ -12,6 +12,7 @@ import static frc.robot.Constants.AutoConstants.kRamseteZeta;
 import static frc.robot.Constants.driveConstants.kDriveKinematics;
 
 import java.util.List;
+import java.util.function.BooleanSupplier;
 
 import com.fearxzombie.limelight;
 import com.team2930.lib.util.geometry;
@@ -31,6 +32,7 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -60,6 +62,7 @@ public class RobotContainer {
 
   // public so that it can get the right instance.
   public static final limelight m_limelight = new limelight("limelight-one");
+  public static final limelight m_limelightPowerCell = new limelight("limelight");
   private final turretSubsystem m_turret = new turretSubsystem();
   public final shooterSubsystem m_shooter = new shooterSubsystem();
   private static final indexerSubsystem m_indexer = new indexerSubsystem();
@@ -195,6 +198,12 @@ public class RobotContainer {
     }
     else if (autoName == "bounce") {
       return getAutonomousBounceCommand();
+    }
+    else if(autoName == "galacticSearchA"){
+      return getAutonomousGalacticSearchA();
+    }
+    else if(autoName == "galacticSearchB"){
+      return getAutonomousGalacticSearchB();
     }
     else if (autoName == "reda") {
       return getAutonomousRedACommand();
@@ -437,16 +446,17 @@ public class RobotContainer {
 
 
     List<Translation2d> blue_b_points = List.of(
-      new Translation2d( inches2Meters(180), inches2Meters(60)),
+      new Translation2d( inches2Meters(180), inches2Meters(66)),
       new Translation2d( inches2Meters(240), inches2Meters(120)),
-      new Translation2d( inches2Meters(300), inches2Meters(60))
+      new Translation2d( inches2Meters(270), inches2Meters(30)),
+      new Translation2d( inches2Meters(315), inches2Meters(90))
       );
     
     // Start of Blue B program
     RamseteCommand ramseteCommand = createTrajectoryCommand(
       startPose,
       blue_b_points,
-      new Pose2d(inches2Meters(340), inches2Meters(90), new Rotation2d(0)), false, 1.0, 0.25
+      new Pose2d(inches2Meters(330), inches2Meters(90), new Rotation2d(20)), false, 1.0, 0.25
     );
 
     // Run path following command, then stop at end. Turn off Drive train
@@ -515,14 +525,6 @@ public class RobotContainer {
    * @return Command object
    */
   public Command getAutonomousRedACommand(){
-    
-    Command intakeStart = new SequentialCommandGroup(
-      new InstantCommand(() -> m_intake.deployIntake()), 
-      new WaitCommand(0.7), 
-      new InstantCommand(() -> m_indexer.setIntakeMode()),
-      new InstantCommand(() -> m_intake.setDynamicSpeed(true))
-    );
-
     //Changing start pose to 12 by 90 because of Orange 1 size
     Pose2d startPose = new Pose2d(inches2Meters(12), inches2Meters(90), new Rotation2d(0));
     m_drive.resetOdometry(startPose);
@@ -541,14 +543,64 @@ public class RobotContainer {
     );
 
     // Run path following command, then stop at end. Turn off Drive train
-    return new ParallelCommandGroup(
-      intakeStart, 
-      new SequentialCommandGroup(
-          ramseteCommand,
-          getAutonomousToTarget()
-          ));
+    return ramseteCommand;
   }
 
+  /**
+   * getAutonomousGalacticSearchA - Generate Auton Command used in Galactic Search A Challenge
+   * 
+   * @return Command object
+   */
+  public Command getAutonomousGalacticSearchA() {
+    Command RedA = getAutonomousRedACommand();
+    Command BlueA = getAutonomousBlueACommand();
+
+    Command intakeStart = new SequentialCommandGroup(
+      new InstantCommand(() -> m_intake.deployIntake()), 
+      new WaitCommand(0.7), 
+      new InstantCommand(() -> m_indexer.setIntakeMode()),
+      new InstantCommand(() -> m_intake.setDynamicSpeed(true))
+    );
+
+    BooleanSupplier seesPowerCell = () -> (m_limelightPowerCell.getTV() == 1.0);
+
+    // If it sees the Power Cell, we run Red A, if not, then we run Blue A
+    return new ParallelCommandGroup(
+      intakeStart,
+      new ConditionalCommand(RedA, BlueA, seesPowerCell));
+
+  }
+
+  /**
+   * getAutonomousGalacticSearchB - Generate Auton Command used in Galactic Search B Challenge
+   * 
+   * @return Command object
+   */
+  public Command getAutonomousGalacticSearchB() {
+    Command RedB = getAutonomousRedBCommand();
+    Command BlueB = getAutonomousBlueBCommand();
+
+    Command intakeStart = new SequentialCommandGroup(
+      new InstantCommand(() -> m_intake.deployIntake()), 
+      new WaitCommand(0.7), 
+      new InstantCommand(() -> m_indexer.setIntakeMode()),
+      new InstantCommand(() -> m_intake.setDynamicSpeed(true))
+    );
+
+    BooleanSupplier seesPowerCell = () -> (m_limelightPowerCell.getTV() == 1.0);
+
+    // If it sees the Power Cell, we run Red B, if not, then we run Blue B
+    return new ParallelCommandGroup(
+      intakeStart,
+      new ConditionalCommand(RedB, BlueB, seesPowerCell));
+  }
+
+
+  /**
+   * getAutonomousToTarget - Generate Auton Command used in Autonomous Challenge
+   * 
+   * @return Command object
+   */
   public Command getAutonomousToTarget(){
     //Start of Shooting with Red A
     Pose2d startPose = new Pose2d(inches2Meters(320), inches2Meters(95), new Rotation2d(0));
