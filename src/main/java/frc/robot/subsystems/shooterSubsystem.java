@@ -137,10 +137,10 @@ public class shooterSubsystem extends SubsystemBase {
 
     talon_shooter1.set(ControlMode.Velocity, setPoint * RPMtoTicks);
 
-    //SmartDashboard.putNumber("RPM", m_currentRPM);
+    SmartDashboard.putNumber("RPM", m_currentRPM);
     //SmartDashboard.putNumber("RPM set point", setPoint);
-    //SmartDashboard.putNumber("RPM error", m_error);
-    //SmartDashboard.putBoolean("isAtSpeed", m_atSpeed);
+    SmartDashboard.putNumber("RPM error", m_error);
+    SmartDashboard.putBoolean("isAtSpeed", m_atSpeed);
     //SmartDashboard.putNumber("Shooter Voltage", talon_shooter1.getMotorOutputVoltage());
   }
 

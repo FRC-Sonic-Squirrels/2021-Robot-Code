@@ -143,7 +143,6 @@ public class indexerSubsystem extends SubsystemBase {
     boolean ballStaged = ballStaged();
 
     //SmartDashboard.putNumber("Belt Amp", indexerBelts.getcurrent());
-
     //SmartDashboard.putNumber("ball count", ballCount);
     //SmartDashboard.putString("indexer state", mode.name());
     //SmartDashboard.putNumber("Belt RPM", indexBelts.getSelectedSensorVelocity() * 600 / 2048);
