@@ -144,13 +144,12 @@ public class indexerSubsystem extends SubsystemBase {
 
     //SmartDashboard.putNumber("Belt Amp", indexerBelts.getcurrent());
 
-    SmartDashboard.putNumber("ball count", ballCount);
-    SmartDashboard.putString("indexer state", mode.name());
-    SmartDashboard.putNumber("Belt RPM", indexBelts.getSelectedSensorVelocity() * 600 / 2048);
-    SmartDashboard.putNumber("Kicker RPM", indexKicker.getSelectedSensorVelocity() * 600 / 2048);
+    //SmartDashboard.putNumber("ball count", ballCount);
+    //SmartDashboard.putString("indexer state", mode.name());
+    //SmartDashboard.putNumber("Belt RPM", indexBelts.getSelectedSensorVelocity() * 600 / 2048);
+    //SmartDashboard.putNumber("Kicker RPM", indexKicker.getSelectedSensorVelocity() * 600 / 2048);
+    //SmartDashboard.putNumber("Agitator RPM", m_agitator_encoder.getVelocity());
 
-    SmartDashboard.putNumber("Agitator RPM", m_agitator_encoder.getVelocity());
-    SmartDashboard.putNumber("Agitator Current", m_hopperAgitator.getOutputCurrent());
 
     if (mode == Mode.STOP) {
       stopIndexer();

@@ -28,7 +28,7 @@ public class driveCommand extends CommandBase {
 
   @Override
   public void initialize() {
-    SmartDashboard.putNumber("Drive Multiplier", speedMultiplier);
+    //SmartDashboard.putNumber("Drive Multiplier", speedMultiplier);
   }
 
   @Override
@@ -37,10 +37,10 @@ public class driveCommand extends CommandBase {
     double speed = 0;
     double rotation = 0;
 
-    double m = SmartDashboard.getNumber("Drive Multiplier", 0);
-    if (m != speedMultiplier) {
-      speedMultiplier = Math.min(Math.abs(m), 1.0);
-    }
+    //double m = SmartDashboard.getNumber("Drive Multiplier", 0);
+    //if (m != speedMultiplier) {
+    //  speedMultiplier = Math.min(Math.abs(m), 1.0);
+    //}
 
     if (m_drive.getForzaModeEnabled()) {
       // right trigger forward, left trigger for reverse
@@ -76,10 +76,10 @@ public class driveCommand extends CommandBase {
 
     m_drive.arcadeDrive(speed, rotation);
 
-    SmartDashboard.putBoolean("Drive Inverted", m_drive.getDriveInvert());
-    SmartDashboard.putBoolean("Drive Forza Mode", m_drive.getForzaModeEnabled());
-    SmartDashboard.putBoolean("Drive Square Inputs", m_drive.getSquaredInputs());
-    SmartDashboard.putNumber("Drive Multiplier", speedMultiplier);
+    //SmartDashboard.putBoolean("Drive Inverted", m_drive.getDriveInvert());
+    //SmartDashboard.putBoolean("Drive Forza Mode", m_drive.getForzaModeEnabled());
+    //SmartDashboard.putBoolean("Drive Square Inputs", m_drive.getSquaredInputs());
+    //SmartDashboard.putNumber("Drive Multiplier", speedMultiplier);
   }
 
   @Override

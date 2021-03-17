@@ -15,6 +15,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 import frc.robot.Constants;
 import edu.wpi.first.wpilibj.Relay;
 import static frc.robot.Constants.canId;
@@ -144,4 +145,5 @@ public class intakeSubsystem extends SubsystemBase {
     setIntakeMotorRPM(0.0);
     intakeRelay.set(Relay.Value.kForward);
   }
+
 }

@@ -6,6 +6,7 @@ import static frc.robot.Constants.limeLightConstants.limeLightAngle_degrees;
 
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -26,16 +27,19 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     m_robotContainer = new RobotContainer();
 
-
+    LiveWindow.disableAllTelemetry();
+    
     SmartDashboard.putNumber("distance ft", 0);
     //RobotContainer.m_limelight.setLEDMode(1);
     //CameraServer.getInstance().startAutomaticCapture();
     chooser.addOption("AutoNav Barrel", "barrel");
     chooser.addOption("AutoNav Slalom", "slalom");
     chooser.addOption("AutoNav Bounce", "bounce");
+    chooser.addOption("Galactic Search A", "galacticSearchA");
+    chooser.addOption("Galactic Search B", "galacticSearchB");
     chooser.addOption("Galactic Search Red A", "reda");
-    chooser.addOption("Galactic Search Red B", "redb");
     chooser.addOption("Galactic Search Blue A", "bluea");
+    chooser.addOption("Galactic Search Red B", "redb");
     chooser.addOption("Galactic Search Blue B", "blueb");
     chooser.addOption("Go Forward 1", "forward1");
     chooser.addOption("Go Forward 2", "forward2");
@@ -69,6 +73,7 @@ public class Robot extends TimedRobot {
 
     SmartDashboard.putBoolean("limelight on target", RobotContainer.limelightOnTarget);
     SmartDashboard.putNumber("turret Error Deg", turretErrorDeg);
+    SmartDashboard.putBoolean("Sees PowerCell", (RobotContainer.m_limelightPowerCell.getTV() == 1.0));
 
   }
 
@@ -122,4 +127,5 @@ public class Robot extends TimedRobot {
   @Override
   public void testPeriodic() {
   }
+
 }

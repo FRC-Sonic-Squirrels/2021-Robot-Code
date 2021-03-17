@@ -103,10 +103,10 @@ public class shooterSubsystem extends SubsystemBase {
     talon_shooter1.set(ControlMode.Velocity, 0);
     m_rateLimiter = new SlewRateLimiter(m_rate_RPMpersecond, m_desiredRPM);
 
-    SmartDashboard.putNumber("RPM set point", m_desiredRPM);
-    SmartDashboard.putNumber("RPM", 0);
-    SmartDashboard.putNumber("RPM error", 0);
-    SmartDashboard.putNumber("Shooter Voltage", 0.0);
+    //SmartDashboard.putNumber("RPM set point", m_desiredRPM);
+    //SmartDashboard.putNumber("RPM", 0);
+    //SmartDashboard.putNumber("RPM error", 0);
+    //SmartDashboard.putNumber("Shooter Voltage", 0.0);
 
   }
 
@@ -137,11 +137,11 @@ public class shooterSubsystem extends SubsystemBase {
 
     talon_shooter1.set(ControlMode.Velocity, setPoint * RPMtoTicks);
 
-    SmartDashboard.putNumber("RPM", m_currentRPM);
-    SmartDashboard.putNumber("RPM set point", setPoint);
-    SmartDashboard.putNumber("RPM error", m_error);
-    SmartDashboard.putBoolean("isAtSpeed", m_atSpeed);
-    SmartDashboard.putNumber("Shooter Voltage", talon_shooter1.getMotorOutputVoltage());
+    //SmartDashboard.putNumber("RPM", m_currentRPM);
+    //SmartDashboard.putNumber("RPM set point", setPoint);
+    //SmartDashboard.putNumber("RPM error", m_error);
+    //SmartDashboard.putBoolean("isAtSpeed", m_atSpeed);
+    //SmartDashboard.putNumber("Shooter Voltage", talon_shooter1.getMotorOutputVoltage());
   }
 
   /**
