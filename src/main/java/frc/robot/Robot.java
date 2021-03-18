@@ -41,6 +41,7 @@ public class Robot extends TimedRobot {
     chooser.addOption("Galactic Search Blue A", "bluea");
     chooser.addOption("Galactic Search Red B", "redb");
     chooser.addOption("Galactic Search Blue B", "blueb");
+    chooser.addOption("Galactic Search Blue B PathWeaver", "blueb_pathweaver");
     chooser.addOption("Go Forward 1", "forward1");
     chooser.addOption("Go Forward 2", "forward2");
     chooser.addOption("Go Forward 3", "forward3");

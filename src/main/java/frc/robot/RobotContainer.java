@@ -223,7 +223,7 @@ public class RobotContainer {
       return getAutonomousBlueBCommand();
     }
     else if (autoName == "blueb_pathweaver") {
-      return loadPathWeaverTrajectoryCommand("paths/GalacticSearchBlueB.wpilib.json");
+      return loadPathWeaverTrajectoryCommand("paths/output/GalacticSearchBlueB.wpilib.json");
     }
     else if (autoName == "forward1") {
       return autonCalibrationForward(1.0);
@@ -728,7 +728,7 @@ public class RobotContainer {
    * @param filename
    * @return RamsetCommand
    */
-  public RamseteCommand loadPathWeaverTrajectoryCommand(String filename) {
+  public Command loadPathWeaverTrajectoryCommand(String filename) {
 
     long initialTime = System.nanoTime();
     Trajectory trajectory = new Trajectory();
@@ -737,6 +737,7 @@ public class RobotContainer {
       trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
     } catch (IOException ex) {
       DriverStation.reportError("Unable to open trajectory: " + filename, ex.getStackTrace());
+      System.out.println("Unable to read from file " + filename );
     }
 
     RamseteCommand ramseteCommand =
