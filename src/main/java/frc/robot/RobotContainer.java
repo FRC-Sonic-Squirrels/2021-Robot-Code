@@ -479,7 +479,7 @@ public class RobotContainer {
   public Command getAutonomousBlueACommand(){
     //Changing start pose to 12 by 90 because of Orange 1 size
     Pose2d startPose = new Pose2d(inches2Meters(12), inches2Meters(90), new Rotation2d(0));
-    m_drive.resetOdometry(startPose);
+    //m_drive.resetOdometry(startPose);
 
 
     List<Translation2d> blue_a_points = List.of(
@@ -505,10 +505,9 @@ public class RobotContainer {
    * @return Command object
    */
   public Command getAutonomousRedBCommand(){
-      //Changing start pose to 12 by 90 because of Orange 1 size
+    // Changing start pose to 12 by 90 because of Orange 1 size
     Pose2d startPose = new Pose2d(inches2Meters(12), inches2Meters(90), new Rotation2d(0));
-    m_drive.resetOdometry(startPose);
-
+    // m_drive.resetOdometry(startPose);
 
     List<Translation2d> red_b_points = List.of(
       new Translation2d( inches2Meters(90), inches2Meters(120)),
@@ -535,7 +534,7 @@ public class RobotContainer {
   public Command getAutonomousRedACommand(){
     //Changing start pose to 12 by 90 because of Orange 1 size
     Pose2d startPose = new Pose2d(inches2Meters(12), inches2Meters(90), new Rotation2d(0));
-    m_drive.resetOdometry(startPose);
+    // m_drive.resetOdometry(startPose);
 
     List<Translation2d> red_a_points = List.of(
       new Translation2d( inches2Meters(90), inches2Meters(85)),
@@ -711,6 +710,9 @@ public class RobotContainer {
     double dt = (System.nanoTime() - initialTime) / 1E6;
     System.out.println("RamseteCommand generation time: " + dt + "ms");
 
+    // Reset odometry to the starting pose of the trajectory.
+    m_drive.resetOdometry(trajectory.getInitialPose());
+
     // Run path following command, then stop at the end.
     return ramseteCommand;
   }
@@ -754,6 +756,9 @@ public class RobotContainer {
 
     double dt = (System.nanoTime() - initialTime) / 1E6;
     System.out.println("RamseteCommand from file " + filename + " generation time: " + dt + "ms");
+
+    // Reset odometry to the starting pose of the trajectory.
+    m_drive.resetOdometry(trajectory.getInitialPose());
 
     // Run path following command, then stop at the end.
     return ramseteCommand;
