@@ -123,7 +123,8 @@ public class RobotContainer {
 
     // turn off indexo and limelight LED for drive challenges 
     driverYButton.whenPressed(new ParallelCommandGroup(
-        new InstantCommand(() -> m_indexer.setStopMode()), 
+        new InstantCommand(() -> m_indexer.setStopMode()),
+        new InstantCommand(() -> m_limelightPowerCell.setLEDMode(1)), 
         new InstantCommand(() -> m_limelight.setLEDMode(1))));
 
 
@@ -224,6 +225,10 @@ public class RobotContainer {
     }
     else if (autoName == "blueb_pathweaver") {
       return loadPathWeaverTrajectoryCommand("paths/output/GalacticSearchBlueB.wpilib.json");
+    }
+    else if (autoName == "blueb_pathweaver2") {
+      return new ParallelCommandGroup(intakeStartCommand(),
+                loadPathWeaverTrajectoryCommand("paths/BlueB.wpilib.json"));
     }
     else if (autoName == "forward1") {
       return autonCalibrationForward(1.0);
@@ -553,6 +558,15 @@ public class RobotContainer {
     return ramseteCommand;
   }
 
+  public Command intakeStartCommand() {
+    return new SequentialCommandGroup(
+      new InstantCommand(() -> m_intake.deployIntake()), 
+      new WaitCommand(0.7), 
+      new InstantCommand(() -> m_indexer.setIntakeMode()),
+      new InstantCommand(() -> m_intake.setDynamicSpeed(true))
+    );
+  }
+
   /**
    * getAutonomousGalacticSearchA - Generate Auton Command used in Galactic Search A Challenge
    * 
@@ -562,12 +576,7 @@ public class RobotContainer {
     Command RedA = getAutonomousRedACommand();
     Command BlueA = getAutonomousBlueACommand();
 
-    Command intakeStart = new SequentialCommandGroup(
-      new InstantCommand(() -> m_intake.deployIntake()), 
-      new WaitCommand(0.7), 
-      new InstantCommand(() -> m_indexer.setIntakeMode()),
-      new InstantCommand(() -> m_intake.setDynamicSpeed(true))
-    );
+    Command intakeStart = intakeStartCommand();
 
     BooleanSupplier seesPowerCell = () -> (m_limelightPowerCell.getTV() == 1.0);
 
