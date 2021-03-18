@@ -87,8 +87,8 @@ public class driveSubsystem extends SubsystemBase {
     // Current limiting
     setCurrentLimit(m_limit);
 
-    // Voltage limits
-    setVoltageLimit(11);
+    // Voltage limits - WARNING: this does not play nice with autonomous driving
+    //setVoltageLimit(11);
 
     // set Ramp up speed, time in seconds (smaller is more responsive, 0 disables)
     // configOpenLoopRampRate(0.25);
