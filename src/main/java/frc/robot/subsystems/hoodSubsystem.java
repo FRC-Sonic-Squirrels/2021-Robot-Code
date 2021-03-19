@@ -196,6 +196,16 @@ public class hoodSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Hood Position Deg",  rotationsToAngle(m_currentHoodPosition));
     SmartDashboard.putNumber("Hood Position Error Pos", m_hoodErrorRotations);
     SmartDashboard.putBoolean("Hood at Position", isAtPos());
+
+    /**
+     * The get() method can be used on a CANDigitalInput object to read the state of the switch.
+     * 
+     * In this example, the polarity of the switches are set to normally closed. In this case,
+     * get() will return true if the switch is pressed. It will also return true if you do not 
+     * have a switch connected. get() will return false when the switch is released.
+     */
+    SmartDashboard.putBoolean("Forward Limit Switch", m_forwardLimit.get());
+    SmartDashboard.putBoolean("Reverse Limit Switch", m_reverseLimit.get());
   }
 
   /**
