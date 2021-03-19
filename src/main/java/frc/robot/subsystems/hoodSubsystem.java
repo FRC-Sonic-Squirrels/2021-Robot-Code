@@ -206,6 +206,12 @@ public class hoodSubsystem extends SubsystemBase {
      */
     SmartDashboard.putBoolean("Forward Limit Switch", m_forwardLimit.get());
     SmartDashboard.putBoolean("Reverse Limit Switch", m_reverseLimit.get());
+
+    // If limit switch is triggered, zero the hood encoder.
+    if(!m_forwardLimit.get()) {
+      SmartDashboard.putNumber("Set Hood Angle", 46);
+    }
+
   }
 
   /**
