@@ -17,6 +17,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.ControlType;
 import com.team2930.lib.util.linearInterpolator;
+import com.revrobotics.CANDigitalInput.LimitSwitchPolarity;
+import com.revrobotics.CANDigitalInput;
 
 public class hoodSubsystem extends SubsystemBase {
 
@@ -36,6 +38,8 @@ public class hoodSubsystem extends SubsystemBase {
   private double m_hoodErrorRotations;
   private double m_currentHoodPosition;
   private boolean m_tune_PID = false;
+  private CANDigitalInput m_forwardLimit;
+  private CANDigitalInput m_reverseLimit;
 
   XboxController operatorController = RobotContainer.m_operatorController;
 
@@ -93,6 +97,31 @@ public class hoodSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Set Hood Angle", 46);
     SmartDashboard.putNumber("Hood Position Deg", rotationsToAngle(m_encoder.getPosition()));
     SmartDashboard.putNumber("Hood Position Error Pos", 0.0);
+
+    /**
+     * A CANDigitalInput object is constructed using the getForwardLimitSwitch() or
+     * getReverseLimitSwitch() method on an existing CANSparkMax object, depending
+     * on which direction you would like to limit
+     * 
+     * Limit switches can be configured to one of two polarities:
+     *  com.revrobotics.CANDigitalInput.LimitSwitchPolarity.kNormallyOpen
+     *  com.revrobotics.CANDigitalInput.LimitSwitchPolarity.kNormallyClosed
+     */
+    m_forwardLimit = m_hood.getForwardLimitSwitch(LimitSwitchPolarity.kNormallyClosed);
+    m_reverseLimit = m_hood.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyClosed);
+
+    /**
+     * Limit switches are enabled by default when they are intialized. They can be disabled
+     * by calling enableLimitSwitch(false) on a CANDigitalInput object
+     * 
+     * Limit switches can be reenabled by calling enableLimitSwitch(true)
+     * 
+     * The isLimitSwitchEnabled() method can be used to check if the limit switch is enabled
+     */
+    m_forwardLimit.enableLimitSwitch(false);
+    m_reverseLimit.enableLimitSwitch(false);
+    SmartDashboard.putBoolean("Forward Limit Enabled", m_forwardLimit.isLimitSwitchEnabled());
+    SmartDashboard.putBoolean("Reverse Limit Enabled", m_reverseLimit.isLimitSwitchEnabled());
 
   }
 
