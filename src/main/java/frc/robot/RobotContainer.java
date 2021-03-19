@@ -30,6 +30,8 @@ import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
@@ -46,7 +48,6 @@ import frc.robot.Constants.driveConstants;
 import frc.robot.commands.driveCommand;
 import frc.robot.commands.indexerDefaultCommand;
 import frc.robot.commands.indexerReverseCommand;
-import frc.robot.commands.indexerStopCommand;
 import frc.robot.commands.shooterAutoCommand;
 import frc.robot.commands.turretDefaultCommand;
 import frc.robot.subsystems.driveSubsystem;
@@ -58,8 +59,7 @@ import frc.robot.subsystems.turretSubsystem;
 
 public class RobotContainer {
 
-  // Position of Power Port, needs to be set in each auton routine
-  public Translation2d powerPortLocation = new Translation2d(geometry.feet2Meters(10), 0);
+  SendableChooser<Command> chooser = new SendableChooser<>();
 
   // Subsystems
   // All other subsystems should be private
@@ -82,6 +82,26 @@ public class RobotContainer {
     m_drive.setDefaultCommand(new driveCommand(m_drive));
     m_indexer.setDefaultCommand(new indexerDefaultCommand(m_indexer));
     m_turret.setDefaultCommand(new turretDefaultCommand(m_turret));
+
+    chooser.addOption("AutoNav Barrel", getAutonomousBarrelCommand());
+    chooser.addOption("AutoNav Slalom", getAutonomousSlalomCommand());
+    chooser.addOption("AutoNav Bounce", getAutonomousBounceCommand());
+    chooser.addOption("Galactic Search A", getAutonomousGalacticSearchA());
+    chooser.addOption("Galactic Search B", getAutonomousGalacticSearchB());
+    chooser.addOption("Galactic Search Red A", getAutonomousRedACommand());
+    chooser.addOption("Galactic Search Blue A", getAutonomousBlueBCommand());
+    chooser.addOption("Galactic Search Red B", getAutonomousRedBCommand());
+    chooser.addOption("Galactic Search Blue B", getAutonomousBlueBCommand());
+    chooser.addOption("Galactic Search Blue B PathWeaver", loadPathWeaverTrajectoryCommand("paths/output/GalacticSearchBlueB.wpilib.json"));
+    chooser.addOption("Go Forward 1", autonCalibrationForward(1.0));
+    chooser.addOption("Go Forward 2", autonCalibrationForward(2.0));
+    chooser.addOption("Go Forward 3", autonCalibrationForward(3.0));
+    chooser.addOption("Shooter Test", getAutonomousToTarget());
+    chooser.addOption("Curve Left", autonCalibrationCurve(1.0, 1.0));
+    chooser.addOption("Curve Right", autonCalibrationCurve(1.0, -1.0));
+    chooser.setDefaultOption("Do Nothing", getNoAutonomousCommand());
+    SmartDashboard.putData("Auto mode", chooser);
+
   }
 
   private void configureButtonBindings() {
@@ -177,81 +197,7 @@ public class RobotContainer {
 
  }
   
-
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand(String autoName) {
-
-    // zero gyro heading and reset encoders to zero.
-    m_drive.zeroHeading();
-    m_drive.resetEncoders();
-
-    if (autoName == "donothing") {
-      return getNoAutonomousCommand();
-    }
-    else if (autoName == "figure8") {
-      return getAutonomousFigure8Command();
-    }
-    else if (autoName == "barrel") {
-      return getAutonomousBarrelCommand();
-    }
-    else if (autoName == "slalom") {
-      return getAutonomousSlalomCommand();
-    }
-    else if (autoName == "bounce") {
-      return getAutonomousBounceCommand();
-    }
-    else if(autoName == "galacticSearchA"){
-      return getAutonomousGalacticSearchA();
-    }
-    else if(autoName == "galacticSearchB"){
-      return getAutonomousGalacticSearchB();
-    }
-    else if (autoName == "reda") {
-      return getAutonomousRedACommand();
-    }
-    else if (autoName == "redb") {
-      return getAutonomousRedBCommand();
-    }
-    else if (autoName == "bluea") {
-      return getAutonomousBlueACommand();
-    }
-    else if (autoName == "blueb") {
-      return getAutonomousBlueBCommand();
-    }
-    else if (autoName == "blueb_pathweaver") {
-      return loadPathWeaverTrajectoryCommand("paths/output/GalacticSearchBlueB.wpilib.json");
-    }
-    else if (autoName == "forward1") {
-      return autonCalibrationForward(1.0);
-    }
-    else if (autoName == "forward2") {
-      return autonCalibrationForward(2.0);
-    }
-    else if (autoName == "forward3") {
-      return autonCalibrationForward(3.0);
-    }
-    else if (autoName == "curveLeft") {
-      return autonCalibrationCurve(1.0, 1.0);
-    }   
-    else if (autoName == "curveRight") {
-      return autonCalibrationCurve(1.0, -1.0);
-    }
-    else if(autoName == "shooterTest"){
-      return getAutonomousToTarget();
-    }
-    else if (autoName == "nothing") {
-      return getNoAutonomousCommand();
-    }
- 
-    System.out.println("Warning: No autonomous command specified.");
-    return getNoAutonomousCommand();
-  }
-
-  /**
+ /**
    * Do nothing during auton
    * 
    * @return Auton do nothing command
@@ -416,7 +362,7 @@ public class RobotContainer {
     Pose2d startPose = new Pose2d(inches2Meters(50), inches2Meters(90), new Rotation2d(0));    
 
     List<Translation2d> bounce_path_points = List.of(
-      // TODO: Set up Slalom path points
+      // TODO: Set up Bounce path points
       new Translation2d( inches2Meters(70), inches2Meters(90))
       // new Translation2d( inches2Meters(90), inches2Meters(150))      
       );
