@@ -65,10 +65,8 @@ public class hoodSubsystem extends SubsystemBase {
     m_hood.setInverted(true);
 
     m_encoder = m_hood.getEncoder();
-    zeroHoodPos();
-    
     m_pidController = m_hood.getPIDController();
-
+    zeroHoodPos();
     m_hoodAngle = new linearInterpolator(hoodPos);
 
     // PID coefficients (currently default)
@@ -89,7 +87,7 @@ public class hoodSubsystem extends SubsystemBase {
     m_pidController.setOutputRange(kMinOutput, kMaxOutput);
 
     // Display initial set hood angle on SmartDashboard
-    SmartDashboard.putNumber("Set Hood Angle", 46);
+    SmartDashboard.putNumber("Set Hood Angle", minAngle);
     SmartDashboard.putNumber("Hood Position Deg", rotationsToAngle(m_encoder.getPosition()));
     SmartDashboard.putNumber("Hood Position Error Pos", 0.0);
     SmartDashboard.putNumber("Hood Zero Count", m_hoodZeroCount);
@@ -161,20 +159,12 @@ public class hoodSubsystem extends SubsystemBase {
 
       // Retrieve set hood angle from SmartDashboard and convert to motor rotations
       // double hoodRotations = SmartDashboard.getNumber("Set Hood Position", 0);
-      double hoodRotations = angleToRotations(SmartDashboard.getNumber("Set Hood Angle", 46));
-
-      // Make sure to not set hood rotations beyond min or max position
-      if (hoodRotations < minPos) {
-        hoodRotations = minPos;
-      }
-
-      else if (hoodRotations > maxPos) {
-        hoodRotations = maxPos;
-      }
+      double hoodRotations = angleToRotations(SmartDashboard.getNumber("Set Hood Angle", minAngle));
 
       if (hoodPosition != hoodRotations) {
         hoodPosition = hoodRotations;
-        m_pidController.setReference(hoodPosition, ControlType.kPosition);
+        // m_pidController.setReference(hoodPosition, ControlType.kPosition);
+        setPositionRotations(hoodPosition);
       }
     }  // end if (m_debug_PID)
 
@@ -202,7 +192,7 @@ public class hoodSubsystem extends SubsystemBase {
       // only re-zero if we're more than about 0.07 rotations or just under 0.1 degrees
       if (hoodPosition <= 0.0) {
         // stop the motor if we're trying to move to zero (or below)
-        m_hood.set(0.0);
+        //m_hood.set(0.0);
       }
       zeroHoodPos();
     }
