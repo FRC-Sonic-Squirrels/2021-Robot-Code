@@ -91,8 +91,7 @@ public class RobotContainer {
     chooser.addOption("Galactic Search Red A", getAutonomousRedACommand());
     chooser.addOption("Galactic Search Blue A", getAutonomousBlueBCommand());
     chooser.addOption("Galactic Search Red B", getAutonomousRedBCommand());
-    chooser.addOption("Galactic Search Blue B", getAutonomousBlueBCommand());
-    chooser.addOption("Galactic Search Blue B PathWeaver", loadPathWeaverTrajectoryCommand("paths/output/GalacticSearchBlueB.wpilib.json"));
+    chooser.addOption("Galactic Search Blue B PathWeaver", getAutonomousBlueBCommand());
     chooser.addOption("Go Forward 1", autonCalibrationForward(1.0));
     chooser.addOption("Go Forward 2", autonCalibrationForward(2.0));
     chooser.addOption("Go Forward 3", autonCalibrationForward(3.0));
@@ -197,6 +196,15 @@ public class RobotContainer {
 
  }
   
+ public Command intakeStartCommand() {
+  return new SequentialCommandGroup(
+    new InstantCommand(() -> m_intake.deployIntake()), 
+    new WaitCommand(0.7), 
+    new InstantCommand(() -> m_indexer.setIntakeMode()),
+    new InstantCommand(() -> m_intake.setDynamicSpeed(true))
+  );
+ }
+
  /**
    * Do nothing during auton
    * 
@@ -383,27 +391,13 @@ public class RobotContainer {
    * @return Command object
    */
   public Command getAutonomousBlueBCommand(){
-    //Changing start pose to 12 by 90 because of Orange 1 size
-    Pose2d startPose = new Pose2d(inches2Meters(12), inches2Meters(90), new Rotation2d(0));
 
-    List<Translation2d> blue_b_points = List.of(
-      new Translation2d( inches2Meters(180), inches2Meters(66)),
-      new Translation2d( inches2Meters(240), inches2Meters(120)),
-      new Translation2d( inches2Meters(270), inches2Meters(30)),
-      new Translation2d( inches2Meters(315), inches2Meters(90))
-      );
-    
-    // Start of Blue B program
-    Command ramseteCommand = createTrajectoryCommand(
-      startPose,
-      blue_b_points,
-      new Pose2d(inches2Meters(330), inches2Meters(90), new Rotation2d(20)), false, 1.0, 0.25
+    return new ParallelCommandGroup(
+      intakeStartCommand(),
+      loadPathWeaverTrajectoryCommand("paths/BlueB.wpilib.json")
     );
 
-    // Run path following command, then stop at end. Turn off Drive train
-    return ramseteCommand.andThen(() -> m_drive.tankDriveVolts(0, 0));
   }
-
 
   /**
    * getAutonomousBlueACommand - generate Blue A AutoNav Command
@@ -491,18 +485,11 @@ public class RobotContainer {
     Command RedA = getAutonomousRedACommand();
     Command BlueA = getAutonomousBlueACommand();
 
-    Command intakeStart = new SequentialCommandGroup(
-      new InstantCommand(() -> m_intake.deployIntake()), 
-      new WaitCommand(0.7), 
-      new InstantCommand(() -> m_indexer.setIntakeMode()),
-      new InstantCommand(() -> m_intake.setDynamicSpeed(true))
-    );
-
     BooleanSupplier seesPowerCell = () -> (m_limelightPowerCell.getTV() == 1.0);
 
     // If it sees the Power Cell, we run Red A, if not, then we run Blue A
     return new ParallelCommandGroup(
-      intakeStart,
+      intakeStartCommand(),
       new ConditionalCommand(RedA, BlueA, seesPowerCell));
 
   }
@@ -516,18 +503,11 @@ public class RobotContainer {
     Command RedB = getAutonomousRedBCommand();
     Command BlueB = getAutonomousBlueBCommand();
 
-    Command intakeStart = new SequentialCommandGroup(
-      new InstantCommand(() -> m_intake.deployIntake()), 
-      new WaitCommand(0.7), 
-      new InstantCommand(() -> m_indexer.setIntakeMode()),
-      new InstantCommand(() -> m_intake.setDynamicSpeed(true))
-    );
-
     BooleanSupplier seesPowerCell = () -> (m_limelightPowerCell.getTV() == 1.0);
 
     // If it sees the Power Cell, we run Red B, if not, then we run Blue B
     return new ParallelCommandGroup(
-      intakeStart,
+      intakeStartCommand(),
       new ConditionalCommand(RedB, BlueB, seesPowerCell));
   }
 
