@@ -41,6 +41,8 @@ public class hoodSubsystem extends SubsystemBase {
   private CANDigitalInput m_forwardLimit;
   private CANDigitalInput m_reverseLimit;
 
+  private int m_hoodZeroCount = 0;
+
   XboxController operatorController = RobotContainer.m_operatorController;
 
   //Sets Hood position in Degrees using Feet
@@ -59,19 +61,16 @@ public class hoodSubsystem extends SubsystemBase {
   /** Creates a new hoodSubsystem. */
   public hoodSubsystem() {
     
-    // TODO: Set current limit
-
     m_hood.restoreFactoryDefaults();
     m_hood.setInverted(true);
 
     m_encoder = m_hood.getEncoder();
-    m_encoder.setPosition(0);
+    zeroHoodPos();
     
     m_pidController = m_hood.getPIDController();
 
     m_hoodAngle = new linearInterpolator(hoodPos);
 
-    // TODO: tune PID values
     // PID coefficients (currently default)
     kP = 0.15;
     kI = 1e-4;
@@ -89,7 +88,6 @@ public class hoodSubsystem extends SubsystemBase {
     m_pidController.setIZone(kIz);
     m_pidController.setOutputRange(kMinOutput, kMaxOutput);
 
-    // TODO: use limit switch!
     // TODO: configure limit switch to zero position
 
 
@@ -97,6 +95,7 @@ public class hoodSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Set Hood Angle", 46);
     SmartDashboard.putNumber("Hood Position Deg", rotationsToAngle(m_encoder.getPosition()));
     SmartDashboard.putNumber("Hood Position Error Pos", 0.0);
+    SmartDashboard.putNumber("Hood Zero Count", m_hoodZeroCount);
 
     /**
      * A CANDigitalInput object is constructed using the getForwardLimitSwitch() or
@@ -107,11 +106,10 @@ public class hoodSubsystem extends SubsystemBase {
      *  com.revrobotics.CANDigitalInput.LimitSwitchPolarity.kNormallyOpen
      *  com.revrobotics.CANDigitalInput.LimitSwitchPolarity.kNormallyClosed
      */
-    m_forwardLimit = m_hood.getForwardLimitSwitch(LimitSwitchPolarity.kNormallyClosed);
-    m_reverseLimit = m_hood.getReverseLimitSwitch(LimitSwitchPolarity.kNormallyClosed);
+    m_forwardLimit = m_hood.getForwardLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
 
     /**
-     * Limit switches are enabled by default when they are intialized. They can be disabled
+     * Limit switches are enabled by default when they are initialized. They can be disabled
      * by calling enableLimitSwitch(false) on a CANDigitalInput object
      * 
      * Limit switches can be reenabled by calling enableLimitSwitch(true)
@@ -119,16 +117,13 @@ public class hoodSubsystem extends SubsystemBase {
      * The isLimitSwitchEnabled() method can be used to check if the limit switch is enabled
      */
     m_forwardLimit.enableLimitSwitch(false);
-    m_reverseLimit.enableLimitSwitch(false);
     SmartDashboard.putBoolean("Forward Limit Enabled", m_forwardLimit.isLimitSwitchEnabled());
-    SmartDashboard.putBoolean("Reverse Limit Enabled", m_reverseLimit.isLimitSwitchEnabled());
 
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-
 
     if (m_tune_PID) {
       // Retrieve PID values from SmartDashboard
@@ -185,8 +180,7 @@ public class hoodSubsystem extends SubsystemBase {
         hoodPosition = hoodRotations;
         m_pidController.setReference(hoodPosition, ControlType.kPosition);
       }
-
-  }  // end if (m_debug_PID)
+    }  // end if (m_debug_PID)
 
     // Display current hood position on SmartDashboard
     m_currentHoodPosition = m_encoder.getPosition();
@@ -204,12 +198,13 @@ public class hoodSubsystem extends SubsystemBase {
      * get() will return true if the switch is pressed. It will also return true if you do not 
      * have a switch connected. get() will return false when the switch is released.
      */
-    SmartDashboard.putBoolean("Forward Limit Switch", m_forwardLimit.get());
-    SmartDashboard.putBoolean("Reverse Limit Switch", m_reverseLimit.get());
+    boolean atForwardLimit = m_forwardLimit.get();
+    SmartDashboard.putBoolean("Forward Limit Switch", atForwardLimit);
 
     // If limit switch is triggered, zero the hood encoder.
-    if(!m_forwardLimit.get()) {
-      SmartDashboard.putNumber("Set Hood Angle", 46);
+    if ((atForwardLimit) && ((m_currentHoodPosition > 0.07) || (m_currentHoodPosition < 0.0))) {
+      // only re-zero if we're more than about 0.07 rotations or just under 0.1 degrees
+      zeroHoodPos();
     }
 
   }
@@ -233,8 +228,10 @@ public class hoodSubsystem extends SubsystemBase {
   /**
    * rest the zero hood position to the current hood location.
    */
-  public void zeroHoodPos(){
+  public void zeroHoodPos() {
     m_encoder.setPosition(0);
+    m_hoodZeroCount++;
+    SmartDashboard.putNumber("Hood Zero Count", m_hoodZeroCount);
   }
 
   /**
@@ -243,8 +240,8 @@ public class hoodSubsystem extends SubsystemBase {
    * @param rotations, position of motor in rotations
    */
   public void setPositionRotations(double rotations){
-      if (rotations < minPos + epsilon) {
-        rotations = minPos + epsilon;
+      if (rotations < minPos) {
+        rotations = minPos;
       }
       if (rotations > maxPos - epsilon) {
         rotations = maxPos - epsilon;
