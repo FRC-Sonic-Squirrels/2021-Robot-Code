@@ -298,7 +298,7 @@ public class hoodSubsystem extends SubsystemBase {
    * @return boolean
    */
   public boolean isAtLowerLimit() {
-    return isAtForwardLimit;
+    return atForwardLimit;
   }
 
   /**
