@@ -42,6 +42,8 @@ public class hoodSubsystem extends SubsystemBase {
 
   private int m_hoodZeroCount = 0;
   private boolean atForwardLimit = false;
+  private boolean prevAtForwardLimit = false;
+  private boolean zeroed = false;
 
   XboxController operatorController = RobotContainer.m_operatorController;
 
@@ -112,6 +114,12 @@ public class hoodSubsystem extends SubsystemBase {
      * The isLimitSwitchEnabled() method can be used to check if the limit switch is enabled
      */
     m_forwardLimit.enableLimitSwitch(false);
+
+    prevAtForwardLimit = atForwardLimit = m_forwardLimit.get();
+
+    if (atForwardLimit == false) {
+      m_hood.set(-0.05);
+    }
 
   }
 
@@ -188,15 +196,12 @@ public class hoodSubsystem extends SubsystemBase {
     SmartDashboard.putBoolean("Forward Limit Switch", atForwardLimit);
 
     // If limit switch is triggered, zero the hood encoder.
-    if ((atForwardLimit) && ((m_currentHoodPosition > 0.07) || (m_currentHoodPosition < 0.0))) {
-      // only re-zero if we're more than about 0.07 rotations or just under 0.1 degrees
-      if (hoodPosition <= 0.0) {
-        // stop the motor if we're trying to move to zero (or below)
-        //m_hood.set(0.0);
-      }
+    if (! zeroed && atForwardLimit && (atForwardLimit != prevAtForwardLimit)) {
       zeroHoodPos();
+      zeroed = true;
     }
 
+    prevAtForwardLimit = atForwardLimit;
   }
 
   /**
