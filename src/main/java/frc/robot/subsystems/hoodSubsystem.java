@@ -17,6 +17,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.ControlType;
 import com.team2930.lib.util.linearInterpolator;
+import com.revrobotics.CANDigitalInput.LimitSwitchPolarity;
+import com.revrobotics.CANDigitalInput;
 
 public class hoodSubsystem extends SubsystemBase {
 
@@ -36,6 +38,10 @@ public class hoodSubsystem extends SubsystemBase {
   private double m_hoodErrorRotations;
   private double m_currentHoodPosition;
   private boolean m_tune_PID = false;
+  private CANDigitalInput m_forwardLimit;
+
+  private int m_hoodZeroCount = 0;
+  private boolean atForwardLimit = false;
 
   XboxController operatorController = RobotContainer.m_operatorController;
 
@@ -55,25 +61,22 @@ public class hoodSubsystem extends SubsystemBase {
   /** Creates a new hoodSubsystem. */
   public hoodSubsystem() {
     
-    // TODO: Set current limit
-
     m_hood.restoreFactoryDefaults();
     m_hood.setInverted(true);
 
     m_encoder = m_hood.getEncoder();
-    m_encoder.setPosition(0);
+    zeroHoodPos();
     
     m_pidController = m_hood.getPIDController();
 
     m_hoodAngle = new linearInterpolator(hoodPos);
 
-    // TODO: tune PID values
     // PID coefficients (currently default)
     kP = 0.15;
     kI = 1e-4;
     kD = 0;
     kF = 0;
-    kIz = 100; 
+    kIz = 10; 
     kMaxOutput = 0.3;
     kMinOutput = -0.3;
 
@@ -85,21 +88,38 @@ public class hoodSubsystem extends SubsystemBase {
     m_pidController.setIZone(kIz);
     m_pidController.setOutputRange(kMinOutput, kMaxOutput);
 
-    // TODO: use limit switch!
-    // TODO: configure limit switch to zero position
-
-
     // Display initial set hood angle on SmartDashboard
     SmartDashboard.putNumber("Set Hood Angle", 46);
     SmartDashboard.putNumber("Hood Position Deg", rotationsToAngle(m_encoder.getPosition()));
     SmartDashboard.putNumber("Hood Position Error Pos", 0.0);
+    SmartDashboard.putNumber("Hood Zero Count", m_hoodZeroCount);
+
+    /**
+     * A CANDigitalInput object is constructed using the getForwardLimitSwitch() or
+     * getReverseLimitSwitch() method on an existing CANSparkMax object, depending
+     * on which direction you would like to limit
+     * 
+     * Limit switches can be configured to one of two polarities:
+     *  com.revrobotics.CANDigitalInput.LimitSwitchPolarity.kNormallyOpen
+     *  com.revrobotics.CANDigitalInput.LimitSwitchPolarity.kNormallyClosed
+     */
+    m_forwardLimit = m_hood.getForwardLimitSwitch(LimitSwitchPolarity.kNormallyOpen);
+
+    /**
+     * Limit switches are enabled by default when they are initialized. They can be disabled
+     * by calling enableLimitSwitch(false) on a CANDigitalInput object
+     * 
+     * Limit switches can be reenabled by calling enableLimitSwitch(true)
+     * 
+     * The isLimitSwitchEnabled() method can be used to check if the limit switch is enabled
+     */
+    m_forwardLimit.enableLimitSwitch(false);
 
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-
 
     if (m_tune_PID) {
       // Retrieve PID values from SmartDashboard
@@ -156,8 +176,7 @@ public class hoodSubsystem extends SubsystemBase {
         hoodPosition = hoodRotations;
         m_pidController.setReference(hoodPosition, ControlType.kPosition);
       }
-
-  }  // end if (m_debug_PID)
+    }  // end if (m_debug_PID)
 
     // Display current hood position on SmartDashboard
     m_currentHoodPosition = m_encoder.getPosition();
@@ -167,6 +186,27 @@ public class hoodSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Hood Position Deg",  rotationsToAngle(m_currentHoodPosition));
     SmartDashboard.putNumber("Hood Position Error Pos", m_hoodErrorRotations);
     SmartDashboard.putBoolean("Hood at Position", isAtPos());
+
+    /**
+     * The get() method can be used on a CANDigitalInput object to read the state of the switch.
+     * 
+     * In this example, the polarity of the switches are set to normally closed. In this case,
+     * get() will return true if the switch is pressed. It will also return true if you do not 
+     * have a switch connected. get() will return false when the switch is released.
+     */
+    atForwardLimit = m_forwardLimit.get();
+    SmartDashboard.putBoolean("Forward Limit Switch", atForwardLimit);
+
+    // If limit switch is triggered, zero the hood encoder.
+    if ((atForwardLimit) && ((m_currentHoodPosition > 0.07) || (m_currentHoodPosition < 0.0))) {
+      // only re-zero if we're more than about 0.07 rotations or just under 0.1 degrees
+      if (hoodPosition <= 0.0) {
+        // stop the motor if we're trying to move to zero (or below)
+        m_hood.set(0.0);
+      }
+      zeroHoodPos();
+    }
+
   }
 
   /**
@@ -188,8 +228,11 @@ public class hoodSubsystem extends SubsystemBase {
   /**
    * rest the zero hood position to the current hood location.
    */
-  public void zeroHoodPos(){
+  public void zeroHoodPos() {
     m_encoder.setPosition(0);
+    m_pidController.setIAccum(0.0);
+    m_hoodZeroCount++;
+    SmartDashboard.putNumber("Hood Zero Count", m_hoodZeroCount);
   }
 
   /**
@@ -198,8 +241,8 @@ public class hoodSubsystem extends SubsystemBase {
    * @param rotations, position of motor in rotations
    */
   public void setPositionRotations(double rotations){
-      if (rotations < minPos + epsilon) {
-        rotations = minPos + epsilon;
+      if (rotations < minPos) {
+        rotations = minPos;
       }
       if (rotations > maxPos - epsilon) {
         rotations = maxPos - epsilon;
@@ -218,7 +261,8 @@ public class hoodSubsystem extends SubsystemBase {
   }
 
   /**
-   * getAngleforDistanceFeet() - return Hood Angle based on distance to target in FEET
+   * getAngleforDistanceFeet() - return Hood Angle based on distance to target in
+   * FEET
    * 
    * @param distanceFeet distance in FEET to goal
    * @return Angle for Hood
@@ -227,8 +271,9 @@ public class hoodSubsystem extends SubsystemBase {
     return m_hoodAngle.getInterpolatedValue(distanceFeet);
   }
 
- /**
-   * getAngleforDistanceMeter() - return Hood Angle based on distance to target in METERS
+  /**
+   * getAngleforDistanceMeter() - return Hood Angle based on distance to target in
+   * METERS
    * 
    * @param distanceFeet distance in METERS to goal
    * @return Angle for Hood
@@ -237,14 +282,29 @@ public class hoodSubsystem extends SubsystemBase {
     return getAngleforDistanceFeet(distanceMeters * 3.28084);
   }
 
-  public boolean isAtPos(){
+  /**
+   * isAtPos() - returns true if hood is at desired hood angle.
+   * 
+   * @return boolean
+   */
+  public boolean isAtPos() {
     return Math.abs(m_hoodErrorRotations) < 1.0;
   }
 
- /**
-  * retract the hood to the full down position
-  */
-  public void retractHood(){
+  /**
+   * isAtLowerLimit() - returns true if hood is triggering the low angle limit
+   * switch.
+   * 
+   * @return boolean
+   */
+  public boolean isAtLowerLimit() {
+    return atForwardLimit;
+  }
+
+  /**
+   * retract the hood to the full down position
+   */
+  public void retractHood() {
     setPositionRotations(0);
   }
 
