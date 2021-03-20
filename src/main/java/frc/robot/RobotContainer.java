@@ -11,12 +11,16 @@ import static frc.robot.Constants.AutoConstants.kRamseteB;
 import static frc.robot.Constants.AutoConstants.kRamseteZeta;
 import static frc.robot.Constants.driveConstants.kDriveKinematics;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
 import com.fearxzombie.limelight;
 import com.team2930.lib.util.geometry;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -26,9 +30,12 @@ import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -41,7 +48,6 @@ import frc.robot.Constants.driveConstants;
 import frc.robot.commands.driveCommand;
 import frc.robot.commands.indexerDefaultCommand;
 import frc.robot.commands.indexerReverseCommand;
-import frc.robot.commands.indexerStopCommand;
 import frc.robot.commands.shooterAutoCommand;
 import frc.robot.commands.turretDefaultCommand;
 import frc.robot.subsystems.driveSubsystem;
@@ -53,8 +59,7 @@ import frc.robot.subsystems.turretSubsystem;
 
 public class RobotContainer {
 
-  // Position of Power Port, needs to be set in each auton routine
-  public Translation2d powerPortLocation = new Translation2d(geometry.feet2Meters(10), 0);
+  SendableChooser<Command> chooser = new SendableChooser<>();
 
   // Subsystems
   // All other subsystems should be private
@@ -77,6 +82,25 @@ public class RobotContainer {
     m_drive.setDefaultCommand(new driveCommand(m_drive));
     m_indexer.setDefaultCommand(new indexerDefaultCommand(m_indexer));
     m_turret.setDefaultCommand(new turretDefaultCommand(m_turret));
+
+    chooser.addOption("AutoNav Barrel", getAutonomousBarrelCommand());
+    chooser.addOption("AutoNav Slalom", getAutonomousSlalomCommand());
+    chooser.addOption("AutoNav Bounce", getAutonomousBounceCommand());
+    chooser.addOption("Galactic Search A", getAutonomousGalacticSearchA());
+    chooser.addOption("Galactic Search B", getAutonomousGalacticSearchB());
+    chooser.addOption("Galactic Search Red A", getAutonomousRedACommand());
+    chooser.addOption("Galactic Search Blue A", getAutonomousBlueBCommand());
+    chooser.addOption("Galactic Search Red B", getAutonomousRedBCommand());
+    chooser.addOption("Galactic Search Blue B PathWeaver", getAutonomousBlueBCommand());
+    chooser.addOption("Go Forward 1", autonCalibrationForward(1.0));
+    chooser.addOption("Go Forward 2", autonCalibrationForward(2.0));
+    chooser.addOption("Go Forward 3", autonCalibrationForward(3.0));
+    chooser.addOption("Shooter Test", getAutonomousToTarget());
+    chooser.addOption("Curve Left", autonCalibrationCurve(1.0, 1.0));
+    chooser.addOption("Curve Right", autonCalibrationCurve(1.0, -1.0));
+    chooser.setDefaultOption("Do Nothing", getNoAutonomousCommand());
+    SmartDashboard.putData("Auto mode", chooser);
+
   }
 
   private void configureButtonBindings() {
@@ -172,78 +196,16 @@ public class RobotContainer {
 
  }
   
+ public Command intakeStartCommand() {
+  return new SequentialCommandGroup(
+    new InstantCommand(() -> m_intake.deployIntake()), 
+    new WaitCommand(0.7), 
+    new InstantCommand(() -> m_indexer.setIntakeMode()),
+    new InstantCommand(() -> m_intake.setDynamicSpeed(true))
+  );
+ }
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand(String autoName) {
-
-    // zero gyro heading and reset encoders to zero.
-    m_drive.zeroHeading();
-    m_drive.resetEncoders();
-
-    if (autoName == "donothing") {
-      return getNoAutonomousCommand();
-    }
-    else if (autoName == "figure8") {
-      return getAutonomousFigure8Command();
-    }
-    else if (autoName == "barrel") {
-      return getAutonomousBarrelCommand();
-    }
-    else if (autoName == "slalom") {
-      return getAutonomousSlalomCommand();
-    }
-    else if (autoName == "bounce") {
-      return getAutonomousBounceCommand();
-    }
-    else if(autoName == "galacticSearchA"){
-      return getAutonomousGalacticSearchA();
-    }
-    else if(autoName == "galacticSearchB"){
-      return getAutonomousGalacticSearchB();
-    }
-    else if (autoName == "reda") {
-      return getAutonomousRedACommand();
-    }
-    else if (autoName == "redb") {
-      return getAutonomousRedBCommand();
-    }
-    else if (autoName == "bluea") {
-      return getAutonomousBlueACommand();
-    }
-    else if (autoName == "blueb") {
-      return getAutonomousBlueBCommand();
-    }
-    else if (autoName == "forward1") {
-      return autonCalibrationForward(1.0);
-    }
-    else if (autoName == "forward2") {
-      return autonCalibrationForward(2.0);
-    }
-    else if (autoName == "forward3") {
-      return autonCalibrationForward(3.0);
-    }
-    else if (autoName == "curveLeft") {
-      return autonCalibrationCurve(1.0, 1.0);
-    }   
-    else if (autoName == "curveRight") {
-      return autonCalibrationCurve(1.0, -1.0);
-    }
-    else if(autoName == "shooterTest"){
-      return getAutonomousToTarget();
-    }
-    else if (autoName == "nothing") {
-      return getNoAutonomousCommand();
-    }
- 
-    System.out.println("Warning: No autonomous command specified.");
-    return getNoAutonomousCommand();
-  }
-
-  /**
+ /**
    * Do nothing during auton
    * 
    * @return Auton do nothing command
@@ -266,9 +228,7 @@ public class RobotContainer {
 
     Pose2d startPose = new Pose2d(0.0, 0.0, new Rotation2d(0));
 
-    m_drive.resetOdometry(startPose);
-
-    RamseteCommand ramseteCommand = createTrajectoryCommand(
+    Command ramseteCommand = createTrajectoryCommand(
         startPose, 
         List.of(),
         new Pose2d(distanceInMeters, 0.0, new Rotation2d(0)),
@@ -302,9 +262,7 @@ public class RobotContainer {
 
     Pose2d startPose = new Pose2d(0.0, 0.0, new Rotation2d(0));
 
-    m_drive.resetOdometry(startPose);
-
-    RamseteCommand ramseteCommand = createTrajectoryCommand(
+    Command ramseteCommand = createTrajectoryCommand(
         startPose, 
         List.of(),
         new Pose2d(forwardInMeters, leftInMeters, new Rotation2d(rotation)),
@@ -324,9 +282,6 @@ public class RobotContainer {
 
     // Tell the odometry know where the robot is starting from and what direction it is pointing.
     Pose2d startPose = new Pose2d(inches2Meters(50), inches2Meters(90), new Rotation2d(0));
-    m_drive.resetOdometry(startPose);
-
-    // TODO: complete Barrel Auton command and uncomment the next line
 
     // distances are in Meters
     List<Translation2d> barrel_path_points = List.of(
@@ -336,14 +291,14 @@ public class RobotContainer {
       new Translation2d( inches2Meters(150), inches2Meters(30)),
       new Translation2d( inches2Meters(120), inches2Meters(60)),
 
-      // TODO: navigate around B8  (240, 120)
+      // navigate around B8  (240, 120)
       new Translation2d( inches2Meters(150), inches2Meters(90)),
       new Translation2d( inches2Meters(240), inches2Meters(90)),
       new Translation2d( inches2Meters(270), inches2Meters(120)),
       new Translation2d( inches2Meters(240), inches2Meters(150)),
       new Translation2d( inches2Meters(205), inches2Meters(120)),
 
-      // TODO: navigate around D10 (300, 60)
+      // navigate around D10 (300, 60)
       new Translation2d( inches2Meters(210), inches2Meters(60)),
       new Translation2d( inches2Meters(300), inches2Meters(30)),
       new Translation2d( inches2Meters(330), inches2Meters(60)),
@@ -357,7 +312,7 @@ public class RobotContainer {
       );
 
     // Start of Barrel Path
-    RamseteCommand ramseteCommand = createTrajectoryCommand(
+    Command ramseteCommand = createTrajectoryCommand(
         startPose,
         barrel_path_points,
         new Pose2d(inches2Meters(60), inches2Meters(90), new Rotation2d(Math.PI)), false, 1.5, 0.50);
@@ -375,10 +330,8 @@ public class RobotContainer {
   public Command getAutonomousSlalomCommand(){
      
     Pose2d startPose = new Pose2d(inches2Meters(45), inches2Meters(30), new Rotation2d(0));
-    m_drive.resetOdometry(startPose);
 
     List<Translation2d> slalom_path_points = List.of(
-      // TODO: Set up Slalom path points
       new Translation2d( inches2Meters(80), inches2Meters(30)),
       //new Translation2d( inches2Meters(90), inches2Meters(60)),
       new Translation2d( inches2Meters(105), inches2Meters(90)),
@@ -398,7 +351,7 @@ public class RobotContainer {
 
 
     // Start of The Slalom Path Program
-    RamseteCommand ramseteCommand = createTrajectoryCommand(
+    Command ramseteCommand = createTrajectoryCommand(
         startPose,
         slalom_path_points,
         new Pose2d(inches2Meters(60), inches2Meters(90), new Rotation2d(Math.PI)), false, 0.5, 0.25);
@@ -414,18 +367,16 @@ public class RobotContainer {
    * @return Command object
    */
   public Command getAutonomousBounceCommand(){
-    Pose2d startPose = new Pose2d(inches2Meters(50), inches2Meters(90), new Rotation2d(0));
-    m_drive.resetOdometry(startPose);
-    
+    Pose2d startPose = new Pose2d(inches2Meters(50), inches2Meters(90), new Rotation2d(0));    
 
     List<Translation2d> bounce_path_points = List.of(
-      // TODO: Set up Slalom path points
+      // TODO: Set up Bounce path points
       new Translation2d( inches2Meters(70), inches2Meters(90))
       // new Translation2d( inches2Meters(90), inches2Meters(150))      
       );
 
     // Start of The Slalom Path Program
-    RamseteCommand ramseteCommand = createTrajectoryCommand(
+    Command ramseteCommand = createTrajectoryCommand(
         startPose,
         bounce_path_points,
         new Pose2d(inches2Meters(90), inches2Meters(150), new Rotation2d(Math.PI/2)), false, 1.0, 0.25);
@@ -440,29 +391,13 @@ public class RobotContainer {
    * @return Command object
    */
   public Command getAutonomousBlueBCommand(){
-    //Changing start pose to 12 by 90 because of Orange 1 size
-    Pose2d startPose = new Pose2d(inches2Meters(12), inches2Meters(90), new Rotation2d(0));
-    m_drive.resetOdometry(startPose);
 
-
-    List<Translation2d> blue_b_points = List.of(
-      new Translation2d( inches2Meters(180), inches2Meters(66)),
-      new Translation2d( inches2Meters(240), inches2Meters(120)),
-      new Translation2d( inches2Meters(270), inches2Meters(30)),
-      new Translation2d( inches2Meters(315), inches2Meters(90))
-      );
-    
-    // Start of Blue B program
-    RamseteCommand ramseteCommand = createTrajectoryCommand(
-      startPose,
-      blue_b_points,
-      new Pose2d(inches2Meters(330), inches2Meters(90), new Rotation2d(20)), false, 1.0, 0.25
+    return new ParallelCommandGroup(
+      intakeStartCommand(),
+      loadPathWeaverTrajectoryCommand("paths/BlueB.wpilib.json")
     );
 
-    // Run path following command, then stop at end. Turn off Drive train
-    return ramseteCommand.andThen(() -> m_drive.tankDriveVolts(0, 0));
   }
-
 
   /**
    * getAutonomousBlueACommand - generate Blue A AutoNav Command
@@ -471,8 +406,6 @@ public class RobotContainer {
   public Command getAutonomousBlueACommand(){
     //Changing start pose to 12 by 90 because of Orange 1 size
     Pose2d startPose = new Pose2d(inches2Meters(12), inches2Meters(90), new Rotation2d(0));
-    m_drive.resetOdometry(startPose);
-
 
     List<Translation2d> blue_a_points = List.of(
       new Translation2d( inches2Meters(180), inches2Meters(30)),
@@ -481,7 +414,7 @@ public class RobotContainer {
       );
     
     // Start of Blue A program
-    RamseteCommand ramseteCommand = createTrajectoryCommand(
+    Command ramseteCommand = createTrajectoryCommand(
       startPose,
       blue_a_points,
       new Pose2d(inches2Meters(340), inches2Meters(90), new Rotation2d(0)), false, 1.0, 0.25
@@ -497,10 +430,8 @@ public class RobotContainer {
    * @return Command object
    */
   public Command getAutonomousRedBCommand(){
-      //Changing start pose to 12 by 90 because of Orange 1 size
+    // Changing start pose to 12 by 90 because of Orange 1 size
     Pose2d startPose = new Pose2d(inches2Meters(12), inches2Meters(90), new Rotation2d(0));
-    m_drive.resetOdometry(startPose);
-
 
     List<Translation2d> red_b_points = List.of(
       new Translation2d( inches2Meters(90), inches2Meters(120)),
@@ -509,7 +440,7 @@ public class RobotContainer {
       );
     
     // Start of Red B program
-    RamseteCommand ramseteCommand = createTrajectoryCommand(
+    Command ramseteCommand = createTrajectoryCommand(
       startPose,
       red_b_points,
       new Pose2d(inches2Meters(320), inches2Meters(90), new Rotation2d(0)), false, 1.0, 0.25
@@ -527,7 +458,6 @@ public class RobotContainer {
   public Command getAutonomousRedACommand(){
     //Changing start pose to 12 by 90 because of Orange 1 size
     Pose2d startPose = new Pose2d(inches2Meters(12), inches2Meters(90), new Rotation2d(0));
-    m_drive.resetOdometry(startPose);
 
     List<Translation2d> red_a_points = List.of(
       new Translation2d( inches2Meters(90), inches2Meters(85)),
@@ -536,7 +466,7 @@ public class RobotContainer {
       );
     
     // Start of Red A program
-    RamseteCommand ramseteCommand = createTrajectoryCommand(
+    Command ramseteCommand = createTrajectoryCommand(
       startPose,
       red_a_points,
       new Pose2d(inches2Meters(320), inches2Meters(95), new Rotation2d(0)), false, 1.5, 0.5
@@ -555,18 +485,11 @@ public class RobotContainer {
     Command RedA = getAutonomousRedACommand();
     Command BlueA = getAutonomousBlueACommand();
 
-    Command intakeStart = new SequentialCommandGroup(
-      new InstantCommand(() -> m_intake.deployIntake()), 
-      new WaitCommand(0.7), 
-      new InstantCommand(() -> m_indexer.setIntakeMode()),
-      new InstantCommand(() -> m_intake.setDynamicSpeed(true))
-    );
-
     BooleanSupplier seesPowerCell = () -> (m_limelightPowerCell.getTV() == 1.0);
 
     // If it sees the Power Cell, we run Red A, if not, then we run Blue A
     return new ParallelCommandGroup(
-      intakeStart,
+      intakeStartCommand(),
       new ConditionalCommand(RedA, BlueA, seesPowerCell));
 
   }
@@ -580,18 +503,11 @@ public class RobotContainer {
     Command RedB = getAutonomousRedBCommand();
     Command BlueB = getAutonomousBlueBCommand();
 
-    Command intakeStart = new SequentialCommandGroup(
-      new InstantCommand(() -> m_intake.deployIntake()), 
-      new WaitCommand(0.7), 
-      new InstantCommand(() -> m_indexer.setIntakeMode()),
-      new InstantCommand(() -> m_intake.setDynamicSpeed(true))
-    );
-
     BooleanSupplier seesPowerCell = () -> (m_limelightPowerCell.getTV() == 1.0);
 
     // If it sees the Power Cell, we run Red B, if not, then we run Blue B
     return new ParallelCommandGroup(
-      intakeStart,
+      intakeStartCommand(),
       new ConditionalCommand(RedB, BlueB, seesPowerCell));
   }
 
@@ -605,7 +521,7 @@ public class RobotContainer {
     //Start of Shooting with Red A
     Pose2d startPose = new Pose2d(inches2Meters(320), inches2Meters(95), new Rotation2d(0));
 
-    RamseteCommand ramseteCommand = createTrajectoryCommand(
+    Command ramseteCommand = createTrajectoryCommand(
       startPose,
       List.of(),
       new Pose2d(inches2Meters(90), inches2Meters(160), new Rotation2d(0)), true, 1.5, 0.5
@@ -643,7 +559,7 @@ public class RobotContainer {
       new Translation2d(-0.5, -0.5));
 
     // Start of a Figure 8
-    RamseteCommand ramseteCommand = createTrajectoryCommand(
+    Command ramseteCommand = createTrajectoryCommand(
         new Pose2d(0, 0, new Rotation2d(0)),
         figure_eight,
         new Pose2d(0.0, 0.0, new Rotation2d(0)), false, 1.0, 0.25);
@@ -664,7 +580,7 @@ public class RobotContainer {
    * @param maxAccelerationMetersPerSecondSquared
    * @return Ramsete Path Follow Command, intake side of robot is isReversed = true and negative values
    */
-  public RamseteCommand createTrajectoryCommand(Pose2d startPose, List<Translation2d> translationList, Pose2d endPose, boolean isReversed, double maxSpeedMetersPerSecond, double maxAccelerationMetersPerSecondSquared) {
+  public Command createTrajectoryCommand(Pose2d startPose, List<Translation2d> translationList, Pose2d endPose, boolean isReversed, double maxSpeedMetersPerSecond, double maxAccelerationMetersPerSecondSquared) {
     DifferentialDriveVoltageConstraint autoVoltageConstraint;
     TrajectoryConfig config;
   
@@ -688,7 +604,7 @@ public class RobotContainer {
         endPose,
         config);
 
-    RamseteCommand ramseteCommand =
+    Command ramseteCommand =
         new RamseteCommand(trajectory, 
             m_drive::getPose,
             new RamseteController(kRamseteB, kRamseteZeta),
@@ -704,9 +620,60 @@ public class RobotContainer {
     System.out.println("RamseteCommand generation time: " + dt + "ms");
 
     // Run path following command, then stop at the end.
-    return ramseteCommand;
+    return new SequentialCommandGroup(
+        new InstantCommand(() -> m_drive.resetOdometry(trajectory.getInitialPose())),
+        ramseteCommand);
   }
   
+  /**
+   * loadPathWeaverTrajectoryCommand - load a PathWeaver generated JSON file with
+   * a trajectory and convert that to a Ramsete Command.
+   * 
+   * PathWeaver places JSON files in src/main/deploy/paths which will
+   * automatically be placed on the roboRIO file system in
+   * /home/lvuser/deploy/paths and can be accessed using getDeployDirectory.
+   * 
+   * Filename should be a string in the form of "paths/RobotPath1.json"
+   * 
+   * @param filename
+   * @return RamsetCommand
+   */
+  public Command loadPathWeaverTrajectoryCommand(String filename) {
+
+    long initialTime = System.nanoTime();
+    Trajectory trajectory;
+    try {
+      Path trajectoryPath = Filesystem.getDeployDirectory().toPath().resolve(filename);
+      trajectory = TrajectoryUtil.fromPathweaverJson(trajectoryPath);
+    } catch (IOException ex) {
+      DriverStation.reportError("Unable to open trajectory: " + filename, ex.getStackTrace());
+      System.out.println("Unable to read from file " + filename );
+      return new InstantCommand();
+    }
+
+    Command ramseteCommand =
+        new RamseteCommand(trajectory, 
+            m_drive::getPose,
+            new RamseteController(kRamseteB, kRamseteZeta),
+            m_drive.getFeedforward(),
+            kDriveKinematics,
+            m_drive::getWheelSpeeds,
+            m_drive.getLeftPidController(),
+            m_drive.getRightPidController(),
+            m_drive::tankDriveVolts,
+            m_drive);
+
+    double dt = (System.nanoTime() - initialTime) / 1E6;
+    System.out.println("RamseteCommand from file " + filename + " generation time: " + dt + "ms");
+
+
+    // Run path following command, then stop at the end.
+    return new SequentialCommandGroup(
+        new InstantCommand(() -> m_drive.resetOdometry(trajectory.getInitialPose())),
+        ramseteCommand);
+
+
+  }
 
   // TODO: this should be in com/team2930/utils/units.java or a new Units.java under Utils
   public double inches2Meters(double i) {

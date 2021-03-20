@@ -7,7 +7,6 @@ import static frc.robot.Constants.limeLightConstants.limeLightAngle_degrees;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -17,7 +16,6 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
   public PowerDistributionPanel m_pdp = new PowerDistributionPanel(0);
-  SendableChooser <String> chooser = new SendableChooser<>();
   public static double distance_meters = 0.0;
 
   private double turretErrorDeg = 0.0;
@@ -29,26 +27,8 @@ public class Robot extends TimedRobot {
 
     LiveWindow.disableAllTelemetry();
     
-    SmartDashboard.putNumber("distance ft", 0);
     //RobotContainer.m_limelight.setLEDMode(1);
     //CameraServer.getInstance().startAutomaticCapture();
-    chooser.addOption("AutoNav Barrel", "barrel");
-    chooser.addOption("AutoNav Slalom", "slalom");
-    chooser.addOption("AutoNav Bounce", "bounce");
-    chooser.addOption("Galactic Search A", "galacticSearchA");
-    chooser.addOption("Galactic Search B", "galacticSearchB");
-    chooser.addOption("Galactic Search Red A", "reda");
-    chooser.addOption("Galactic Search Blue A", "bluea");
-    chooser.addOption("Galactic Search Red B", "redb");
-    chooser.addOption("Galactic Search Blue B", "blueb");
-    chooser.addOption("Go Forward 1", "forward1");
-    chooser.addOption("Go Forward 2", "forward2");
-    chooser.addOption("Go Forward 3", "forward3");
-    chooser.addOption("Shooter Test", "shooterTest");
-    chooser.addOption("Curve Left", "curveLeft");
-    chooser.addOption("Curve Right", "curveRight");
-    chooser.setDefaultOption("Do Nothing", "donothing");
-    SmartDashboard.putData("Auto mode", chooser);
   }
 
   @Override
@@ -89,12 +69,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    // TODO: move this to RobotInit() that gets run when the robot is powered on instead of here when
-    // Autonomous starts. Auton command generation can take almost a second. Don't waste it during a 
-    // match.
-
-    String autoName = chooser.getSelected();
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand(autoName);
+    m_autonomousCommand = m_robotContainer.chooser.getSelected();
 
     if (m_autonomousCommand != null) {
       System.out.println("Scheduling Autonomous Command");
