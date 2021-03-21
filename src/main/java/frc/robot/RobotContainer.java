@@ -165,12 +165,15 @@ public class RobotContainer {
     opAButton.whenPressed(new InstantCommand(() -> m_intake.deployIntake()));
     opBButton.whenPressed(new InstantCommand(() -> m_intake.toggleDynamicMode()));
     //opBButton.whenPressed(new indexerStopCommand(m_indexer)); 
-    opXButton.whileHeld(new indexerReverseCommand(m_indexer));
-    opYButton.whenPressed(new InstantCommand(() -> m_indexer.setIntakeMode(), m_indexer));
+    //opXButton.whileHeld(new indexerReverseCommand(m_indexer));
+    //opXButton.whenPressed(new InstantCommand(() -> m_hood.setPositionRotations(m_hood.angleToRotations(70.0)), m_hood));
+    //opYButton.whenPressed(new InstantCommand(() -> m_hood.setPositionRotations(m_hood.angleToRotations(46.13)), m_hood));
+
+    //opYButton.whenPressed(new InstantCommand(() -> m_indexer.setIntakeMode(), m_indexer));
 
     // spin up flywheel to idle RPM
     opLeftBumper.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(3000), m_shooter));
-    opBackButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(0)));
+    opBackButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(0), m_shooter));
 
     opRightBumper.whileHeld(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_hood, m_limelight));
 
