@@ -30,6 +30,7 @@ public class shooterAutoCommand extends CommandBase {
   private long startTimeNS = 0;
   private long shooterReadyTimeNS = 0;
   private double m_Integral = 0;
+  private boolean shooting = false;
 
   /**
    * shooterAutoCommand class constructor
@@ -51,6 +52,7 @@ public class shooterAutoCommand extends CommandBase {
     m_shooter = shooter;
     m_hood = hood;
     m_limelight = ll_util;
+    shooting = false;
     // m_stationary = stationary;
     SmartDashboard.putNumber("Time to Shoot", 0.0);
   }
@@ -84,9 +86,13 @@ public class shooterAutoCommand extends CommandBase {
     // shoot!
     if ( m_shooter.isAtSpeed() && RobotContainer.limelightOnTarget && m_hood.isAtPos() ) {
       m_indexer.ejectOneBall();
+      shooting = true;
       if (shooterReadyTimeNS == 0)
         shooterReadyTimeNS = System.nanoTime();
         SmartDashboard.putNumber("Time to Shoot", (double) (shooterReadyTimeNS - startTimeNS) / 1_000_000_000);
+    }
+    else if (shooting) {
+      m_indexer.setEjectPauseMode();
     }
   }
   
