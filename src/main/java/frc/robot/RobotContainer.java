@@ -139,7 +139,7 @@ public class RobotContainer {
     // driverBButton.whenPressed(new InstantCommand(() -> m_drive.toggleSquaredInputs()));
     // driverXButton.whenPressed(new InstantCommand(() -> m_intake.toggleDynamicMode()));
 
-    driverAButton.whileHeld(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_hood, m_limelight));
+    driverAButton.whileHeld(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_hood, m_limelight, m_intake).andThen(() -> m_intake.coastToZero()));
     driverXButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(3000), m_shooter));
     driverBackButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(0), m_shooter));
     driverBButton.whenPressed(intakeReleaseCommand());
@@ -179,7 +179,7 @@ public class RobotContainer {
     opLeftBumper.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(3000), m_shooter));
     opBackButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(0), m_shooter));
 
-    opRightBumper.whileHeld(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_hood, m_limelight));
+    opRightBumper.whileHeld(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_hood, m_limelight, m_intake));
 
     // opLeftBumper.whileHeld(new shooterUnderGoal(m_indexer, m_turret, m_shooter));
     opDPadUp.whenPressed(() -> m_indexer.setBallCount(m_indexer.getBallCount() + 1));
@@ -551,8 +551,8 @@ public class RobotContainer {
       new InstantCommand(() -> m_intake.setDynamicSpeed(false)),
       ramseteCommand, 
       new InstantCommand(() -> m_drive.tankDriveVolts(0, 0)),
-      new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_hood, m_limelight).withTimeout(15),
-      new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_hood, m_limelight).withTimeout(5),
+      new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_hood, m_limelight, m_intake).withTimeout(15),
+      new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_hood, m_limelight, m_intake).withTimeout(5),
       new InstantCommand(() -> m_indexer.stopIndexer())
     );
 

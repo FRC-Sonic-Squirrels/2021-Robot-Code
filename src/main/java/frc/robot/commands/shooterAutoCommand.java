@@ -16,6 +16,7 @@ import frc.robot.subsystems.hoodSubsystem;
 import frc.robot.subsystems.indexerSubsystem;
 import frc.robot.subsystems.shooterSubsystem;
 import frc.robot.subsystems.turretSubsystem;
+import frc.robot.subsystems.intakeSubsystem;
 
 public class shooterAutoCommand extends CommandBase {
 
@@ -24,6 +25,7 @@ public class shooterAutoCommand extends CommandBase {
   private shooterSubsystem m_shooter;
   private hoodSubsystem m_hood;
   private limelight m_limelight;
+  private intakeSubsystem m_intake;
   private double steer_kp = 0.03;
   private double steer_ki = 0.05;
   private double limelightSteerCommand = 0;
@@ -40,9 +42,10 @@ public class shooterAutoCommand extends CommandBase {
    * @param shooter,    shooter subsystem
    * @param hood,       hood subsystem
    * @param ll_util,    limelight class
+   * @param intake,
    * @param stationary, boolean: true if robot is stationary
    */
-  public shooterAutoCommand(indexerSubsystem indexer, turretSubsystem turret, shooterSubsystem shooter, hoodSubsystem hood, limelight ll_util, boolean stationary) {
+  public shooterAutoCommand(indexerSubsystem indexer, turretSubsystem turret, shooterSubsystem shooter, hoodSubsystem hood, limelight ll_util, intakeSubsystem intake, boolean stationary) {
     addRequirements(indexer);
     addRequirements(turret);
     addRequirements(shooter);
@@ -52,14 +55,15 @@ public class shooterAutoCommand extends CommandBase {
     m_shooter = shooter;
     m_hood = hood;
     m_limelight = ll_util;
+    m_intake = intake;
     shooting = false;
     // m_stationary = stationary;
     SmartDashboard.putNumber("Time to Shoot", 0.0);
   }
 
-  public shooterAutoCommand(indexerSubsystem indexer, turretSubsystem turret, shooterSubsystem shooter, hoodSubsystem hood, limelight ll_util) {
+  public shooterAutoCommand(indexerSubsystem indexer, turretSubsystem turret, shooterSubsystem shooter, hoodSubsystem hood, limelight ll_util, intakeSubsystem intake) {
     // call main constructor, w/ stationary false,
-     this(indexer, turret, shooter, hood, ll_util, false);
+     this(indexer, turret, shooter, hood, ll_util, intake, false);
   }
 
   @Override
@@ -70,6 +74,7 @@ public class shooterAutoCommand extends CommandBase {
 
   @Override
   public void execute() {
+    m_intake.coastToZero();
     if (startTimeNS == 0) {
       startTimeNS = System.nanoTime();
     }
@@ -106,6 +111,7 @@ public class shooterAutoCommand extends CommandBase {
     //m_limelight.setLEDMode(1);
     startTimeNS = 0;
     shooterReadyTimeNS = 0;
+    m_intake.resetIntake();
   }
 
   @Override
