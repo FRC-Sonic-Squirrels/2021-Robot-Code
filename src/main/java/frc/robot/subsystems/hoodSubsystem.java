@@ -48,15 +48,15 @@ public class hoodSubsystem extends SubsystemBase {
   XboxController operatorController = RobotContainer.m_operatorController;
 
   //Sets Hood position in Degrees using Feet
-  private double [][] hoodPos = {
+ private double [][] hoodPos = {
     {4.0, 46.13},
     {5.0, 46.13},
     {6.6, 50.0},
     {7.0, 50}, 
     {11.0, 60},
-    {12.7, 63.5},
+    {12.7, 62},
     {15.0, 65}, 
-    {20.0, 70},
+    {20.0, 69},
     {25.0, 70}
   };
 
@@ -203,6 +203,8 @@ public class hoodSubsystem extends SubsystemBase {
 
     prevAtForwardLimit = atForwardLimit;
   }
+      zeroHoodPos();
+    }
 
   /**
    * converts hood degrees (above horizontal) to motor rotations
