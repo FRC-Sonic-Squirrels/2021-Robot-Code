@@ -135,16 +135,19 @@ public class RobotContainer {
     // Right Bumper - invert drive controls
     // Left Bumper - turbo boost, FULL SPEED  
     driverRightBumper.whenPressed(new InstantCommand(() -> m_drive.toggleDriveInverted()));
-    driverAButton.whenPressed(new InstantCommand(() -> m_drive.toggleForzaMode()));
-    driverBButton.whenPressed(new InstantCommand(() -> m_drive.toggleSquaredInputs()));
-    
+    // driverAButton.whenPressed(new InstantCommand(() -> m_drive.toggleForzaMode()));
+    // driverBButton.whenPressed(new InstantCommand(() -> m_drive.toggleSquaredInputs()));
     // driverXButton.whenPressed(new InstantCommand(() -> m_intake.toggleDynamicMode()));
+
+    driverAButton.whileHeld(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_hood, m_limelight));
+    driverXButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(3000), m_shooter));
+    driverBackButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(0), m_shooter));
+    driverBButton.whenPressed(intakeReleaseCommand());
 
     // turn off indexo and limelight LED for drive challenges 
     driverYButton.whenPressed(new ParallelCommandGroup(
         new InstantCommand(() -> m_indexer.setStopMode()), 
         new InstantCommand(() -> m_limelight.setLEDMode(1))));
-
 
 
     // Operator Controls
@@ -162,7 +165,7 @@ public class RobotContainer {
     // Start Button - reset Odometry
     // Back Button - spool up the shooter
 
-    opAButton.whenPressed(new InstantCommand(() -> m_intake.deployIntake()));
+    //opAButton.whenPressed(new InstantCommand(() -> m_intake.deployIntake()));
     opBButton.whenPressed(new InstantCommand(() -> m_intake.toggleDynamicMode()));
     //opBButton.whenPressed(new indexerStopCommand(m_indexer)); 
     //opXButton.whileHeld(new indexerReverseCommand(m_indexer));
@@ -212,14 +215,14 @@ public class RobotContainer {
  public Command intakeReleaseCommand() {
   return new SequentialCommandGroup(
     new InstantCommand(() -> m_intake.deployIntake()), 
-    new InstantCommand(() -> m_intake.setIntakePercentOutput(0.3), m_intake),
+    new InstantCommand(() -> m_intake.setIntakePercentOutput(0.3)),
     new WaitCommand(0.3), 
-    new InstantCommand(() -> m_intake.setIntakePercentOutput(-0.2), m_intake),
+    new InstantCommand(() -> m_intake.setIntakePercentOutput(-0.2)),
     new WaitCommand(0.5), 
-    new InstantCommand(() -> m_intake.setIntakePercentOutput(0.0), m_intake),
+    new InstantCommand(() -> m_intake.setIntakePercentOutput(0.0)),
     new InstantCommand(() -> m_indexer.setIntakeMode()),
     new InstantCommand(() -> m_intake.setDynamicSpeed(true))
-  );
+    );
  }
 
  /**
@@ -410,7 +413,7 @@ public class RobotContainer {
   public Command getAutonomousBlueBCommand(){
 
     return new ParallelCommandGroup(
-      intakeStartCommand(),
+      intakeReleaseCommand(),
       loadPathWeaverTrajectoryCommand("paths/BlueB.wpilib.json")
     );
 
@@ -506,7 +509,7 @@ public class RobotContainer {
 
     // If it sees the Power Cell, we run Red A, if not, then we run Blue A
     return new ParallelCommandGroup(
-      intakeStartCommand(),
+      intakeReleaseCommand(),
       new ConditionalCommand(RedA, BlueA, seesPowerCell));
 
   }
@@ -524,7 +527,7 @@ public class RobotContainer {
 
     // If it sees the Power Cell, we run Red B, if not, then we run Blue B
     return new ParallelCommandGroup(
-      intakeStartCommand(),
+      intakeReleaseCommand(),
       new ConditionalCommand(RedB, BlueB, seesPowerCell));
   }
 
