@@ -203,8 +203,6 @@ public class hoodSubsystem extends SubsystemBase {
 
     prevAtForwardLimit = atForwardLimit;
   }
-      zeroHoodPos();
-    }
 
   /**
    * converts hood degrees (above horizontal) to motor rotations
