@@ -168,8 +168,9 @@ public class RobotContainer {
     //opXButton.whileHeld(new indexerReverseCommand(m_indexer));
     //opXButton.whenPressed(new InstantCommand(() -> m_hood.setPositionRotations(m_hood.angleToRotations(70.0)), m_hood));
     //opYButton.whenPressed(new InstantCommand(() -> m_hood.setPositionRotations(m_hood.angleToRotations(46.13)), m_hood));
-
     //opYButton.whenPressed(new InstantCommand(() -> m_indexer.setIntakeMode(), m_indexer));
+    opYButton.whenPressed(intakeReleaseCommand());
+
 
     // spin up flywheel to idle RPM
     opLeftBumper.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(3000), m_shooter));
@@ -203,6 +204,19 @@ public class RobotContainer {
   return new SequentialCommandGroup(
     new InstantCommand(() -> m_intake.deployIntake()), 
     new WaitCommand(0.7), 
+    new InstantCommand(() -> m_indexer.setIntakeMode()),
+    new InstantCommand(() -> m_intake.setDynamicSpeed(true))
+  );
+ }
+
+ public Command intakeReleaseCommand() {
+  return new SequentialCommandGroup(
+    new InstantCommand(() -> m_intake.deployIntake()), 
+    new InstantCommand(() -> m_intake.setIntakePercentOutput(0.3), m_intake),
+    new WaitCommand(0.3), 
+    new InstantCommand(() -> m_intake.setIntakePercentOutput(-0.2), m_intake),
+    new WaitCommand(0.5), 
+    new InstantCommand(() -> m_intake.setIntakePercentOutput(0.0), m_intake),
     new InstantCommand(() -> m_indexer.setIntakeMode()),
     new InstantCommand(() -> m_intake.setDynamicSpeed(true))
   );
