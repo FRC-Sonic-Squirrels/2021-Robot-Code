@@ -202,6 +202,7 @@ public class hoodSubsystem extends SubsystemBase {
     }
 
     prevAtForwardLimit = atForwardLimit;
+  }
       zeroHoodPos();
     }
 
