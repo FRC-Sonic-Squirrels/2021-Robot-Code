@@ -432,7 +432,7 @@ public class RobotContainer {
    */
   public Command getAutonomousBlueACommand(){
     //Changing start pose to 12 by 90 because of Orange 1 size
-    Pose2d startPose = new Pose2d(inches2Meters(12), inches2Meters(90), new Rotation2d(0));
+    /* Pose2d startPose = new Pose2d(inches2Meters(12), inches2Meters(90), new Rotation2d(0));
 
     List<Translation2d> blue_a_points = List.of(
       new Translation2d( inches2Meters(180), inches2Meters(30)),
@@ -449,6 +449,12 @@ public class RobotContainer {
 
     // Run path following command, then stop at end. Turn off Drive train
     return ramseteCommand.andThen(() -> m_drive.tankDriveVolts(0, 0));
+    */
+
+    return new ParallelCommandGroup(
+      intakeStartCommand(),
+      loadPathWeaverTrajectoryCommand("paths/output/GalacticSearchBlueA.wpilib.json", true)
+    );
   }
 
 
@@ -458,7 +464,7 @@ public class RobotContainer {
    */
   public Command getAutonomousRedBCommand(){
     // Changing start pose to 12 by 90 because of Orange 1 size
-    Pose2d startPose = new Pose2d(inches2Meters(12), inches2Meters(90), new Rotation2d(0));
+    /* Pose2d startPose = new Pose2d(inches2Meters(12), inches2Meters(90), new Rotation2d(0));
 
     List<Translation2d> red_b_points = List.of(
       new Translation2d( inches2Meters(90), inches2Meters(120)),
@@ -475,6 +481,11 @@ public class RobotContainer {
 
     // Run path following command, then stop at end. Turn off Drive train
     return ramseteCommand.andThen(() -> m_drive.tankDriveVolts(0, 0));
+    */
+    return new ParallelCommandGroup(
+      intakeStartCommand(),
+      loadPathWeaverTrajectoryCommand("paths/output/GalacticSearchRedB.wpilib.json", true)
+    );
   }
 
 
@@ -484,7 +495,7 @@ public class RobotContainer {
    */
   public Command getAutonomousRedACommand(){
     //Changing start pose to 12 by 90 because of Orange 1 size
-    Pose2d startPose = new Pose2d(inches2Meters(12), inches2Meters(90), new Rotation2d(0));
+    /* Pose2d startPose = new Pose2d(inches2Meters(12), inches2Meters(90), new Rotation2d(0));
 
     List<Translation2d> red_a_points = List.of(
       new Translation2d( inches2Meters(90), inches2Meters(85)),
@@ -501,6 +512,12 @@ public class RobotContainer {
 
     // Run path following command, then stop at end. Turn off Drive train
     return ramseteCommand;
+    */
+
+    return new ParallelCommandGroup(
+      intakeStartCommand(),
+      loadPathWeaverTrajectoryCommand("paths/output/GalacticSearchRedA.wpilib.json", true)
+    );
   }
 
   /**
