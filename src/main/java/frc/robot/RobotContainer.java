@@ -88,9 +88,9 @@ public class RobotContainer {
     chooser.addOption("AutoNav Bounce", getAutonomousBounceCommand());
     chooser.addOption("Galactic Search A", getAutonomousGalacticSearchA());
     chooser.addOption("Galactic Search B", getAutonomousGalacticSearchB());
-    chooser.addOption("Galactic Search Red A", getAutonomousRedACommand());
-    chooser.addOption("Galactic Search Blue A", getAutonomousBlueBCommand());
-    chooser.addOption("Galactic Search Red B", getAutonomousRedBCommand());
+    chooser.addOption("Galactic Search Red A Pathweaver", getAutonomousRedACommand());
+    chooser.addOption("Galactic Search Blue A Pathweaver", getAutonomousBlueBCommand());
+    chooser.addOption("Galactic Search Red B Pathweaver", getAutonomousRedBCommand());
     chooser.addOption("Galactic Search Blue B PathWeaver", getAutonomousBlueBCommand());
     chooser.addOption("Go Forward 1", autonCalibrationForward(1.0));
     chooser.addOption("Go Forward 2", autonCalibrationForward(2.0));
