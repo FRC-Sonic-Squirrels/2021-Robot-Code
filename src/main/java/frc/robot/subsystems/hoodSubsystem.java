@@ -48,7 +48,7 @@ public class hoodSubsystem extends SubsystemBase {
   XboxController operatorController = RobotContainer.m_operatorController;
 
   //Sets Hood position in Degrees using Feet
-  private double [][] hoodPos = {
+ private double [][] hoodPos = {
     {4.0, 46.13},
     {5.0, 46.13},
     {6.6, 50.0},
