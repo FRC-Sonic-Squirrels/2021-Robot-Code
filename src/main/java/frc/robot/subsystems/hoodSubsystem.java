@@ -22,7 +22,7 @@ import com.revrobotics.CANDigitalInput;
 
 public class hoodSubsystem extends SubsystemBase {
 
-  private CANSparkMax m_hood = new CANSparkMax(hoodMotor, MotorType.kBrushless);
+  private CANSparkMax m_hood;
   private CANEncoder m_encoder;
   private CANPIDController m_pidController;
   private double kP, kI, kD, kF, kIz, kMaxOutput, kMinOutput;
@@ -63,6 +63,7 @@ public class hoodSubsystem extends SubsystemBase {
   /** Creates a new hoodSubsystem. */
   public hoodSubsystem() {
     
+    m_hood = new CANSparkMax(hoodMotor, MotorType.kBrushless);
     m_hood.restoreFactoryDefaults();
     m_hood.setInverted(true);
 
