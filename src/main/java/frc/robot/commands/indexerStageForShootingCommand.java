@@ -21,7 +21,7 @@ public class indexerStageForShootingCommand extends CommandBase {
 
   @Override
   public void initialize() {
-    m_indexer.runIndexer();
+    m_indexer.setIntakeMode();
   }
 
   @Override

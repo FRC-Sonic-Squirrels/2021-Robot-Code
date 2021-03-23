@@ -25,11 +25,8 @@ import frc.robot.RobotContainer;
 
 public class shooterSubsystem extends SubsystemBase {
 
-  private WPI_TalonFX talon_shooter1 = new WPI_TalonFX(Constants.shooterConstants.shooter1);
-  private WPI_TalonFX talon_shooter2 = new WPI_TalonFX(Constants.shooterConstants.shooter2);
-  
-  //private CANSparkMax talon_shooter1 = new CANSparkMax(shooter1, MotorType.kBrushless);
-  //private CANSparkMax talon_shooter2 = new CANSparkMax(shooter2, MotorType.kBrushless);
+  private WPI_TalonFX talon_shooter1;
+  private WPI_TalonFX talon_shooter2;
 
   private TalonFXSensorCollection m_encoder;
   private double kMaxOutput, kMinOutput;
@@ -55,7 +52,9 @@ public class shooterSubsystem extends SubsystemBase {
     {6.6, 3900},  // 6.6 Feet
     {11.0, 5000}, // 11 feet
     {15.0, 5400}, // 15 feet
-    {20.0, 6000}, // 20 feet
+    {16.2, 5500},
+    {20.0, 6000},  // 20 feet
+    {23.3, 6000},
     {25.0, 6200}
   };
 
@@ -63,6 +62,9 @@ public class shooterSubsystem extends SubsystemBase {
    * shooterSubsystem() - constructor for shooterSubsytem class
    */
   public shooterSubsystem() {
+
+    talon_shooter1 = new WPI_TalonFX(Constants.shooterConstants.shooter1);
+    talon_shooter2 = new WPI_TalonFX(Constants.shooterConstants.shooter2);
 
     talon_shooter1.configFactoryDefault();
     talon_shooter2.configFactoryDefault();
@@ -92,7 +94,7 @@ public class shooterSubsystem extends SubsystemBase {
 
     //setShooterPID(0.12, 0.0005, 0.0, 0.048, 100);
 
-    setShooterPID(0.14, 0.0005, 0.0, 0.048, 100);
+    setShooterPID(0.14, 0.0005, 0.0, 0.048, 300);
 
     // Build the linear Interpolator
     m_lt_feet = new linearInterpolator(shooterDistances);
@@ -103,7 +105,7 @@ public class shooterSubsystem extends SubsystemBase {
     talon_shooter1.set(ControlMode.Velocity, 0);
     m_rateLimiter = new SlewRateLimiter(m_rate_RPMpersecond, m_desiredRPM);
 
-    //SmartDashboard.putNumber("RPM set point", m_desiredRPM);
+    SmartDashboard.putNumber("RPM set point", m_desiredRPM);
     //SmartDashboard.putNumber("RPM", 0);
     //SmartDashboard.putNumber("RPM error", 0);
     //SmartDashboard.putNumber("Shooter Voltage", 0.0);
@@ -138,7 +140,7 @@ public class shooterSubsystem extends SubsystemBase {
     talon_shooter1.set(ControlMode.Velocity, setPoint * RPMtoTicks);
 
     SmartDashboard.putNumber("RPM", m_currentRPM);
-    //SmartDashboard.putNumber("RPM set point", setPoint);
+    SmartDashboard.putNumber("RPM set point", setPoint);
     SmartDashboard.putNumber("RPM error", m_error);
     SmartDashboard.putBoolean("isAtSpeed", m_atSpeed);
     //SmartDashboard.putNumber("Shooter Voltage", talon_shooter1.getMotorOutputVoltage());

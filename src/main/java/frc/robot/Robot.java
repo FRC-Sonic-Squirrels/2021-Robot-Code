@@ -5,6 +5,7 @@ import static frc.robot.Constants.limeLightConstants.limeLightHeight_meters;
 import static frc.robot.Constants.limeLightConstants.limeLightAngle_degrees;
 
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import edu.wpi.first.wpilibj.SlewRateLimiter;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -17,9 +18,9 @@ public class Robot extends TimedRobot {
   private RobotContainer m_robotContainer;
   public PowerDistributionPanel m_pdp = new PowerDistributionPanel(0);
   public static double distance_meters = 0.0;
-
+  private static double rateMetersPerSecond = 1.0;
+  private static final SlewRateLimiter distanceRateLimiter = new SlewRateLimiter(rateMetersPerSecond, 0.0);
   private double turretErrorDeg = 0.0;
-
 
   @Override
   public void robotInit() {
@@ -43,7 +44,8 @@ public class Robot extends TimedRobot {
         } else {
           RobotContainer.limelightOnTarget = false;
         }
-        distance_meters = RobotContainer.m_limelight.getDist(targetHeight_meters, limeLightHeight_meters , limeLightAngle_degrees);
+        // distance_meters = RobotContainer.m_limelight.getDist(targetHeight_meters, limeLightHeight_meters , limeLightAngle_degrees);
+        distance_meters = distanceRateLimiter.calculate(RobotContainer.m_limelight.getDist(targetHeight_meters, limeLightHeight_meters , limeLightAngle_degrees));
         SmartDashboard.putNumber("distance ft", distance_meters * 3.28084);
       }
       else {

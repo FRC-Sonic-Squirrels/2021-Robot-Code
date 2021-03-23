@@ -33,6 +33,7 @@ public class indexerSubsystem extends SubsystemBase {
   enum Mode {
     INTAKE,
     EJECT,
+    EJECTPAUSE,
     REVERSE,
     STOP
   };
@@ -153,16 +154,21 @@ public class indexerSubsystem extends SubsystemBase {
     if (mode == Mode.STOP) {
       stopIndexer();
     }
-    if(mode == Mode.EJECT){
-        setKickerPercentOutput(0.9);
-        setBeltsPercentOutput(0.9);
-        setHopperPercentOutput(0.5);
+    if (mode == Mode.EJECT) {
+      setKickerPercentOutput(0.9);
+      setBeltsPercentOutput(0.6);
+      setHopperPercentOutput(0.1);
     }
+    if (mode == Mode.EJECTPAUSE) {
+      setKickerPercentOutput(0.9);
+      setBeltsPercentOutput(0.0);
+      setHopperPercentOutput(0.0);
+    } 
     else if (mode == Mode.REVERSE) {
-        setKickerPercentOutput(-0.5);
-        setBeltsPercentOutput(-0.6);
-        setHopperPercentOutput(-0.9);
-    }
+      setKickerPercentOutput(-0.5);
+      setBeltsPercentOutput(-0.6);
+      setHopperPercentOutput(-0.9);
+    } 
     else if (mode == Mode.INTAKE) {
       // Normal, non-eject mode
       SmartDashboard.putNumber("Eject State", 0);
@@ -222,8 +228,13 @@ public class indexerSubsystem extends SubsystemBase {
       indexIntake.set(ControlMode.PercentOutput, percent);
   }
 
-  public void setHopperPercentOutput(double percent){
-    setAgitatorRPM(Constants.indexConstants.agitatorRPM);
+  public void setHopperPercentOutput(double percent) {
+    if (percent > 0) {
+      setAgitatorRPM(Constants.indexConstants.agitatorRPM);
+    }
+    else {
+      m_hopperAgitator.set(0.0);
+    }
     setIntakePercentOutput(percent);
   }
 
@@ -246,8 +257,6 @@ public class indexerSubsystem extends SubsystemBase {
 
   public void ejectOneBall() {
 
-    ejectIndexer();
-
     if (mode == Mode.EJECT) {
       // we're already in ejectMode
       return;
@@ -264,6 +273,13 @@ public class indexerSubsystem extends SubsystemBase {
     ejectBallStep2 = ballExiting();
     ejectBallStep3 = false;
 
+  }
+
+  /**
+   * enable Intake mode, pull balls into intake
+   */
+  public void setEjectPauseMode(){
+    mode = Mode.EJECTPAUSE;
   }
 
   /**
@@ -298,6 +314,7 @@ public class indexerSubsystem extends SubsystemBase {
    * Stop all motors
    */
   public void stopIndexer() {
+    mode = Mode.STOP;
     setBeltsPercentOutput(0.0);
     setKickerPercentOutput(0.0);
     setIntakePercentOutput(0.0);
@@ -333,46 +350,6 @@ public class indexerSubsystem extends SubsystemBase {
   }
 
   /**
-   * runIndexer() - run all indexer motors at ball staging speeds
-   */
-  public void runIndexer() {
-      setHopperPercentOutput(1);
-      setBeltsRPM(6380);
-      setKickerPercentOutput(0.3);
-      // m_blinkin.solid_green();
-  }
-
-  /**
-   * runBelts() - run only the belts
-   */
-  public void runOnlyBelts() {
-      setIntakePercentOutput(0);
-      setBeltsRPM(6380);
-      setKickerPercentOutput(0);
-      // m_blinkin.solid_blue();
-  }
-
-  /**
-   * reverseIndexer() - run all indexer motors backwards at staging speeds
-   */
-  public void reverseIndexer() {
-      setIntakePercentOutput(-0.3);
-      setBeltsPercentOutput(-0.3);
-      setKickerPercentOutput(-0.4);
-      // m_blinkin.strobe_red();
-  }
-
-  /**
-   * ejectIndexer() - run all indexer motors at eject/shooting speeds
-   */
-  public void ejectIndexer() {
-      setBeltsPercentOutput(0.8);
-      setKickerPercentOutput(0.8);
-      setHopperPercentOutput(0.3);
-      setAgitatorRPM(0);
-  }
-
-  /**
    * runIntake() - run intake motor
    */
   public void runIntake() {
@@ -380,41 +357,24 @@ public class indexerSubsystem extends SubsystemBase {
   }
 
   /**
-   * stopIntake() - stop intake motor
-   */
-  public void stopIntake() {
-    setIntakePercentOutput(0);
-  }
-
-  /**
    * stopHopper() - stop's intake & Intake Agitator Motors
    */
-  public void stopHopper() {
+  private void stopHopper() {
     setHopperPercentOutput(0);
     setAgitatorRPM(0);
   }
   
   /**
-   * runOnlyIntake() - run intake motor and stop the belts and kicker
-   */
-  public void runOnlyIntake() {
-      setIntakePercentOutput(1);
-      setBeltsRPM(0);
-      setKickerPercentOutput(0);
-      setAgitatorRPM(Constants.indexConstants.agitatorRPM);
-  } 
-
-  /**
    * stopBelts() - stop the belts motor
    */
-  public void stopBelts() {
+  private void stopBelts() {
     setBeltsRPM(0);
   }
 
   /**
    * stopKicker() - stop the kicker motor
    */
-  public void stopKicker() {
+  private void stopKicker() {
     setKickerPercentOutput(0);
   }
 

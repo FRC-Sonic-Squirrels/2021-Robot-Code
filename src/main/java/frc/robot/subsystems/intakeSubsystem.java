@@ -15,7 +15,6 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RobotContainer;
 import frc.robot.Constants;
 import edu.wpi.first.wpilibj.Relay;
 import static frc.robot.Constants.canId;
@@ -137,6 +136,21 @@ public class intakeSubsystem extends SubsystemBase {
   public void retractIntake() {
     // There is no retract on this robot. Just reset solenoids
     intakeRelay.set(Relay.Value.kForward);
+  }
+
+  /**
+   * Coasts the Intake to zero using new PID
+   */
+  public void coastToZero() {
+    setDynamicSpeed(false);
+    setIntakePercentOutput(0);
+  }
+
+  /**
+   * Resets the Intake to origional PID Values
+   */
+  public void resetIntake(){
+    setDynamicSpeed(dynamicMode);
   }
 
   public void stop() {

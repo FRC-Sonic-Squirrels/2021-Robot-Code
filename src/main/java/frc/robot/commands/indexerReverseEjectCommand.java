@@ -21,7 +21,7 @@ public class indexerReverseEjectCommand extends CommandBase {
 
   @Override
   public void initialize() {
-    m_indexer.reverseIndexer();
+    m_indexer.setReverseMode();
   }
 
   @Override
