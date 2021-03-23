@@ -387,22 +387,29 @@ public class RobotContainer {
    * @return Command object
    */
   public Command getAutonomousBounceCommand(){
-    Pose2d startPose = new Pose2d(inches2Meters(50), inches2Meters(90), new Rotation2d(0));    
+    // Pose2d startPose = new Pose2d(inches2Meters(50), inches2Meters(90), new Rotation2d(0));    
 
-    List<Translation2d> bounce_path_points = List.of(
+    // List<Translation2d> bounce_path_points = List.of(
       // TODO: Set up Bounce path points
-      new Translation2d( inches2Meters(70), inches2Meters(90))
+      // new Translation2d( inches2Meters(70), inches2Meters(90))
       // new Translation2d( inches2Meters(90), inches2Meters(150))      
-      );
+      // );
 
     // Start of The Slalom Path Program
-    Command ramseteCommand = createTrajectoryCommand(
-        startPose,
-        bounce_path_points,
-        new Pose2d(inches2Meters(90), inches2Meters(150), new Rotation2d(Math.PI/2)), false, 1.0, 0.25);
+    // Command ramseteCommand = createTrajectoryCommand(
+        // startPose,
+        // bounce_path_points,
+        // new Pose2d(inches2Meters(90), inches2Meters(150), new Rotation2d(Math.PI/2)), false, 1.0, 0.25);
     
     // Run path following command, then stop at the end. Turn off Drive train
-    return ramseteCommand.andThen(() -> m_drive.tankDriveVolts(0, 0));
+    // return ramseteCommand.andThen(() -> m_drive.tankDriveVolts(0, 0));
+
+    return new SequentialCommandGroup(
+      loadPathWeaverTrajectoryCommand("paths/output/BouncePathPartOne.wpilib.json", true),
+      loadPathWeaverTrajectoryCommand("paths/output/BouncePathPartTwo.wpilib.json", false),
+      loadPathWeaverTrajectoryCommand("paths/output/BouncePathPartThree.wpilib.json", false),
+      loadPathWeaverTrajectoryCommand("paths/output/BouncePathPartFour.wpilib.json", false)
+    );
   }
 
   
@@ -414,7 +421,7 @@ public class RobotContainer {
 
     return new ParallelCommandGroup(
       intakeReleaseCommand(),
-      loadPathWeaverTrajectoryCommand("paths/BlueB.wpilib.json")
+      loadPathWeaverTrajectoryCommand("paths/BlueB.wpilib.json", true)
     );
 
   }
@@ -658,7 +665,7 @@ public class RobotContainer {
    * @param filename
    * @return RamsetCommand
    */
-  public Command loadPathWeaverTrajectoryCommand(String filename) {
+  public Command loadPathWeaverTrajectoryCommand(String filename, boolean resetOdometry) {
 
     long initialTime = System.nanoTime();
     Trajectory trajectory;
@@ -688,9 +695,15 @@ public class RobotContainer {
 
 
     // Run path following command, then stop at the end.
-    return new SequentialCommandGroup(
-        new InstantCommand(() -> m_drive.resetOdometry(trajectory.getInitialPose())),
-        ramseteCommand);
+    // If told to reset odometry, reset odometry before running path.
+    if(resetOdometry) {
+      return new SequentialCommandGroup(
+      new InstantCommand(() -> m_drive.resetOdometry(trajectory.getInitialPose())),
+      ramseteCommand);
+    }
+    else {
+      return ramseteCommand;
+    }
 
 
   }
