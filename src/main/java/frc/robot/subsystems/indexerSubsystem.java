@@ -10,6 +10,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -27,6 +28,7 @@ import static frc.robot.Constants.canId;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
 public class indexerSubsystem extends SubsystemBase {
 
@@ -66,6 +68,12 @@ public class indexerSubsystem extends SubsystemBase {
 
     m_hopperAgitator = new CANSparkMax(indexConstants.hopperAgitator, MotorType.kBrushless);
     m_hopperAgitator.restoreFactoryDefaults();
+    
+    // reduce CAN traffic from Agitator. We don't need fast updates from this motor
+    m_hopperAgitator.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 100);
+    m_hopperAgitator.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 500);
+    m_hopperAgitator.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 500);
+
     agitatorController = m_hopperAgitator.getPIDController();
     m_agitator_encoder = m_hopperAgitator.getEncoder();
     m_hopperAgitator.setInverted(false);
@@ -73,6 +81,14 @@ public class indexerSubsystem extends SubsystemBase {
     indexBelts.configFactoryDefault();
     indexKicker.configFactoryDefault();
     indexIntake.configFactoryDefault();
+
+    // reduce CAN traffic for motors (not using speed control)
+    indexBelts.setStatusFramePeriod(StatusFrame.Status_1_General, 20);
+    indexBelts.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 100);
+    indexKicker.setStatusFramePeriod(StatusFrame.Status_1_General, 20);
+    indexKicker.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 100);
+    indexIntake.setStatusFramePeriod(StatusFrame.Status_1_General, 20);
+    indexIntake.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 100);
 
     // Voltage limits, percent output is scaled to this new max
     indexBelts.configVoltageCompSaturation(11);

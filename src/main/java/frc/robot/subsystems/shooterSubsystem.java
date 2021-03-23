@@ -15,6 +15,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FollowerType;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.TalonFXSensorCollection;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.team2930.lib.util.linearInterpolator;
@@ -85,6 +86,10 @@ public class shooterSubsystem extends SubsystemBase {
     talon_shooter2.follow(talon_shooter1, FollowerType.PercentOutput);
     // always spin opposite of the lead motor
     talon_shooter2.setInverted(InvertType.OpposeMaster);
+
+    // Reduce CAN traffic from follow motor
+    talon_shooter2.setStatusFramePeriod(StatusFrame.Status_1_General, 40);
+    talon_shooter2.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 200);
     
     m_encoder = talon_shooter1.getSensorCollection();
 
