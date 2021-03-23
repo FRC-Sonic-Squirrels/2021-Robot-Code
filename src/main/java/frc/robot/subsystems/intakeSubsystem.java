@@ -160,7 +160,7 @@ public class intakeSubsystem extends SubsystemBase {
     m_intake.config_kD(kPIDLoopIdx, 0);
     m_intake.config_kF(kPIDLoopIdx, 0.05);
     m_intake.config_IntegralZone(kPIDLoopIdx, 100);
-    setDynamicSpeed(true);
+    setDynamicSpeed(dynamicMode);
   }
 
   public void stop() {

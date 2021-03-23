@@ -139,7 +139,7 @@ public class RobotContainer {
     // driverBButton.whenPressed(new InstantCommand(() -> m_drive.toggleSquaredInputs()));
     // driverXButton.whenPressed(new InstantCommand(() -> m_intake.toggleDynamicMode()));
 
-    driverAButton.whileHeld(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_hood, m_limelight, m_intake).andThen(() -> m_intake.coastToZero()));
+    driverAButton.whileHeld(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_hood, m_limelight, m_intake));
     driverXButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(3000), m_shooter));
     driverBackButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(0), m_shooter));
     driverBButton.whenPressed(intakeReleaseCommand());
