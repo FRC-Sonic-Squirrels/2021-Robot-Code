@@ -52,7 +52,9 @@ public class shooterSubsystem extends SubsystemBase {
     {6.6, 3900},
     {11.0, 5000}, // 11 feet
     {15.0, 5400}, // 15 feet
+    {16.2, 5500},
     {20.0, 6000},  // 20 feet
+    {23.3, 6000},
     {25.0, 6200}
   };
 
