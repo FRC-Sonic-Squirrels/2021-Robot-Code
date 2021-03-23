@@ -141,12 +141,7 @@ public class intakeSubsystem extends SubsystemBase {
   /**
    * Coasts the Intake to zero using new PID
    */
-  public void coastToZero(){
-    m_intake.config_kP(kPIDLoopIdx, 0.02);
-    m_intake.config_kI(kPIDLoopIdx, 0.0005);
-    m_intake.config_kD(kPIDLoopIdx, 0);
-    m_intake.config_kF(kPIDLoopIdx, 0.05);
-    m_intake.config_IntegralZone(kPIDLoopIdx, 100);
+  public void coastToZero() {
     setDynamicSpeed(false);
     setIntakePercentOutput(0);
   }
@@ -155,11 +150,6 @@ public class intakeSubsystem extends SubsystemBase {
    * Resets the Intake to origional PID Values
    */
   public void resetIntake(){
-    m_intake.config_kP(kPIDLoopIdx, 0.2);
-    m_intake.config_kI(kPIDLoopIdx, 0.0005);
-    m_intake.config_kD(kPIDLoopIdx, 0);
-    m_intake.config_kF(kPIDLoopIdx, 0.05);
-    m_intake.config_IntegralZone(kPIDLoopIdx, 100);
     setDynamicSpeed(dynamicMode);
   }
 
