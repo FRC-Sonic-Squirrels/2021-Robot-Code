@@ -228,8 +228,13 @@ public class indexerSubsystem extends SubsystemBase {
       indexIntake.set(ControlMode.PercentOutput, percent);
   }
 
-  public void setHopperPercentOutput(double percent){
-    setAgitatorRPM(Constants.indexConstants.agitatorRPM);
+  public void setHopperPercentOutput(double percent) {
+    if (percent > 0) {
+      setAgitatorRPM(Constants.indexConstants.agitatorRPM);
+    }
+    else {
+      m_hopperAgitator.set(0.0);
+    }
     setIntakePercentOutput(percent);
   }
 
