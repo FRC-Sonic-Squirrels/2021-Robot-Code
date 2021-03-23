@@ -404,11 +404,15 @@ public class RobotContainer {
     // Run path following command, then stop at the end. Turn off Drive train
     // return ramseteCommand.andThen(() -> m_drive.tankDriveVolts(0, 0));
 
-    return new SequentialCommandGroup(
+    return new ParallelCommandGroup(
+      new InstantCommand(() -> m_indexer.stopIndexer()),
+      new InstantCommand(() -> m_intake.setDynamicSpeed(false)),
+      new SequentialCommandGroup(
       loadPathWeaverTrajectoryCommand("paths/output/BouncePathPartOne.wpilib.json", true),
       loadPathWeaverTrajectoryCommand("paths/output/BouncePathPartTwo.wpilib.json", false),
       loadPathWeaverTrajectoryCommand("paths/output/BouncePathPartThree.wpilib.json", false),
       loadPathWeaverTrajectoryCommand("paths/output/BouncePathPartFour.wpilib.json", false)
+      )
     );
   }
 

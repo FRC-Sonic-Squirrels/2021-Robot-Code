@@ -73,6 +73,7 @@ public class hoodSubsystem extends SubsystemBase {
     m_encoder = m_hood.getEncoder();
     m_pidController = m_hood.getPIDController();
     zeroHoodPos();
+    
     m_hoodAngle = new linearInterpolator(hoodPos);
 
     // PID coefficients (currently default)
