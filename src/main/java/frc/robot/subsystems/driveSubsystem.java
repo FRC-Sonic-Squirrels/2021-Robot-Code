@@ -21,6 +21,7 @@ import static frc.robot.Constants.driveConstants.driveTimeout;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrame;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.PigeonIMU;
@@ -48,7 +49,6 @@ public class driveSubsystem extends SubsystemBase {
   private boolean driveInvert = true;
   private boolean forzaModeEnabled = true;
   private boolean squaredInputs = false;
-
 
   // New Gyro, pigeon IMU on the CAN bus
   private PigeonIMU m_gyro = new PigeonIMU(canId.canId20_pigeon_imu);
@@ -84,8 +84,14 @@ public class driveSubsystem extends SubsystemBase {
     falcon3_rightLead.configFactoryDefault();
     falcon4_rightFollow.configFactoryDefault();
 
+    // reduce CAN traffic from follow motors
+    falcon2_leftFollow.setStatusFramePeriod(StatusFrame.Status_1_General, 500);
+    falcon2_leftFollow.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 100);
+    falcon4_rightFollow.setStatusFramePeriod(StatusFrame.Status_1_General, 500);
+    falcon4_rightFollow.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 100);
+
     // Current limiting
-    setCurrentLimit(m_limit);
+    // setCurrentLimit(m_limit);
 
     // Voltage limits: interfere with autonomous path following
     //setVoltageLimit(11);
