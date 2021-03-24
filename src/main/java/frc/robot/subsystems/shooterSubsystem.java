@@ -49,7 +49,9 @@ public class shooterSubsystem extends SubsystemBase {
 
   private double shooterDistances[][] = {
     {4.0, 3700},  // 4 feet 
+    {4.7, 3800},
     {5.0, 3850},  // 5 feet
+    {5.8, 3850},
     {6.6, 3900},
     {9.7, 4675},
     {11.0, 5000}, 

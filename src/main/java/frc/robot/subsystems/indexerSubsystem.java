@@ -171,12 +171,12 @@ public class indexerSubsystem extends SubsystemBase {
       stopIndexer();
     }
     if (mode == Mode.EJECT) {
-      setKickerPercentOutput(0.9);
+      setKickerPercentOutput(0.8);
       setBeltsPercentOutput(0.6);
-      setHopperPercentOutput(0.1);
+      setIntakePercentOutput(0.3);
     }
     if (mode == Mode.EJECTPAUSE) {
-      setKickerPercentOutput(0.9);
+      setKickerPercentOutput(0.8);
       setBeltsPercentOutput(0.0);
       setHopperPercentOutput(0.0);
     } 

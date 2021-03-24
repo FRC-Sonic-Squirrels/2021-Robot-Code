@@ -147,7 +147,7 @@ public class RobotContainer {
     // turn off indexo and limelight LED for drive challenges 
     driverYButton.whenPressed(new ParallelCommandGroup(
         new InstantCommand(() -> m_indexer.setStopMode()), 
-        new InstantCommand(() -> m_limelight.setLEDMode(1))));
+        new InstantCommand(() -> m_limelight.setLEDMode(0))));
 
 
     // Operator Controls
