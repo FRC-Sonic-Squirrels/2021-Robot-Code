@@ -86,8 +86,7 @@ public class RobotContainer {
     chooser.addOption("AutoNav Barrel", getAutonomousBarrelCommand());
     chooser.addOption("AutoNav Slalom", getAutonomousSlalomCommand());
     chooser.addOption("AutoNav Bounce", getAutonomousBounceCommand());
-    chooser.addOption("Galactic Search A", getAutonomousGalacticSearchA());
-    chooser.addOption("Galactic Search B", getAutonomousGalacticSearchB());
+    chooser.addOption("Galactic Search", getAutonomousGalacticSearch());
     chooser.addOption("Galactic Search Red A Pathweaver", getAutonomousRedACommand());
     chooser.addOption("Galactic Search Blue A Pathweaver", getAutonomousBlueBCommand());
     chooser.addOption("Galactic Search Red B Pathweaver", getAutonomousRedBCommand());
@@ -525,38 +524,41 @@ public class RobotContainer {
   }
 
   /**
-   * getAutonomousGalacticSearchA - Generate Auton Command used in Galactic Search A Challenge
+   * getAutonomousGalacticSearch - Generate Auton Command used in Galactic Search Challenge
    * 
    * @return Command object
    */
-  public Command getAutonomousGalacticSearchA() {
+  public Command getAutonomousGalacticSearch() {
     Command RedA = getAutonomousRedACommand();
     Command BlueA = getAutonomousBlueACommand();
+    Command RedB = getAutonomousRedBCommand();
+    Command BlueB = getAutonomousBlueBCommand();
+    Command chosen;
 
-    BooleanSupplier seesPowerCell = () -> (m_limelightPowerCell.getTV() == 1.0);
+    //BooleanSupplier seesPowerCell = () -> (m_limelightPowerCell.getTV() == 1.0);
+    if(m_limelightPowerCell.getTY()  < 30){
+      //If PowerCell is less than 30 degrees off center, then we pick Red A path
+      if(m_limelightPowerCell.getTX()  < 30){
+        chosen = RedA;
+      }
+      else {
+        chosen = RedB;
+      }
+    }
+    else {
+      //If PowerCell is less than 30 degrees off center, then we pick Blue A path
+      if(m_limelightPowerCell.getTX()  < 30){
+        chosen = BlueA;
+      }
+      else {
+        chosen = BlueB;
+      }
+    }
 
     // If it sees the Power Cell, we run Red A, if not, then we run Blue A
     return new ParallelCommandGroup(
       intakeReleaseCommand(),
-      new ConditionalCommand(RedA, BlueA, seesPowerCell));
-
-  }
-
-  /**
-   * getAutonomousGalacticSearchB - Generate Auton Command used in Galactic Search B Challenge
-   * 
-   * @return Command object
-   */
-  public Command getAutonomousGalacticSearchB() {
-    Command RedB = getAutonomousRedBCommand();
-    Command BlueB = getAutonomousBlueBCommand();
-
-    BooleanSupplier seesPowerCell = () -> (m_limelightPowerCell.getTV() == 1.0);
-
-    // If it sees the Power Cell, we run Red B, if not, then we run Blue B
-    return new ParallelCommandGroup(
-      intakeReleaseCommand(),
-      new ConditionalCommand(RedB, BlueB, seesPowerCell));
+      chosen);
   }
 
 
