@@ -575,25 +575,10 @@ public class RobotContainer {
    * @param startPose
    * @param translationList
    * @param endPose
-   * @param isReversed
-   * @param maxSpeedMetersPerSecond
-   * @param maxAccelerationMetersPerSecondSquared
+   * @param config
    * @return Ramsete Path Follow Command, intake side of robot is isReversed = true and negative values
    */
-  public Command createTrajectoryCommand(Pose2d startPose, List<Translation2d> translationList, Pose2d endPose, boolean isReversed, double maxSpeedMetersPerSecond, double maxAccelerationMetersPerSecondSquared) {
-    DifferentialDriveVoltageConstraint autoVoltageConstraint;
-    TrajectoryConfig config;
-  
-    // Create a voltage constraint to ensure we don't accelerate too fast
-    autoVoltageConstraint = new DifferentialDriveVoltageConstraint(m_drive.getFeedforward(), kDriveKinematics, 6);
-
-    // Create config for trajectory
-    config = new TrajectoryConfig(maxSpeedMetersPerSecond, maxAccelerationMetersPerSecondSquared)
-        // Add kinematics to ensure max speed is actually obeyed
-        .setKinematics(kDriveKinematics)
-        // Apply the voltage constraint
-        .addConstraint(autoVoltageConstraint)
-        .setReversed(isReversed);
+  public Command createTrajectoryCommand(Pose2d startPose, List<Translation2d> translationList, Pose2d endPose, TrajectoryConfig config) {
 
     long initialTime = System.nanoTime();
 
@@ -625,6 +610,39 @@ public class RobotContainer {
         ramseteCommand);
   }
   
+
+  /**
+   * createTrajectoryCommand - given a start pose, some intermediate points, and a finish pose, create
+   *     a Ramsete Command to execute the path follow.
+   * 
+   * Use default trajectory config with max velocity, max acceleration, and is reversed.
+   * 
+   * @param startPose
+   * @param translationList
+   * @param endPose
+   * @param isReversed
+   * @param maxSpeedMetersPerSecond
+   * @param maxAccelerationMetersPerSecondSquared
+   * @return Ramsete Path Follow Command, intake side of robot is isReversed = true and negative values
+   */
+  public Command createTrajectoryCommand(Pose2d startPose, List<Translation2d> translationList, Pose2d endPose, boolean isReversed, double maxSpeedMetersPerSecond, double maxAccelerationMetersPerSecondSquared) {
+    DifferentialDriveVoltageConstraint autoVoltageConstraint;
+    TrajectoryConfig config;
+  
+    // Create a voltage constraint to ensure we don't accelerate too fast
+    autoVoltageConstraint = new DifferentialDriveVoltageConstraint(m_drive.getFeedforward(), kDriveKinematics, 10);
+
+    // Create config for trajectory
+    config = new TrajectoryConfig(maxSpeedMetersPerSecond, maxAccelerationMetersPerSecondSquared)
+        // Add kinematics to ensure max speed is actually obeyed
+        .setKinematics(kDriveKinematics)
+        // Apply the voltage constraint
+        .addConstraint(autoVoltageConstraint)
+        .setReversed(isReversed);
+
+     return createTrajectoryCommand(startPose, translationList, endPose, config);
+  }
+
   /**
    * loadPathWeaverTrajectoryCommand - load a PathWeaver generated JSON file with
    * a trajectory and convert that to a Ramsete Command.
@@ -636,7 +654,7 @@ public class RobotContainer {
    * Filename should be a string in the form of "paths/RobotPath1.json"
    * 
    * @param filename
-   * @return RamsetCommand
+   * @return Command
    */
   public Command loadPathWeaverTrajectoryCommand(String filename) {
 
