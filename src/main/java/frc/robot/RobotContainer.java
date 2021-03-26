@@ -534,13 +534,14 @@ public class RobotContainer {
    * @return Command object
    */
   public Command getAutonomousGalacticSearch() {
+    i = () -> "";
     Command RedA = getAutonomousRedACommand();
     Command BlueA = getAutonomousBlueACommand();
     Command RedB = getAutonomousRedBCommand();
     Command BlueB = getAutonomousBlueBCommand();
     String selectedPath; 
 
-      if(m_limelightPowerCell.getTY()  < 10){
+      if(m_limelightPowerCell.getTV() == 1.0){
         //If PowerCell is less than 30 degrees off center, then we pick Red A path
         if(m_limelightPowerCell.getTX()  > 0){
           selectedPath = "RedA";
@@ -551,7 +552,9 @@ public class RobotContainer {
       }
       else {
           selectedPath = "Blue";
-      } 
+      }
+      i = () -> selectedPath;
+    DriverStation.reportError("********** Selecting path: " + selectedPath, true);
     BooleanSupplier seesPowerCell = () -> (m_limelightPowerCell.getTX() > 0);
 
     Command driveForward = createTrajectoryCommand(
@@ -560,11 +563,12 @@ public class RobotContainer {
       new Pose2d(inches2Meters(120), inches2Meters(45), new Rotation2d(0)),
       false, 1.5, 0.75);
 
-    return new InstantCommand(() -> new SelectCommand(Map.ofEntries(
-      Map.entry("RedA", new PrintCommand("Red A Path")), 
-      Map.entry("RedB", new PrintCommand("Red B Path")),
-      Map.entry("Blue", new ConditionalCommand(new PrintCommand("Blue A"), new PrintCommand("Blue B"), seesPowerCell))
-    ), i).schedule());  
+    return new InstantCommand(() -> new ParallelCommandGroup(intakeStartCommand(),
+    new SelectCommand(Map.ofEntries(
+      Map.entry("RedA", RedA), 
+      Map.entry("RedB", RedB),
+      Map.entry("Blue", new SequentialCommandGroup(driveForward, new ConditionalCommand(BlueA, BlueB, seesPowerCell)))
+    ), i)).schedule());  
   }
 
 
