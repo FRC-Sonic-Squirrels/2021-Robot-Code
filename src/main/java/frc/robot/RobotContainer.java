@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.function.BooleanSupplier;
+import java.util.Map;
+import java.util.function.Supplier;
 
 import com.fearxzombie.limelight;
 import com.team2930.lib.util.geometry;
@@ -41,6 +43,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
+import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -76,6 +79,7 @@ public class RobotContainer {
   public static XboxController m_driveController = new XboxController(driveConstants.driveController);
   public static XboxController m_operatorController = new XboxController(driveConstants.operatorController);
   public static boolean limelightOnTarget = false;
+  public static Supplier<Object> i = () -> "";
 
   public RobotContainer() {
     configureButtonBindings();
@@ -533,32 +537,32 @@ public class RobotContainer {
     Command BlueA = getAutonomousBlueACommand();
     Command RedB = getAutonomousRedBCommand();
     Command BlueB = getAutonomousBlueBCommand();
-    Command chosen;
+    String selectedPath; 
 
-    //BooleanSupplier seesPowerCell = () -> (m_limelightPowerCell.getTV() == 1.0);
-    if(m_limelightPowerCell.getTY()  < 30){
-      //If PowerCell is less than 30 degrees off center, then we pick Red A path
-      if(m_limelightPowerCell.getTX()  < 30){
-        chosen = RedA;
+      if(m_limelightPowerCell.getTY()  < 30){
+        //If PowerCell is less than 30 degrees off center, then we pick Red A path
+        if(m_limelightPowerCell.getTX()  < 30){
+          selectedPath = "RedA";
+        }
+        else {
+          selectedPath = "RedB";
+        }
       }
       else {
-        chosen = RedB;
-      }
-    }
-    else {
-      //If PowerCell is less than 30 degrees off center, then we pick Blue A path
-      if(m_limelightPowerCell.getTX()  < 30){
-        chosen = BlueA;
-      }
-      else {
-        chosen = BlueB;
-      }
-    }
-
-    // If it sees the Power Cell, we run Red A, if not, then we run Blue A
-    return new ParallelCommandGroup(
-      intakeReleaseCommand(),
-      chosen);
+        //If PowerCell is less than 30 degrees off center, then we pick Blue A path
+        if(m_limelightPowerCell.getTX()  < 30){
+          selectedPath = "BlueA";
+        }
+        else {
+          selectedPath = "BlueB";
+        }
+      } 
+    return new InstantCommand(() -> new SelectCommand(Map.ofEntries(
+      Map.entry("RedA", getAutonomousRedACommand()), 
+      Map.entry("RedB", getAutonomousRedBCommand()),
+      Map.entry("BlueA", getAutonomousBlueACommand()),
+      Map.entry("BlueB", getAutonomousBlueBCommand())
+    ), i).schedule());  
   }
 
 
