@@ -542,7 +542,7 @@ public class RobotContainer {
 
       if(m_limelightPowerCell.getTY()  < 30){
         //If PowerCell is less than 30 degrees off center, then we pick Red A path
-        if(m_limelightPowerCell.getTX()  < 30){
+        if(m_limelightPowerCell.getTX()  < 0){
           selectedPath = "RedA";
         }
         else {
@@ -551,7 +551,7 @@ public class RobotContainer {
       }
       else {
         //If PowerCell is less than 30 degrees off center, then we pick Blue A path
-        if(m_limelightPowerCell.getTX()  < 30){
+        if(m_limelightPowerCell.getTX()  < 0){
           selectedPath = "BlueA";
         }
         else {
