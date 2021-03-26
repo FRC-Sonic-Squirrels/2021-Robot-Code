@@ -550,19 +550,20 @@ public class RobotContainer {
         }
       }
       else {
-        //If PowerCell is less than 30 degrees off center, then we pick Blue A path
-        if(m_limelightPowerCell.getTX()  > 0){
-          selectedPath = "BlueA";
-        }
-        else {
-          selectedPath = "BlueB";
-        }
+          selectedPath = "Blue";
       } 
+    BooleanSupplier seesPowerCell = () -> (m_limelightPowerCell.getTX() > 0);
+
+    Command driveForward = createTrajectoryCommand(
+      new Pose2d(inches2Meters(15), inches2Meters(45), new Rotation2d(0)), 
+      List.of(),
+      new Pose2d(inches2Meters(120), inches2Meters(45), new Rotation2d(0)),
+      false, 1.5, 0.75);
+
     return new InstantCommand(() -> new SelectCommand(Map.ofEntries(
       Map.entry("RedA", new PrintCommand("Red A Path")), 
       Map.entry("RedB", new PrintCommand("Red B Path")),
-      Map.entry("BlueA", new PrintCommand("Blue A Path")),
-      Map.entry("BlueB", new PrintCommand("Red A Path"))
+      Map.entry("Blue", new ConditionalCommand(new PrintCommand("Blue A"), new PrintCommand("Blue B"), seesPowerCell))
     ), i).schedule());  
   }
 
