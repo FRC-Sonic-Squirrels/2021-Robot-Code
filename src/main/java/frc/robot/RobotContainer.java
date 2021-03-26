@@ -44,6 +44,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -558,10 +559,10 @@ public class RobotContainer {
         }
       } 
     return new InstantCommand(() -> new SelectCommand(Map.ofEntries(
-      Map.entry("RedA", getAutonomousRedACommand()), 
-      Map.entry("RedB", getAutonomousRedBCommand()),
-      Map.entry("BlueA", getAutonomousBlueACommand()),
-      Map.entry("BlueB", getAutonomousBlueBCommand())
+      Map.entry("RedA", new PrintCommand("Red A Path")), 
+      Map.entry("RedB", new PrintCommand("Red B Path")),
+      Map.entry("BlueA", new PrintCommand("Blue A Path")),
+      Map.entry("BlueB", new PrintCommand("Red A Path"))
     ), i).schedule());  
   }
 
