@@ -80,6 +80,7 @@ public class RobotContainer {
   public static XboxController m_driveController = new XboxController(driveConstants.driveController);
   public static XboxController m_operatorController = new XboxController(driveConstants.operatorController);
   public static boolean limelightOnTarget = false;
+  public static String selectedPath = "";
   public static Supplier<Object> i = () -> "";
 
   public RobotContainer() {
@@ -535,12 +536,12 @@ public class RobotContainer {
    */
   public Command getAutonomousGalacticSearch() {
     i = () -> "";
-    Command RedA = getAutonomousRedACommand();
-    Command BlueA = getAutonomousBlueACommand();
-    Command RedB = getAutonomousRedBCommand();
-    Command BlueB = getAutonomousBlueBCommand();
-    String selectedPath; 
-
+    Command RedA = new ParallelCommandGroup(new PrintCommand("Red A Path"), getAutonomousRedACommand());
+    Command BlueA = new ParallelCommandGroup(new PrintCommand("Blue A Path"), getAutonomousBlueACommand());
+    Command RedB = new ParallelCommandGroup(new PrintCommand("Red B Path"), getAutonomousRedBCommand());
+    Command BlueB = new ParallelCommandGroup(new PrintCommand("Blue B Path"), getAutonomousBlueBCommand());
+    
+    Command searchforPowerCell = new InstantCommand(() -> {
       if(m_limelightPowerCell.getTV() == 1.0){
         //If PowerCell is less than 30 degrees off center, then we pick Red A path
         if(m_limelightPowerCell.getTX()  > 0){
@@ -552,10 +553,11 @@ public class RobotContainer {
       }
       else {
           selectedPath = "Blue";
-      }
+      }});
       i = () -> selectedPath;
+
     DriverStation.reportError("********** Selecting path: " + selectedPath, true);
-    BooleanSupplier seesPowerCell = () -> (m_limelightPowerCell.getTX() > 0);
+    BooleanSupplier seesPowerCellToRight = () -> (m_limelightPowerCell.getTX() > 0);
 
     Command driveForward = createTrajectoryCommand(
       new Pose2d(inches2Meters(15), inches2Meters(45), new Rotation2d(0)), 
@@ -564,11 +566,12 @@ public class RobotContainer {
       false, 1.5, 0.75);
 
     return new InstantCommand(() -> new ParallelCommandGroup(intakeStartCommand(),
+    new SequentialCommandGroup(searchforPowerCell,
     new SelectCommand(Map.ofEntries(
-      Map.entry("RedA", RedA), 
-      Map.entry("RedB", RedB),
-      Map.entry("Blue", new SequentialCommandGroup(driveForward, new ConditionalCommand(BlueA, BlueB, seesPowerCell)))
-    ), i)).schedule());  
+      Map.entry("RedA", RedA),
+      Map.entry("RedB", RedB), 
+      Map.entry("Blue", new SequentialCommandGroup(driveForward, new ConditionalCommand(BlueA, BlueB, seesPowerCellToRight)))
+    ), i))).schedule() );  
   }
 
 
