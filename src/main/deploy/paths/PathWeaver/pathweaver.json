@@ -4,6 +4,6 @@
   "maxVelocity": 2.0,
   "maxAcceleration": 0.875,
   "wheelBase": 0.627,
-  "gameName": "Galactic Search B",
+  "gameName": "Galactic Search A",
   "outputDir": ".."
 }
