@@ -554,7 +554,7 @@ public class RobotContainer {
       else {
           selectedPath = "Blue";
       }
-      DriverStation.reportError("********** Selecting path: " + selectedPath + "**********", true);
+      DriverStation.reportError("********** Selecting path: " + selectedPath + " **********", true);
       });
       i = () -> selectedPath;
 
@@ -566,7 +566,7 @@ public class RobotContainer {
       new Pose2d(inches2Meters(120), inches2Meters(45), new Rotation2d(0)),
       false, 1.5, 0.75);
 
-    return new InstantCommand(() -> new ParallelCommandGroup(intakeStartCommand(),
+    return new InstantCommand(() -> new ParallelCommandGroup(intakeReleaseCommand(),
     new SequentialCommandGroup(searchforPowerCell,
     new SelectCommand(Map.ofEntries(
       Map.entry("RedA", RedA),
