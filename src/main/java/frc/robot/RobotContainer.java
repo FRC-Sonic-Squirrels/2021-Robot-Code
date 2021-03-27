@@ -461,7 +461,7 @@ public class RobotContainer {
     */
 
     return new ParallelCommandGroup(
-      intakeStartCommand(),
+      intakeReleaseCommand(),
       loadPathWeaverTrajectoryCommand("paths/output/GalacticSearchBlueA.wpilib.json", true)
     );
   }
@@ -492,7 +492,7 @@ public class RobotContainer {
     return ramseteCommand.andThen(() -> m_drive.tankDriveVolts(0, 0));
     */
     return new ParallelCommandGroup(
-      intakeStartCommand(),
+      intakeReleaseCommand(),
       loadPathWeaverTrajectoryCommand("paths/output/GalacticSearchRedB.wpilib.json", true)
     );
   }
@@ -524,7 +524,7 @@ public class RobotContainer {
     */
 
     return new ParallelCommandGroup(
-      intakeStartCommand(),
+      intakeReleaseCommand(),
       loadPathWeaverTrajectoryCommand("paths/output/GalacticSearchRedA.wpilib.json", true)
     );
   }
