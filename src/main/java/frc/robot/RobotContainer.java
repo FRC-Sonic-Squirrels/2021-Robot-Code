@@ -553,10 +553,11 @@ public class RobotContainer {
       }
       else {
           selectedPath = "Blue";
-      }});
+      }
+      DriverStation.reportError("********** Selecting path: " + selectedPath + "**********", true);
+      });
       i = () -> selectedPath;
 
-    DriverStation.reportError("********** Selecting path: " + selectedPath, true);
     BooleanSupplier seesPowerCellToRight = () -> (m_limelightPowerCell.getTX() > 0);
 
     Command driveForward = createTrajectoryCommand(
