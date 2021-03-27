@@ -75,7 +75,7 @@ public class RobotContainer {
   private final turretSubsystem m_turret = new turretSubsystem();
   public final shooterSubsystem m_shooter = new shooterSubsystem();
   private static final indexerSubsystem m_indexer = new indexerSubsystem();
-  private final intakeSubsystem m_intake = new intakeSubsystem(m_drive);
+  public final intakeSubsystem m_intake = new intakeSubsystem(m_drive);
   private final hoodSubsystem m_hood = new hoodSubsystem();
   public static XboxController m_driveController = new XboxController(driveConstants.driveController);
   public static XboxController m_operatorController = new XboxController(driveConstants.operatorController);
