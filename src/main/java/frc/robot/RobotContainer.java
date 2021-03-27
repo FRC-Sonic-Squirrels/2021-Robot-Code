@@ -535,6 +535,7 @@ public class RobotContainer {
    * @return Command object
    */
   public Command getAutonomousGalacticSearch() {
+    m_intake.setDynamicSpeed(false);
     i = () -> "";
     Command RedA = new ParallelCommandGroup(new PrintCommand("Red A Path"), getAutonomousRedACommand());
     Command BlueA = new ParallelCommandGroup(new PrintCommand("Blue A Path"), getAutonomousBlueACommand());
@@ -542,14 +543,9 @@ public class RobotContainer {
     Command BlueB = new ParallelCommandGroup(new PrintCommand("Blue B Path"), getAutonomousBlueBCommand());
     
     Command searchforPowerCell = new InstantCommand(() -> {
-      if(m_limelightPowerCell.getTV() == 1.0){
-        //If PowerCell is less than 30 degrees off center, then we pick Red A path
-        if(m_limelightPowerCell.getTX()  > 0){
-          selectedPath = "RedA";
-        }
-        else {
-          selectedPath = "RedB";
-        }
+      //If Powercell is less than 14.5 degrees away, then runs red. Else runs blue
+      if(m_limelightPowerCell.getTY() < 14.5){
+          selectedPath = "Red";
       }
       else {
           selectedPath = "Blue";
@@ -560,19 +556,11 @@ public class RobotContainer {
 
     BooleanSupplier seesPowerCellToRight = () -> (m_limelightPowerCell.getTX() > 0);
 
-    Command driveForward = createTrajectoryCommand(
-      new Pose2d(inches2Meters(15), inches2Meters(45), new Rotation2d(0)), 
-      List.of(),
-      new Pose2d(inches2Meters(120), inches2Meters(45), new Rotation2d(0)),
-      false, 1.5, 0.75);
-
-    return new InstantCommand(() -> new ParallelCommandGroup(intakeReleaseCommand(),
-    new SequentialCommandGroup(searchforPowerCell,
+    return new InstantCommand(() -> new SequentialCommandGroup(searchforPowerCell,
     new SelectCommand(Map.ofEntries(
-      Map.entry("RedA", RedA),
-      Map.entry("RedB", RedB), 
-      Map.entry("Blue", new SequentialCommandGroup(driveForward, new ConditionalCommand(BlueA, BlueB, seesPowerCellToRight)))
-    ), i))).schedule() );  
+      Map.entry("Red", new ConditionalCommand(RedA, RedB, seesPowerCellToRight)),
+      Map.entry("Blue", new ConditionalCommand(BlueA, BlueB, seesPowerCellToRight))
+    ), i)).schedule() );  
   }
 
 
