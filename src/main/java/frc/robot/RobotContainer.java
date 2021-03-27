@@ -94,7 +94,7 @@ public class RobotContainer {
     chooser.addOption("AutoNav Bounce", getAutonomousBounceCommand());
     chooser.addOption("Galactic Search", getAutonomousGalacticSearch());
     chooser.addOption("Galactic Search Red A Pathweaver", getAutonomousRedACommand());
-    chooser.addOption("Galactic Search Blue A Pathweaver", getAutonomousBlueBCommand());
+    chooser.addOption("Galactic Search Blue A Pathweaver", getAutonomousBlueACommand());
     chooser.addOption("Galactic Search Red B Pathweaver", getAutonomousRedBCommand());
     chooser.addOption("Galactic Search Blue B PathWeaver", getAutonomousBlueBCommand());
     chooser.addOption("Go Forward 1", autonCalibrationForward(1.0));
@@ -430,7 +430,7 @@ public class RobotContainer {
 
     return new ParallelCommandGroup(
       intakeReleaseCommand(),
-      loadPathWeaverTrajectoryCommand("paths/BlueB.wpilib.json", true)
+      loadPathWeaverTrajectoryCommand("paths/output/GalacticSearchBlueB.wpilib.json", true)
     );
 
   }
