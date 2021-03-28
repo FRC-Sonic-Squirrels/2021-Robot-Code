@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.function.BooleanSupplier;
+import java.util.Map;
+import java.util.function.Supplier;
 
 import com.fearxzombie.limelight;
 import com.team2930.lib.util.geometry;
@@ -41,6 +43,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
+import edu.wpi.first.wpilibj2.command.SelectCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -71,11 +75,13 @@ public class RobotContainer {
   private final turretSubsystem m_turret = new turretSubsystem();
   public final shooterSubsystem m_shooter = new shooterSubsystem();
   private static final indexerSubsystem m_indexer = new indexerSubsystem();
-  private final intakeSubsystem m_intake = new intakeSubsystem(m_drive);
+  public final intakeSubsystem m_intake = new intakeSubsystem(m_drive);
   private final hoodSubsystem m_hood = new hoodSubsystem();
   public static XboxController m_driveController = new XboxController(driveConstants.driveController);
   public static XboxController m_operatorController = new XboxController(driveConstants.operatorController);
   public static boolean limelightOnTarget = false;
+  public static String selectedPath = "";
+  public static Supplier<Object> i = () -> "";
 
   public RobotContainer() {
     configureButtonBindings();
@@ -86,11 +92,10 @@ public class RobotContainer {
     chooser.addOption("AutoNav Barrel", getAutonomousBarrelCommand());
     chooser.addOption("AutoNav Slalom", getAutonomousSlalomCommand());
     chooser.addOption("AutoNav Bounce", getAutonomousBounceCommand());
-    chooser.addOption("Galactic Search A", getAutonomousGalacticSearchA());
-    chooser.addOption("Galactic Search B", getAutonomousGalacticSearchB());
-    chooser.addOption("Galactic Search Red A", getAutonomousRedACommand());
-    chooser.addOption("Galactic Search Blue A", getAutonomousBlueBCommand());
-    chooser.addOption("Galactic Search Red B", getAutonomousRedBCommand());
+    chooser.addOption("Galactic Search", getAutonomousGalacticSearch());
+    chooser.addOption("Galactic Search Red A Pathweaver", getAutonomousRedACommand());
+    chooser.addOption("Galactic Search Blue A Pathweaver", getAutonomousBlueACommand());
+    chooser.addOption("Galactic Search Red B Pathweaver", getAutonomousRedBCommand());
     chooser.addOption("Galactic Search Blue B PathWeaver", getAutonomousBlueBCommand());
     chooser.addOption("Go Forward 1", autonCalibrationForward(1.0));
     chooser.addOption("Go Forward 2", autonCalibrationForward(2.0));
@@ -387,22 +392,33 @@ public class RobotContainer {
    * @return Command object
    */
   public Command getAutonomousBounceCommand(){
-    Pose2d startPose = new Pose2d(inches2Meters(50), inches2Meters(90), new Rotation2d(0));    
+    // Pose2d startPose = new Pose2d(inches2Meters(50), inches2Meters(90), new Rotation2d(0));    
 
-    List<Translation2d> bounce_path_points = List.of(
+    // List<Translation2d> bounce_path_points = List.of(
       // TODO: Set up Bounce path points
-      new Translation2d( inches2Meters(70), inches2Meters(90))
+      // new Translation2d( inches2Meters(70), inches2Meters(90))
       // new Translation2d( inches2Meters(90), inches2Meters(150))      
-      );
+      // );
 
     // Start of The Slalom Path Program
-    Command ramseteCommand = createTrajectoryCommand(
-        startPose,
-        bounce_path_points,
-        new Pose2d(inches2Meters(90), inches2Meters(150), new Rotation2d(Math.PI/2)), false, 1.0, 0.25);
+    // Command ramseteCommand = createTrajectoryCommand(
+        // startPose,
+        // bounce_path_points,
+        // new Pose2d(inches2Meters(90), inches2Meters(150), new Rotation2d(Math.PI/2)), false, 1.0, 0.25);
     
     // Run path following command, then stop at the end. Turn off Drive train
-    return ramseteCommand.andThen(() -> m_drive.tankDriveVolts(0, 0));
+    // return ramseteCommand.andThen(() -> m_drive.tankDriveVolts(0, 0));
+
+    return new ParallelCommandGroup(
+      new InstantCommand(() -> m_indexer.stopIndexer()),
+      new InstantCommand(() -> m_intake.setDynamicSpeed(false)),
+      new SequentialCommandGroup(
+      loadPathWeaverTrajectoryCommand("paths/output/BouncePathPartOne.wpilib.json", true),
+      loadPathWeaverTrajectoryCommand("paths/output/BouncePathPartTwo.wpilib.json", false),
+      loadPathWeaverTrajectoryCommand("paths/output/BouncePathPartThree.wpilib.json", false),
+      loadPathWeaverTrajectoryCommand("paths/output/BouncePathPartFour.wpilib.json", false)
+      )
+    );
   }
 
   
@@ -414,7 +430,7 @@ public class RobotContainer {
 
     return new ParallelCommandGroup(
       intakeReleaseCommand(),
-      loadPathWeaverTrajectoryCommand("paths/BlueB.wpilib.json")
+      loadPathWeaverTrajectoryCommand("paths/output/GalacticSearchBlueB.wpilib.json", true)
     );
 
   }
@@ -425,7 +441,7 @@ public class RobotContainer {
    */
   public Command getAutonomousBlueACommand(){
     //Changing start pose to 12 by 90 because of Orange 1 size
-    Pose2d startPose = new Pose2d(inches2Meters(12), inches2Meters(90), new Rotation2d(0));
+    /* Pose2d startPose = new Pose2d(inches2Meters(12), inches2Meters(90), new Rotation2d(0));
 
     List<Translation2d> blue_a_points = List.of(
       new Translation2d( inches2Meters(180), inches2Meters(30)),
@@ -442,6 +458,12 @@ public class RobotContainer {
 
     // Run path following command, then stop at end. Turn off Drive train
     return ramseteCommand.andThen(() -> m_drive.tankDriveVolts(0, 0));
+    */
+
+    return new ParallelCommandGroup(
+      intakeReleaseCommand(),
+      loadPathWeaverTrajectoryCommand("paths/output/GalacticSearchBlueA.wpilib.json", true)
+    );
   }
 
 
@@ -451,7 +473,7 @@ public class RobotContainer {
    */
   public Command getAutonomousRedBCommand(){
     // Changing start pose to 12 by 90 because of Orange 1 size
-    Pose2d startPose = new Pose2d(inches2Meters(12), inches2Meters(90), new Rotation2d(0));
+    /* Pose2d startPose = new Pose2d(inches2Meters(12), inches2Meters(90), new Rotation2d(0));
 
     List<Translation2d> red_b_points = List.of(
       new Translation2d( inches2Meters(90), inches2Meters(120)),
@@ -468,6 +490,11 @@ public class RobotContainer {
 
     // Run path following command, then stop at end. Turn off Drive train
     return ramseteCommand.andThen(() -> m_drive.tankDriveVolts(0, 0));
+    */
+    return new ParallelCommandGroup(
+      intakeReleaseCommand(),
+      loadPathWeaverTrajectoryCommand("paths/output/GalacticSearchRedB.wpilib.json", true)
+    );
   }
 
 
@@ -477,7 +504,7 @@ public class RobotContainer {
    */
   public Command getAutonomousRedACommand(){
     //Changing start pose to 12 by 90 because of Orange 1 size
-    Pose2d startPose = new Pose2d(inches2Meters(12), inches2Meters(90), new Rotation2d(0));
+    /* Pose2d startPose = new Pose2d(inches2Meters(12), inches2Meters(90), new Rotation2d(0));
 
     List<Translation2d> red_a_points = List.of(
       new Translation2d( inches2Meters(90), inches2Meters(85)),
@@ -494,41 +521,46 @@ public class RobotContainer {
 
     // Run path following command, then stop at end. Turn off Drive train
     return ramseteCommand;
+    */
+
+    return new ParallelCommandGroup(
+      intakeReleaseCommand(),
+      loadPathWeaverTrajectoryCommand("paths/output/GalacticSearchRedA.wpilib.json", true)
+    );
   }
 
   /**
-   * getAutonomousGalacticSearchA - Generate Auton Command used in Galactic Search A Challenge
+   * getAutonomousGalacticSearch - Generate Auton Command used in Galactic Search Challenge
    * 
    * @return Command object
    */
-  public Command getAutonomousGalacticSearchA() {
-    Command RedA = getAutonomousRedACommand();
-    Command BlueA = getAutonomousBlueACommand();
+  public Command getAutonomousGalacticSearch() {
+    m_intake.setDynamicSpeed(false);
+    i = () -> "";
+    Command RedA = new ParallelCommandGroup(new PrintCommand("Red A Path"), getAutonomousRedACommand());
+    Command BlueA = new ParallelCommandGroup(new PrintCommand("Blue A Path"), getAutonomousBlueACommand());
+    Command RedB = new ParallelCommandGroup(new PrintCommand("Red B Path"), getAutonomousRedBCommand());
+    Command BlueB = new ParallelCommandGroup(new PrintCommand("Blue B Path"), getAutonomousBlueBCommand());
+    
+    Command searchforPowerCell = new InstantCommand(() -> {
+      //If Powercell is less than 14.5 degrees away, then runs red. Else runs blue
+      if(m_limelightPowerCell.getTY() < 14.5){
+          selectedPath = "Red";
+      }
+      else {
+          selectedPath = "Blue";
+      }
+      DriverStation.reportError("********** Selecting path: " + selectedPath + " **********", true);
+      });
+      i = () -> selectedPath;
 
-    BooleanSupplier seesPowerCell = () -> (m_limelightPowerCell.getTV() == 1.0);
+    BooleanSupplier seesPowerCellToRight = () -> (m_limelightPowerCell.getTX() > 0);
 
-    // If it sees the Power Cell, we run Red A, if not, then we run Blue A
-    return new ParallelCommandGroup(
-      intakeReleaseCommand(),
-      new ConditionalCommand(RedA, BlueA, seesPowerCell));
-
-  }
-
-  /**
-   * getAutonomousGalacticSearchB - Generate Auton Command used in Galactic Search B Challenge
-   * 
-   * @return Command object
-   */
-  public Command getAutonomousGalacticSearchB() {
-    Command RedB = getAutonomousRedBCommand();
-    Command BlueB = getAutonomousBlueBCommand();
-
-    BooleanSupplier seesPowerCell = () -> (m_limelightPowerCell.getTV() == 1.0);
-
-    // If it sees the Power Cell, we run Red B, if not, then we run Blue B
-    return new ParallelCommandGroup(
-      intakeReleaseCommand(),
-      new ConditionalCommand(RedB, BlueB, seesPowerCell));
+    return new InstantCommand(() -> new SequentialCommandGroup(searchforPowerCell,
+    new SelectCommand(Map.ofEntries(
+      Map.entry("Red", new ConditionalCommand(RedA, RedB, seesPowerCellToRight)),
+      Map.entry("Blue", new ConditionalCommand(BlueA, BlueB, seesPowerCellToRight))
+    ), i)).schedule() );  
   }
 
 
@@ -658,7 +690,7 @@ public class RobotContainer {
    * @param filename
    * @return RamsetCommand
    */
-  public Command loadPathWeaverTrajectoryCommand(String filename) {
+  public Command loadPathWeaverTrajectoryCommand(String filename, boolean resetOdometry) {
 
     long initialTime = System.nanoTime();
     Trajectory trajectory;
@@ -688,9 +720,15 @@ public class RobotContainer {
 
 
     // Run path following command, then stop at the end.
-    return new SequentialCommandGroup(
-        new InstantCommand(() -> m_drive.resetOdometry(trajectory.getInitialPose())),
-        ramseteCommand);
+    // If told to reset odometry, reset odometry before running path.
+    if(resetOdometry) {
+      return new SequentialCommandGroup(
+      new InstantCommand(() -> m_drive.resetOdometry(trajectory.getInitialPose())),
+      ramseteCommand);
+    }
+    else {
+      return ramseteCommand;
+    }
 
 
   }

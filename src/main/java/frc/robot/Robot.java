@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
+
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
@@ -30,6 +31,7 @@ public class Robot extends TimedRobot {
     
     //RobotContainer.m_limelight.setLEDMode(1);
     //CameraServer.getInstance().startAutomaticCapture();
+    m_robotContainer.m_intake.setDynamicSpeed(false);
   }
 
   @Override
