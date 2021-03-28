@@ -123,7 +123,7 @@ public class hoodSubsystem extends SubsystemBase {
     prevAtForwardLimit = atForwardLimit = m_forwardLimit.get();
 
     if (atForwardLimit == false) {
-      m_hood.set(-0.05);
+      m_hood.set(-0.09);
     }
 
   }

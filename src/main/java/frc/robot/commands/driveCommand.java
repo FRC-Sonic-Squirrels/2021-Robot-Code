@@ -18,7 +18,7 @@ public class driveCommand extends CommandBase {
 
   driveSubsystem m_drive;
   XboxController driveController = RobotContainer.m_driveController;
-  private double speedMultiplier = 0.7;
+  private double speedMultiplier = 0.8;
   private double rotationMultiplier = 0.6;
 
   public driveCommand(driveSubsystem drive) {
@@ -76,7 +76,7 @@ public class driveCommand extends CommandBase {
 
     m_drive.arcadeDrive(speed, rotation);
 
-    //SmartDashboard.putBoolean("Drive Inverted", m_drive.getDriveInvert());
+    SmartDashboard.putBoolean("Drive Inverted", m_drive.getDriveInvert());
     //SmartDashboard.putBoolean("Drive Forza Mode", m_drive.getForzaModeEnabled());
     //SmartDashboard.putBoolean("Drive Square Inputs", m_drive.getSquaredInputs());
     //SmartDashboard.putNumber("Drive Multiplier", speedMultiplier);

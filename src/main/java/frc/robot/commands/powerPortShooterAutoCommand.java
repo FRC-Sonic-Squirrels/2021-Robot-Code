@@ -18,7 +18,7 @@ import frc.robot.subsystems.shooterSubsystem;
 import frc.robot.subsystems.turretSubsystem;
 import frc.robot.subsystems.intakeSubsystem;
 
-public class shooterAutoCommand extends CommandBase {
+public class powerPortShooterAutoCommand extends CommandBase {
 
   private indexerSubsystem m_indexer;
   private turretSubsystem m_turret;
@@ -45,7 +45,7 @@ public class shooterAutoCommand extends CommandBase {
    * @param intake,
    * @param stationary, boolean: true if robot is stationary
    */
-  public shooterAutoCommand(indexerSubsystem indexer, turretSubsystem turret, shooterSubsystem shooter, hoodSubsystem hood, limelight ll_util, intakeSubsystem intake, boolean stationary) {
+  public powerPortShooterAutoCommand(indexerSubsystem indexer, turretSubsystem turret, shooterSubsystem shooter, hoodSubsystem hood, limelight ll_util, intakeSubsystem intake, boolean stationary) {
     addRequirements(indexer);
     addRequirements(turret);
     addRequirements(shooter);
@@ -61,7 +61,7 @@ public class shooterAutoCommand extends CommandBase {
     SmartDashboard.putNumber("Time to Shoot", 0.0);
   }
 
-  public shooterAutoCommand(indexerSubsystem indexer, turretSubsystem turret, shooterSubsystem shooter, hoodSubsystem hood, limelight ll_util, intakeSubsystem intake) {
+  public powerPortShooterAutoCommand(indexerSubsystem indexer, turretSubsystem turret, shooterSubsystem shooter, hoodSubsystem hood, limelight ll_util, intakeSubsystem intake) {
     // call main constructor, w/ stationary false,
      this(indexer, turret, shooter, hood, ll_util, intake, false);
   }

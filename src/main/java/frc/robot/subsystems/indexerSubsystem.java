@@ -172,8 +172,8 @@ public class indexerSubsystem extends SubsystemBase {
     }
     if (mode == Mode.EJECT) {
       setKickerPercentOutput(0.8);
-      setBeltsPercentOutput(0.6);
-      setIntakePercentOutput(0.3);
+      setBeltsPercentOutput(0.8);
+      setIntakePercentOutput(0.6);
     }
     if (mode == Mode.EJECTPAUSE) {
       setKickerPercentOutput(0.8);
@@ -271,6 +271,13 @@ public class indexerSubsystem extends SubsystemBase {
     agitatorController.setReference(rpm, ControlType.kVelocity);
   }
 
+  /**
+   * Enables Eject Mode and Speeds up belts: 
+   *   Steps:
+     * 1. run indexer until ball exiting (get ready to shoot)
+     * 2. run indexer until ball not exiting (shooting!)
+     * 3. stop indexer when ball ready to exit (ready for next shot)
+   */
   public void ejectOneBall() {
 
     if (mode == Mode.EJECT) {
