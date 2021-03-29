@@ -10,6 +10,8 @@ package frc.robot.commands;
 import com.fearxzombie.limelight;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.XboxController.Button;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.hoodSubsystem;
@@ -33,6 +35,8 @@ public class powerPortShooterAutoCommand extends CommandBase {
   private long shooterReadyTimeNS = 0;
   private double m_Integral = 0;
   private boolean shooting = false;
+  //private double distance = 10.0;
+  private double distance = 10.0;
 
   /**
    * shooterAutoCommand class constructor
@@ -70,31 +74,37 @@ public class powerPortShooterAutoCommand extends CommandBase {
   public void initialize() {
     m_limelight.setLEDMode(0);
     m_Integral = 0;
+    m_shooter.setShooterRPM(m_shooter.getRPMforDistanceFeet(distance));
+    m_hood.setPositionRotations(m_hood.angleToRotations(m_hood.getAngleforDistanceFeet(distance)));
   }
 
   @Override
   public void execute() {
-    m_intake.coastToZero();
+    //m_intake.coastToZero();
     if (startTimeNS == 0) {
       startTimeNS = System.nanoTime();
     }
+    //While A is not pressed
 
-    m_shooter.setShooterRPM(m_shooter.getRPMforDistanceMeter(Robot.distance_meters));
-    m_hood.setPositionRotations(m_hood.angleToRotations(m_hood.getAngleforDistanceMeter(Robot.distance_meters)));
-    double tx_angleError = m_limelight.getTX();
-    if (Math.abs(tx_angleError) < 2.0) {
-      m_Integral += tx_angleError * (0.02);
-    }
-    limelightSteerCommand = (tx_angleError * steer_kp) + (m_Integral * steer_ki);
-    m_turret.setPercentOutput(limelightSteerCommand);
-
+    //if(!RobotContainer.m_driveController.getAButton()) { 
+      double tx_angleError = m_limelight.getTX();
+      if (Math.abs(tx_angleError) < 2.0) {
+        m_Integral += tx_angleError * (0.02);
+      }
+      limelightSteerCommand = (tx_angleError * steer_kp) + (m_Integral * steer_ki);
+      m_turret.setPercentOutput(limelightSteerCommand);
+    //}
     // shoot!
-    if ( m_shooter.isAtSpeed() && RobotContainer.limelightOnTarget && m_hood.isAtPos() ) {
+    if(RobotContainer.m_driveController.getAButton()) { 
       m_indexer.ejectOneBall();
+      //m_turret.setPercentOutput(0.0);
       shooting = true;
       if (shooterReadyTimeNS == 0)
         shooterReadyTimeNS = System.nanoTime();
         SmartDashboard.putNumber("Time to Shoot", (double) (shooterReadyTimeNS - startTimeNS) / 1_000_000_000);
+    }
+    else {
+      m_indexer.setIntakeMode();
     }
   }
   
