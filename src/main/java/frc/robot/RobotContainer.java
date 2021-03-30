@@ -306,7 +306,7 @@ public class RobotContainer {
   public Command getAutonomousBarrelCommand(){
 
     // Tell the odometry know where the robot is starting from and what direction it is pointing.
-    Pose2d startPose = new Pose2d(inches2Meters(50), inches2Meters(90), new Rotation2d(0));
+    /* Pose2d startPose = new Pose2d(inches2Meters(50), inches2Meters(90), new Rotation2d(0));
 
     // distances are in Meters
     List<Translation2d> barrel_path_points = List.of(
@@ -344,6 +344,14 @@ public class RobotContainer {
     
     // Run path following command, then stop at the end.
     return ramseteCommand.andThen(() -> m_drive.tankDriveVolts(0, 0));
+    */
+
+    return new ParallelCommandGroup(
+      new InstantCommand(() -> m_indexer.stopIndexer()),
+      new InstantCommand(() -> m_intake.setDynamicSpeed(false)),
+      loadPathWeaverTrajectoryCommand("paths/output/BarrelRacing.wpilib.json", true)
+    );
+
   }
 
 
@@ -354,7 +362,7 @@ public class RobotContainer {
    */
   public Command getAutonomousSlalomCommand(){
      
-    Pose2d startPose = new Pose2d(inches2Meters(45), inches2Meters(30), new Rotation2d(0));
+    /* Pose2d startPose = new Pose2d(inches2Meters(45), inches2Meters(30), new Rotation2d(0));
 
     List<Translation2d> slalom_path_points = List.of(
       new Translation2d( inches2Meters(80), inches2Meters(30)),
@@ -383,6 +391,13 @@ public class RobotContainer {
     
     // Run path following command, then stop at the end. Turn off Drive train
     return ramseteCommand.andThen(() -> m_drive.tankDriveVolts(0, 0));
+    */
+
+    return new ParallelCommandGroup(
+      new InstantCommand(() -> m_indexer.stopIndexer()),
+      new InstantCommand(() -> m_intake.setDynamicSpeed(false)),
+      loadPathWeaverTrajectoryCommand("paths/output/Slalom.wpilib.json", true)
+    );
   }
 
 
