@@ -86,7 +86,7 @@ public class RobotContainer {
   public RobotContainer() {
     configureButtonBindings();
     m_drive.setDefaultCommand(new driveCommand(m_drive));
-    m_indexer.setDefaultCommand(new indexerDefaultCommand(m_indexer));
+    // m_indexer.setDefaultCommand(new indexerDefaultCommand(m_indexer));
     m_turret.setDefaultCommand(new turretDefaultCommand(m_turret));
 
     chooser.addOption("AutoNav Barrel", getAutonomousBarrelCommand());
@@ -347,7 +347,7 @@ public class RobotContainer {
     */
 
     return new ParallelCommandGroup(
-      new InstantCommand(() -> m_indexer.stopIndexer()),
+      new InstantCommand(() -> m_indexer.setStopMode()),
       new InstantCommand(() -> m_intake.setDynamicSpeed(false)),
       loadPathWeaverTrajectoryCommand("paths/output/BarrelRacing.wpilib.json", true)
     );
@@ -394,7 +394,7 @@ public class RobotContainer {
     */
 
     return new ParallelCommandGroup(
-      new InstantCommand(() -> m_indexer.stopIndexer()),
+      new InstantCommand(() -> m_indexer.setStopMode()),
       new InstantCommand(() -> m_intake.setDynamicSpeed(false)),
       loadPathWeaverTrajectoryCommand("paths/output/Slalom.wpilib.json", true)
     );
@@ -425,7 +425,7 @@ public class RobotContainer {
     // return ramseteCommand.andThen(() -> m_drive.tankDriveVolts(0, 0));
 
     return new ParallelCommandGroup(
-      new InstantCommand(() -> m_indexer.stopIndexer()),
+      new InstantCommand(() -> m_indexer.setStopMode()),
       new InstantCommand(() -> m_intake.setDynamicSpeed(false)),
       new SequentialCommandGroup(
       loadPathWeaverTrajectoryCommand("paths/output/BouncePathPartOne.wpilib.json", true),
