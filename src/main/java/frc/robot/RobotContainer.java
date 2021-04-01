@@ -49,6 +49,7 @@ import frc.robot.commands.driveCommand;
 import frc.robot.commands.indexerDefaultCommand;
 import frc.robot.commands.indexerReverseCommand;
 import frc.robot.commands.shooterAutoCommand;
+import frc.robot.commands.interstellarAccuracyShooterAutoCommand;
 import frc.robot.commands.turretDefaultCommand;
 import frc.robot.subsystems.driveSubsystem;
 import frc.robot.subsystems.hoodSubsystem;
@@ -139,16 +140,16 @@ public class RobotContainer {
     // driverBButton.whenPressed(new InstantCommand(() -> m_drive.toggleSquaredInputs()));
     // driverXButton.whenPressed(new InstantCommand(() -> m_intake.toggleDynamicMode()));
 
-    driverAButton.whileHeld(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_hood, m_limelight, m_intake));
+    driverYButton.whenPressed(new interstellarAccuracyShooterAutoCommand(m_indexer, m_turret, m_shooter, m_hood, m_limelight, m_intake));
     driverXButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(3000), m_shooter));
     driverBackButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(0), m_shooter));
     driverBButton.whenPressed(intakeReleaseCommand());
 
-    // turn off indexo and limelight LED for drive challenges 
+    /* turn off indexo and limelight LED for drive challenges
     driverYButton.whenPressed(new ParallelCommandGroup(
         new InstantCommand(() -> m_indexer.setStopMode()), 
         new InstantCommand(() -> m_limelight.setLEDMode(0))));
-
+    */
 
     // Operator Controls
     // Left Joystick - manual turret control
