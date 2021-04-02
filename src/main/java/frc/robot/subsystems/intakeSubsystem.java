@@ -28,7 +28,7 @@ public class intakeSubsystem extends SubsystemBase {
 
   private driveSubsystem m_drive;
   private double circOfIntake_meters = (1.4725 * Math.PI) * 0.0254;
-  private double minIntakeRPM = 2500;
+  private double minIntakeRPM = 4000;
   private double maxIntakeRPM = 6000;
   private double intakeRPM = 0.0;
   private boolean dynamicMode = false;
