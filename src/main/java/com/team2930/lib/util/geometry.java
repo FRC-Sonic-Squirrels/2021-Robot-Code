@@ -71,4 +71,8 @@ public class geometry {
         return (feet * 0.3048);
     }
 
+    public static double meters2Feet(double meters){
+        return (meters / 0.3048);
+    }
+
 }

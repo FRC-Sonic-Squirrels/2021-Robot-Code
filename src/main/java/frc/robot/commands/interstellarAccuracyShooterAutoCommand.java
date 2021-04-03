@@ -19,6 +19,7 @@ import frc.robot.subsystems.indexerSubsystem;
 import frc.robot.subsystems.shooterSubsystem;
 import frc.robot.subsystems.turretSubsystem;
 import frc.robot.subsystems.intakeSubsystem;
+import com.team2930.lib.util.geometry;
 
 public class interstellarAccuracyShooterAutoCommand extends CommandBase {
 
@@ -36,6 +37,7 @@ public class interstellarAccuracyShooterAutoCommand extends CommandBase {
   private double m_Integral = 0;
   private boolean shooting = false;
   private double distance;
+  private boolean tracking = true;
 
   /**
    * shooterAutoCommand class constructor
@@ -91,20 +93,20 @@ public class interstellarAccuracyShooterAutoCommand extends CommandBase {
       m_turret.setPercentOutput(limelightSteerCommand);
     //}
     //Sets distances for Accuracy at 4 spots we shoot at
-    if(Robot.distance_meters > 10.0){
-      distance = 5.0;
+    if(geometry.meters2Feet(Robot.distance_meters) < 10.0){
+      distance = geometry.feet2Meters(5.0);
     }
-    else if(Robot.distance_meters > 15.0){
-      distance = 10.0;
+    else if(geometry.meters2Feet(Robot.distance_meters) < 15.0){
+      distance = geometry.feet2Meters(10.0);
     }
-    else if(Robot.distance_meters > 20){
-      distance = 15.0;
+    else if(geometry.meters2Feet(Robot.distance_meters) < 20){
+      distance = geometry.feet2Meters(15.0);
     }
     else {
-      distance = 20.0;
+      distance = geometry.feet2Meters(20.0);
     }
-    m_shooter.setShooterRPM(m_shooter.getRPMforDistanceMeter(Robot.distance_meters));
-    m_hood.setPositionRotations(m_hood.angleToRotations(m_hood.getAngleforDistanceMeter(Robot.distance_meters)));  
+    m_shooter.setShooterRPM(m_shooter.getRPMforDistanceMeter(distance));
+    m_hood.setPositionRotations(m_hood.angleToRotations(m_hood.getAngleforDistanceMeter(distance)));  
     // shoot while holding a button!
     if(RobotContainer.m_driveController.getAButton()) { 
       m_indexer.ejectOneBall();
