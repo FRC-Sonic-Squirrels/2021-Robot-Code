@@ -92,7 +92,7 @@ public class interstellarAccuracyShooterAutoCommand extends CommandBase {
       limelightSteerCommand = (tx_angleError * steer_kp) + (m_Integral * steer_ki);
       m_turret.setPercentOutput(limelightSteerCommand);
     //}
-    //Sets distances for Accuracy at 4 spots we shoot at
+    //Sets relative distances for Accuracy at 4 spots we shoot at
     if(geometry.meters2Feet(Robot.distance_meters) <= 8.0){
       distance_feet = 5.8;
     }
