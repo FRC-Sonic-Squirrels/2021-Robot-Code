@@ -90,14 +90,14 @@ public class powerPortShooterAutoCommand extends CommandBase {
     }
     //While A is not pressed
 
-    //if(!RobotContainer.m_driveController.getAButton()) { 
+    if(tracking) { 
       double tx_angleError = m_limelight.getTX();
       if (Math.abs(tx_angleError) < 2.0) {
         m_Integral += tx_angleError * (0.02);
       }
       limelightSteerCommand = (tx_angleError * steer_kp) + (m_Integral * steer_ki);
       m_turret.setPercentOutput(limelightSteerCommand);
-    //}
+    }
     // shoot!
     if(RobotContainer.m_driveController.getAButton()) { 
       m_indexer.ejectOneBall();
