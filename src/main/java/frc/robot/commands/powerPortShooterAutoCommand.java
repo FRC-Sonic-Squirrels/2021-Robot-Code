@@ -88,6 +88,8 @@ public class powerPortShooterAutoCommand extends CommandBase {
     }
     //While A is not pressed
 
+    /* If we want to track, then we will with the powerport challenge. 
+    Then we will wait 1/4 of a second and set the turret to stationary */
     if(tracking) { 
       double tx_angleError = m_limelight.getTX();
       if (Math.abs(tx_angleError) < 2.0) {
