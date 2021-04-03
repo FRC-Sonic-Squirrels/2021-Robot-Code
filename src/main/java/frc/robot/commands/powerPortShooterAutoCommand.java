@@ -38,9 +38,7 @@ public class powerPortShooterAutoCommand extends CommandBase {
   private boolean tracking = true;
   //private double distance = 10.0;
   private double distance = 10.0;
-  private boolean setTime = true;
-  private long start_time;
-  private long current_time;
+  private long start_time = 0;
 
   /**
    * shooterAutoCommand class constructor
@@ -98,24 +96,23 @@ public class powerPortShooterAutoCommand extends CommandBase {
       limelightSteerCommand = (tx_angleError * steer_kp) + (m_Integral * steer_ki);
       m_turret.setPercentOutput(limelightSteerCommand);
     }
+    else {
+      m_turret.setPercentOutput(0.0);
+    }
+
     // shoot!
     if(RobotContainer.m_driveController.getAButton()) { 
       m_indexer.ejectOneBall();
       if(tracking){
-        current_time = System.currentTimeMillis();
-        if(setTime){
+        if(start_time == 0){
           start_time = System.currentTimeMillis();
-          setTime = false;
         }
         else {
-          if(current_time - start_time >= 250){
+          if(System.currentTimeMillis() - start_time >= 250){
             tracking = false; 
             m_turret.setPercentOutput(0.0);
           }
         }
-      }
-      else {
-        m_turret.setPercentOutput(0.0);
       }
       
       if (shooterReadyTimeNS == 0)
@@ -125,7 +122,7 @@ public class powerPortShooterAutoCommand extends CommandBase {
     else {
       m_indexer.setIntakeMode();
       tracking = true;
-      setTime = true;
+      start_time = 0;
     }
   }
   
