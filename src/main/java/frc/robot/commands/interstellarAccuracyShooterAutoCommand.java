@@ -29,14 +29,14 @@ public class interstellarAccuracyShooterAutoCommand extends CommandBase {
   private hoodSubsystem m_hood;
   private limelight m_limelight;
   private intakeSubsystem m_intake;
-  private double steer_kp = 0.03;
-  private double steer_ki = 0.05;
+  private double steer_kp = 0.00; //Was 0.03
+  private double steer_ki = 0.00; //Was 0.05
   private double limelightSteerCommand = 0;
   private long startTimeNS = 0;
   private long shooterReadyTimeNS = 0;
   private double m_Integral = 0;
   private boolean shooting = false;
-  private double distance;
+  private double distance_feet = 0.0;
   private boolean tracking = true;
 
   /**
@@ -93,20 +93,20 @@ public class interstellarAccuracyShooterAutoCommand extends CommandBase {
       m_turret.setPercentOutput(limelightSteerCommand);
     //}
     //Sets distances for Accuracy at 4 spots we shoot at
-    if(geometry.meters2Feet(Robot.distance_meters) < 10.0){
-      distance = geometry.feet2Meters(5.0);
+    if(geometry.meters2Feet(Robot.distance_meters) <= 8.0){
+      distance_feet = 5.8;
     }
-    else if(geometry.meters2Feet(Robot.distance_meters) < 15.0){
-      distance = geometry.feet2Meters(10.0);
+    else if(geometry.meters2Feet(Robot.distance_meters) <= 13.0){
+      distance_feet = 9.7;
     }
-    else if(geometry.meters2Feet(Robot.distance_meters) < 20){
-      distance = geometry.feet2Meters(15.0);
+    else if(geometry.meters2Feet(Robot.distance_meters) <= 19.0){
+      distance_feet = 16.2;
     }
     else {
-      distance = geometry.feet2Meters(20.0);
+      distance_feet = 22.9;
     }
-    m_shooter.setShooterRPM(m_shooter.getRPMforDistanceMeter(distance));
-    m_hood.setPositionRotations(m_hood.angleToRotations(m_hood.getAngleforDistanceMeter(distance)));  
+    m_shooter.setShooterRPM(m_shooter.getRPMforDistanceFeet(distance_feet));
+    m_hood.setPositionRotations(m_hood.angleToRotations(m_hood.getAngleforDistanceFeet(distance_feet)));  
     // shoot while holding a button!
     if(RobotContainer.m_driveController.getAButton()) { 
       m_indexer.ejectOneBall();
