@@ -35,8 +35,12 @@ public class powerPortShooterAutoCommand extends CommandBase {
   private long shooterReadyTimeNS = 0;
   private double m_Integral = 0;
   private boolean shooting = false;
+  private boolean tracking = true;
   //private double distance = 10.0;
   private double distance = 10.0;
+  private boolean setTime = true;
+  private long start_time;
+  private long current_time;
 
   /**
    * shooterAutoCommand class constructor
@@ -97,14 +101,31 @@ public class powerPortShooterAutoCommand extends CommandBase {
     // shoot!
     if(RobotContainer.m_driveController.getAButton()) { 
       m_indexer.ejectOneBall();
-      //m_turret.setPercentOutput(0.0);
-      shooting = true;
+      if(tracking){
+        current_time = System.currentTimeMillis();
+        if(setTime){
+          start_time = System.currentTimeMillis();
+          setTime = false;
+        }
+        else {
+          if(current_time - start_time >= 250){
+            tracking = false; 
+            m_turret.setPercentOutput(0.0);
+          }
+        }
+      }
+      else {
+        m_turret.setPercentOutput(0.0);
+      }
+      
       if (shooterReadyTimeNS == 0)
         shooterReadyTimeNS = System.nanoTime();
         SmartDashboard.putNumber("Time to Shoot", (double) (shooterReadyTimeNS - startTimeNS) / 1_000_000_000);
     }
     else {
       m_indexer.setIntakeMode();
+      tracking = true;
+      setTime = true;
     }
   }
   
