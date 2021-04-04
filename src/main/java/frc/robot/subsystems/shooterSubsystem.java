@@ -96,13 +96,13 @@ public class shooterSubsystem extends SubsystemBase {
     m_encoder = talon_shooter1.getSensorCollection();
 
     kMaxOutput = 1.0; 
-    kMinOutput = -0.05;
+    kMinOutput = 0.0; //Was -0.05
     talon_shooter1.configPeakOutputForward(kMaxOutput);
     talon_shooter1.configPeakOutputReverse(kMinOutput);
 
     //setShooterPID(0.12, 0.0005, 0.0, 0.048, 100);
-
-    setShooterPID(0.14, 0.0005, 0.0, 0.048, 300);
+    //setShooterPID(0.14, 0.0005, 0.0, 0.048, 300);
+    setShooterPID(0.13, 0.0005, 0.0, 0.048, 300);
 
     // Build the linear Interpolator
     m_lt_feet = new linearInterpolator(shooterDistances);

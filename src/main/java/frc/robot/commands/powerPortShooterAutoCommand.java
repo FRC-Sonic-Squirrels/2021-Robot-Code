@@ -37,7 +37,7 @@ public class powerPortShooterAutoCommand extends CommandBase {
   private boolean shooting = false;
   private boolean tracking = true;
   //private double distance = 10.0;
-  private double distance = 10.0;
+  private double distance = 16.2;
   private long start_time = 0;
 
   /**
@@ -110,7 +110,7 @@ public class powerPortShooterAutoCommand extends CommandBase {
           start_time = System.currentTimeMillis();
         }
         else {
-          if(System.currentTimeMillis() - start_time >= 250){
+          if(System.currentTimeMillis() - start_time >= 1000){
             tracking = false; 
             m_turret.setPercentOutput(0.0);
           }
