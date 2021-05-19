@@ -57,16 +57,8 @@ public class driveCommand extends CommandBase {
       speed = speed * Math.abs(speed);
       // rotation = rotation * Math.abs(rotation);
     }
-
-    if (driveController.getBumper(Hand.kLeft) == false) {
-      // drive slower, press button in engage turbo mode
-
-      speed = speed * speedMultiplier;
-      rotation = rotation * rotationMultiplier;
-    }
-    else {
-      rotation = rotation * 0.75;
-    }
+    speed = speed * speedMultiplier;
+    rotation = rotation * rotationMultiplier;
 
 
     if (m_drive.getDriveInvert() == true) {
@@ -74,7 +66,7 @@ public class driveCommand extends CommandBase {
       speed = -speed;
     }
 
-    m_drive.arcadeDrive(speed, rotation);
+    m_drive.arcadeDrive(speed * 0.3, rotation);
 
     //SmartDashboard.putBoolean("Drive Inverted", m_drive.getDriveInvert());
     //SmartDashboard.putBoolean("Drive Forza Mode", m_drive.getForzaModeEnabled());
