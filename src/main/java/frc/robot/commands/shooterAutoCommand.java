@@ -8,8 +8,6 @@
 package frc.robot.commands;
 
 import com.fearxzombie.limelight;
-
-import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
@@ -81,13 +79,17 @@ public class shooterAutoCommand extends CommandBase {
       startTimeNS = System.nanoTime();
     }
 
-    m_shooter.setShooterRPM(2000);
-    m_hood.setPositionRotations(m_hood.angleToRotations(60));
-
-    m_turret.setPercentOutput(RobotContainer.m_operatorController.getX(Hand.kLeft));
+    m_shooter.setShooterRPM(m_shooter.getRPMforDistanceMeter(Robot.distance_meters));
+    m_hood.setPositionRotations(m_hood.angleToRotations(m_hood.getAngleforDistanceMeter(Robot.distance_meters)));
+    double tx_angleError = m_limelight.getTX();
+    if (Math.abs(tx_angleError) < 2.0) {
+      m_Integral += tx_angleError * (0.02);
+    }
+    limelightSteerCommand = (tx_angleError * steer_kp) + (m_Integral * steer_ki);
+    m_turret.setPercentOutput(limelightSteerCommand);
 
     // shoot!
-    if ( m_shooter.isAtSpeed()) {
+    if ( m_shooter.isAtSpeed() && RobotContainer.limelightOnTarget && m_hood.isAtPos() ) {
       m_indexer.ejectOneBall();
       shooting = true;
       if (shooterReadyTimeNS == 0)
