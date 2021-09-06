@@ -53,6 +53,7 @@ import frc.robot.commands.driveCommand;
 import frc.robot.commands.indexerDefaultCommand;
 import frc.robot.commands.indexerReverseCommand;
 import frc.robot.commands.shooterAutoCommand;
+import frc.robot.commands.shooterUnderGoal;
 import frc.robot.commands.turretDefaultCommand;
 import frc.robot.subsystems.driveSubsystem;
 import frc.robot.subsystems.hoodSubsystem;
@@ -184,6 +185,8 @@ public class RobotContainer {
     opLeftBumper.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(3000), m_shooter));
     opBackButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(0), m_shooter));
 
+    // left to shoot from under goal, right bumper for fully autonomous shooting
+    opLeftBumper.whileHeld(new shooterUnderGoal(m_indexer, m_turret, m_shooter, m_hood));
     opRightBumper.whileHeld(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_hood, m_limelight, m_intake));
 
     // opLeftBumper.whileHeld(new shooterUnderGoal(m_indexer, m_turret, m_shooter));

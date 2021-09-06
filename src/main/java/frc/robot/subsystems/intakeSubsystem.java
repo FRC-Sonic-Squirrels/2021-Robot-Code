@@ -17,14 +17,17 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import edu.wpi.first.wpilibj.Relay;
-import static frc.robot.Constants.canId;
+import edu.wpi.first.wpilibj.Solenoid;
 
+import static frc.robot.Constants.canId;
+import static frc.robot.Constants.pneumaticId;
 
 public class intakeSubsystem extends SubsystemBase {
 
   private WPI_TalonFX m_intake = new WPI_TalonFX(canId.canId18_intake);
   private TalonFXSensorCollection m_encoder;
   private Relay intakeRelay = new Relay(0);
+  private Solenoid intakeSolenoid = new Solenoid(pneumaticId.id0_intake);
 
   private driveSubsystem m_drive;
   private double circOfIntake_meters = (1.4725 * Math.PI) * 0.0254;
@@ -128,14 +131,14 @@ public class intakeSubsystem extends SubsystemBase {
    */
   public void deployIntake() {
     intakeRelay.set(Relay.Value.kReverse);
+    intakeSolenoid.set(true);
   }
 
   /**
-   * reset solenoids
+   * retract the intake
    */
   public void retractIntake() {
-    // There is no retract on this robot. Just reset solenoids
-    intakeRelay.set(Relay.Value.kForward);
+    intakeSolenoid.set(false);
   }
 
   /**
@@ -147,7 +150,7 @@ public class intakeSubsystem extends SubsystemBase {
   }
 
   /**
-   * Resets the Intake to origional PID Values
+   * Resets the Intake to original PID Values
    */
   public void resetIntake(){
     setDynamicSpeed(dynamicMode);

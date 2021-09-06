@@ -63,6 +63,10 @@ public final class Constants {
         public static final int canId20_pigeon_imu = 20;
     }
 
+    public static final class pneumaticId {
+        public static final int id0_intake = 0;
+    }
+
     public static final class currentLimits {
         public static SupplyCurrentLimitConfiguration m_currentlimitMain = new SupplyCurrentLimitConfiguration(true, 35, 1, 1);
         public static SupplyCurrentLimitConfiguration m_currentlimitSecondary = new SupplyCurrentLimitConfiguration(true, 25, 1, 1);
