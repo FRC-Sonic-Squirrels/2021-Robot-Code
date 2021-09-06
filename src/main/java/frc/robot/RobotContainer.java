@@ -71,7 +71,7 @@ public class RobotContainer {
 
   // public so that it can get the right instance.
   public static final limelight m_limelight = new limelight("limelight-one");
-  public static final limelight m_limelightPowerCell = new limelight("limelight");
+  //public static final limelight m_limelightPowerCell = new limelight("limelight");
   private final turretSubsystem m_turret = new turretSubsystem();
   public final shooterSubsystem m_shooter = new shooterSubsystem();
   private static final indexerSubsystem m_indexer = new indexerSubsystem();
@@ -89,14 +89,14 @@ public class RobotContainer {
     m_indexer.setDefaultCommand(new indexerDefaultCommand(m_indexer));
     m_turret.setDefaultCommand(new turretDefaultCommand(m_turret));
 
-    chooser.addOption("AutoNav Barrel", getAutonomousBarrelCommand());
-    chooser.addOption("AutoNav Slalom", getAutonomousSlalomCommand());
-    chooser.addOption("AutoNav Bounce", getAutonomousBounceCommand());
-    chooser.addOption("Galactic Search", getAutonomousGalacticSearch());
-    chooser.addOption("Galactic Search Red A Pathweaver", getAutonomousRedACommand());
-    chooser.addOption("Galactic Search Blue A Pathweaver", getAutonomousBlueACommand());
-    chooser.addOption("Galactic Search Red B Pathweaver", getAutonomousRedBCommand());
-    chooser.addOption("Galactic Search Blue B PathWeaver", getAutonomousBlueBCommand());
+    // chooser.addOption("AutoNav Barrel", getAutonomousBarrelCommand());
+    // chooser.addOption("AutoNav Slalom", getAutonomousSlalomCommand());
+    // chooser.addOption("AutoNav Bounce", getAutonomousBounceCommand());
+    // chooser.addOption("Galactic Search", getAutonomousGalacticSearch());
+    // chooser.addOption("Galactic Search Red A Pathweaver", getAutonomousRedACommand());
+    // chooser.addOption("Galactic Search Blue A Pathweaver", getAutonomousBlueACommand());
+    // chooser.addOption("Galactic Search Red B Pathweaver", getAutonomousRedBCommand());
+    // chooser.addOption("Galactic Search Blue B PathWeaver", getAutonomousBlueBCommand());
     chooser.addOption("Go Forward 1", autonCalibrationForward(1.0));
     chooser.addOption("Go Forward 2", autonCalibrationForward(2.0));
     chooser.addOption("Go Forward 3", autonCalibrationForward(3.0));
@@ -144,9 +144,9 @@ public class RobotContainer {
     // driverBButton.whenPressed(new InstantCommand(() -> m_drive.toggleSquaredInputs()));
     // driverXButton.whenPressed(new InstantCommand(() -> m_intake.toggleDynamicMode()));
 
-    driverAButton.whileHeld(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_hood, m_limelight, m_intake));
-    driverXButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(3000), m_shooter));
-    driverBackButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(0), m_shooter));
+    //driverAButton.whileHeld(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_hood, m_limelight, m_intake));
+    // driverXButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(3000), m_shooter));
+    // driverBackButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(0), m_shooter));
     driverBButton.whenPressed(intakeReleaseCommand());
 
     // turn off indexo and limelight LED for drive challenges 
@@ -528,41 +528,6 @@ public class RobotContainer {
       loadPathWeaverTrajectoryCommand("paths/output/GalacticSearchRedA.wpilib.json", true)
     );
   }
-
-  /**
-   * getAutonomousGalacticSearch - Generate Auton Command used in Galactic Search Challenge
-   * 
-   * @return Command object
-   */
-  public Command getAutonomousGalacticSearch() {
-    m_intake.setDynamicSpeed(false);
-    i = () -> "";
-    Command RedA = new ParallelCommandGroup(new PrintCommand("Red A Path"), getAutonomousRedACommand());
-    Command BlueA = new ParallelCommandGroup(new PrintCommand("Blue A Path"), getAutonomousBlueACommand());
-    Command RedB = new ParallelCommandGroup(new PrintCommand("Red B Path"), getAutonomousRedBCommand());
-    Command BlueB = new ParallelCommandGroup(new PrintCommand("Blue B Path"), getAutonomousBlueBCommand());
-    
-    Command searchforPowerCell = new InstantCommand(() -> {
-      //If Powercell is less than 14.5 degrees away, then runs red. Else runs blue
-      if(m_limelightPowerCell.getTY() < 14.5){
-          selectedPath = "Red";
-      }
-      else {
-          selectedPath = "Blue";
-      }
-      DriverStation.reportError("********** Selecting path: " + selectedPath + " **********", true);
-      });
-      i = () -> selectedPath;
-
-    BooleanSupplier seesPowerCellToRight = () -> (m_limelightPowerCell.getTX() > 0);
-
-    return new InstantCommand(() -> new SequentialCommandGroup(searchforPowerCell,
-    new SelectCommand(Map.ofEntries(
-      Map.entry("Red", new ConditionalCommand(RedA, RedB, seesPowerCellToRight)),
-      Map.entry("Blue", new ConditionalCommand(BlueA, BlueB, seesPowerCellToRight))
-    ), i)).schedule() );  
-  }
-
 
   /**
    * getAutonomousToTarget - Generate Auton Command used in Autonomous Challenge
