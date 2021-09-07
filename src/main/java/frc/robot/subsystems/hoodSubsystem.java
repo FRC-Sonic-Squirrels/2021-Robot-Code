@@ -252,6 +252,24 @@ public class hoodSubsystem extends SubsystemBase {
   }
 
   /**
+   * setPositionForDistanceMeters()  - Sets hood for shooting from 
+   * 
+   * @param distance_meters, distance to goal in meters from a given distance
+   */
+  public void setPositionForDistanceMeters(double distance_meters){
+    setPositionRotations(angleToRotations(getAngleforDistanceMeter(distance_meters)));
+  }
+
+  /**
+   * setPositionForDistanceFeet()  - Sets hood for shooting from a given distance
+   * 
+   * @param distance_feet, distance to goal in feet
+   */
+  public void setPositionForDistanceFeet(double distance_feet) {
+    setPositionRotations(angleToRotations(getAngleforDistanceFeet(distance_feet)));
+  }
+
+  /**
    * setPercentOutput()  - override Hood Motors with percent output
    * 
    * @param percent, percent motor output -1.0 to 1.0
