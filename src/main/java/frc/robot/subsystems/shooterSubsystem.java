@@ -180,6 +180,15 @@ public class shooterSubsystem extends SubsystemBase {
   }
 
   /**
+   * setShooterRPMforDistanceFeet - set optimal RPM for distance
+   * 
+   * @param distance_feet
+   */
+  public void setShooterRPMforDistanceFeet(double distance_feet) {
+    setShooterRPM(getRPMforDistanceFeet(distance_feet));
+  }
+
+  /**
    * setShooterPID()   set flywheel PID parameters
    * 
    * @param kP
