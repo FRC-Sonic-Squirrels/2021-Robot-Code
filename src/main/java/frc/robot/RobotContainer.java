@@ -41,12 +41,14 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.Constants.driveConstants;
 import frc.robot.commands.driveCommand;
@@ -172,6 +174,7 @@ public class RobotContainer {
     // Back Button - spool up the shooter
 
     //opAButton.whenPressed(new InstantCommand(() -> m_intake.deployIntake()));
+    opAButton.whenPressed(intakeReleaseCommand());
     opBButton.whenPressed(new InstantCommand(() -> m_intake.toggleDynamicMode()));
     //opBButton.whenPressed(new indexerStopCommand(m_indexer)); 
     //opXButton.whileHeld(new indexerReverseCommand(m_indexer));
@@ -223,9 +226,10 @@ public class RobotContainer {
  public Command intakeReleaseCommand() {
   return new SequentialCommandGroup(
     new InstantCommand(() -> m_intake.deployIntake()), 
-    new InstantCommand(() -> m_intake.setIntakePercentOutput(0.3)),
-    new WaitCommand(0.3), 
-    new InstantCommand(() -> m_intake.setIntakePercentOutput(-0.2)),
+    // now have pneumatics to help deploy intake
+    //new InstantCommand(() -> m_intake.setIntakePercentOutput(0.3)),
+    //new WaitCommand(0.3), 
+    //new InstantCommand(() -> m_intake.setIntakePercentOutput(-0.2)),
     new WaitCommand(0.5), 
     new InstantCommand(() -> m_intake.setIntakePercentOutput(0.0)),
     new InstantCommand(() -> m_indexer.setIntakeMode()),
@@ -242,6 +246,73 @@ public class RobotContainer {
     return new RunCommand(() -> m_drive.tankDriveVolts(0, 0));
   }
 
+  /**
+   * 
+   * 
+   * @return Auto command
+   */
+  public Command rightSide6Ball() {
+
+    // power port is left of robot, 
+    // 1. front of frame over initiation line
+    // 2. robot lined up on row of balls
+    //powerPortLocation = new Translation2d(feet2Meters(10.5), inches2Meters(66.91));
+
+    Pose2d startPos = new Pose2d(0, 0, new Rotation2d(0));
+    Pose2d back1Pos = new Pose2d(-1.75, 0, new Rotation2d(0));
+    Pose2d back2Pos = new Pose2d(-4.35, 0, new Rotation2d(0));
+    Pose2d finalPos = new Pose2d(-2, 0, new Rotation2d(0));
+
+    Command moveBack1 = createTrajectoryCommand(startPos, List.of(), back1Pos, true, 3.0, 1.8); 
+    Command moveBack2 = createTrajectoryCommand(back1Pos, List.of(), back2Pos, true, 0.80, 0.5);
+    Command moveForward = createTrajectoryCommand(back2Pos, List.of(), finalPos, false, 3.0, 1.8);
+
+    double goalDistanceFeet = 17.0;
+
+    Command ac = new SequentialCommandGroup(
+      // Do these setup things in parallel
+      new ParallelCommandGroup(
+        new InstantCommand(() -> m_indexer.setBallCount(3), m_indexer),
+        new InstantCommand(() -> m_shooter.setShooterRPMforDistanceFeet(goalDistanceFeet), m_shooter),
+        new InstantCommand(() -> m_hood.setPositionForDistanceFeet(goalDistanceFeet), m_hood),
+        new InstantCommand(() -> m_turret.setAngleDegrees(-3), m_turret), // look left
+        moveBack1
+        ),
+
+      // shoot until all the balls are gone
+      new ParallelRaceGroup(
+        new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_hood, m_limelight, m_intake).withTimeout(5),
+        new WaitUntilCommand(() -> m_indexer.getBallCount() == 0)
+      ),
+
+      // Move back get 3 more balls
+      new ParallelRaceGroup(
+        new indexerDefaultCommand(m_indexer).perpetually(), 
+        intakeReleaseCommand(),
+        new SequentialCommandGroup(
+          moveBack2                    // move back slow
+          //new WaitCommand(0.1)       // time to finish sucking in last ball
+        )
+      ),
+
+      // Move forward prepare to shoot
+      new ParallelCommandGroup(
+          new InstantCommand(() -> m_shooter.setShooterRPMforDistanceFeet(goalDistanceFeet), m_shooter),
+          new InstantCommand(() -> m_hood.setPositionForDistanceFeet(goalDistanceFeet), m_hood),
+          // new indexerStageForShootingCommand(m_indexer), 
+          moveForward
+      ),
+
+      // shoot, finish when all the balls are gone
+      new ParallelRaceGroup(
+        new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_hood, m_limelight, m_intake).withTimeout(7),
+        new WaitUntilCommand(() -> m_indexer.getBallCount() == 0)
+      )
+
+    );
+
+    return  ac;
+  }
 
  /**
    * Forward Autonomous Command
@@ -398,7 +469,6 @@ public class RobotContainer {
     // Pose2d startPose = new Pose2d(inches2Meters(50), inches2Meters(90), new Rotation2d(0));    
 
     // List<Translation2d> bounce_path_points = List.of(
-      // TODO: Set up Bounce path points
       // new Translation2d( inches2Meters(70), inches2Meters(90))
       // new Translation2d( inches2Meters(90), inches2Meters(150))      
       // );
@@ -656,7 +726,7 @@ public class RobotContainer {
    * Filename should be a string in the form of "paths/RobotPath1.json"
    * 
    * @param filename
-   * @return RamsetCommand
+   * @return Command
    */
   public Command loadPathWeaverTrajectoryCommand(String filename, boolean resetOdometry) {
 

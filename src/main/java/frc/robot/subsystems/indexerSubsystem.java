@@ -220,13 +220,13 @@ public class indexerSubsystem extends SubsystemBase {
     }
 
     // increase ball count as balls enter the indexer
-    if (ballReady4Indexer != ballReady4IndexerLast && ballReady4Indexer == false) {
+    if ((ballReady4Indexer != ballReady4IndexerLast) && ballReady4Indexer == false) {
       ballCount += 1;
     }
     ballReady4IndexerLast = ballReady4Indexer;
 
     // decrease ballCount as balls leave the indexer
-    if (ballExiting != ballExitingLast && ballExiting == false) {
+    if ((ballExiting != ballExitingLast) && ballExiting == false) {
       ballCount -= 1;
     }
     ballExitingLast = ballExiting;
