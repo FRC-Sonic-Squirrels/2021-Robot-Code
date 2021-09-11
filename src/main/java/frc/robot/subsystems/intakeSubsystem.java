@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import edu.wpi.first.wpilibj.Relay;
-import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 import static frc.robot.Constants.canId;
 import static frc.robot.Constants.pneumaticId;
@@ -27,7 +27,7 @@ public class intakeSubsystem extends SubsystemBase {
   private WPI_TalonFX m_intake = new WPI_TalonFX(canId.canId18_intake);
   private TalonFXSensorCollection m_encoder;
   private Relay intakeRelay = new Relay(0);
-  private Solenoid intakeSolenoid = new Solenoid(pneumaticId.id0_intake);
+  private DoubleSolenoid intakeDoubleSolenoid = new DoubleSolenoid(pneumaticId.id0_intake, pneumaticId.id1_intake);
 
   private driveSubsystem m_drive;
   private double circOfIntake_meters = (1.4725 * Math.PI) * 0.0254;
@@ -53,6 +53,8 @@ public class intakeSubsystem extends SubsystemBase {
     m_intake.config_IntegralZone(kPIDLoopIdx, 100);
 
     m_encoder = m_intake.getSensorCollection();
+
+    intakeDoubleSolenoid.set(DoubleSolenoid.Value.kOff);
     //deployIntake();
     
     intakeRPM = 0.0;
@@ -131,14 +133,14 @@ public class intakeSubsystem extends SubsystemBase {
    */
   public void deployIntake() {
     intakeRelay.set(Relay.Value.kReverse);
-    intakeSolenoid.set(true);
+    intakeDoubleSolenoid.set(DoubleSolenoid.Value.kForward);
   }
 
   /**
    * retract the intake
    */
   public void retractIntake() {
-    intakeSolenoid.set(false);
+    intakeDoubleSolenoid.set(DoubleSolenoid.Value.kReverse);
   }
 
   /**
@@ -161,6 +163,7 @@ public class intakeSubsystem extends SubsystemBase {
     m_intake.setVoltage(0.0);
     setIntakeMotorRPM(0.0);
     intakeRelay.set(Relay.Value.kForward);
+    // intakeDoubleSolenoid.set(DoubleSolenoid.Value.kOff);
   }
 
 }

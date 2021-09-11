@@ -65,6 +65,8 @@ public final class Constants {
 
     public static final class pneumaticId {
         public static final int id0_intake = 0;
+        public static final int id1_intake = 1;
+
     }
 
     public static final class currentLimits {
