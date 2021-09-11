@@ -65,6 +65,7 @@ public class Robot extends TimedRobot {
   public void disabledInit() {
     //RobotContainer.m_limelight.setLEDMode(1);
     m_robotContainer.m_shooter.setShooterRPM(0);
+    m_robotContainer.m_intake.setDynamicSpeed(false);
   }
 
   @Override
@@ -92,6 +93,7 @@ public class Robot extends TimedRobot {
       System.out.println("Cancelling Autonomous Command");
       m_autonomousCommand.cancel();
     }
+    m_robotContainer.m_intake.setDynamicSpeed(false);
   }
 
   @Override

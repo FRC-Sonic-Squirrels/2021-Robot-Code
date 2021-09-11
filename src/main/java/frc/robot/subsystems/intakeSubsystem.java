@@ -131,10 +131,18 @@ public class intakeSubsystem extends SubsystemBase {
   /**
    * release and deploy the intake
    */
+  public void releaseIntake() {
+    intakeRelay.set(Relay.Value.kReverse);
+  }
+
+  /**
+   * release and deploy the intake
+   */
   public void deployIntake() {
     intakeRelay.set(Relay.Value.kReverse);
     intakeDoubleSolenoid.set(DoubleSolenoid.Value.kForward);
   }
+
 
   /**
    * retract the intake

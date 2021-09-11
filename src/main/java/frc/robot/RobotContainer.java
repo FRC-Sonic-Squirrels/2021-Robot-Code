@@ -90,7 +90,7 @@ public class RobotContainer {
     configureButtonBindings();
     m_drive.setDefaultCommand(new driveCommand(m_drive));
     m_indexer.setDefaultCommand(new indexerDefaultCommand(m_indexer));
-    m_turret.setDefaultCommand(new turretDefaultCommand(m_turret));
+    //m_turret.setDefaultCommand(new turretDefaultCommand(m_turret));
 
     // chooser.addOption("AutoNav Barrel", getAutonomousBarrelCommand());
     // chooser.addOption("AutoNav Slalom", getAutonomousSlalomCommand());
@@ -138,11 +138,13 @@ public class RobotContainer {
     // Driver Controls
     // A Button toggle Forza mode
     // B Button toggle square driver inputs
-    // Left Trigger - reverse throttle (Forza mode)
+    // Left Trigger - reverse throttle (Forza mode)  
     // Right Trigger - forward throttle (Forza mode)
-    // Right Bumper - invert drive controls
+    // B Button  - invert drive controls
     // Left Bumper - turbo boost, FULL SPEED  
-    driverRightBumper.whenPressed(new InstantCommand(() -> m_drive.toggleDriveInverted()));
+    // driverRightBumper.whenPressed(new InstantCommand(() -> m_drive.toggleDriveInverted()));
+    driverBButton.whenPressed(new InstantCommand(() -> m_drive.toggleDriveInverted()));
+
     // driverAButton.whenPressed(new InstantCommand(() -> m_drive.toggleForzaMode()));
     // driverBButton.whenPressed(new InstantCommand(() -> m_drive.toggleSquaredInputs()));
     // driverXButton.whenPressed(new InstantCommand(() -> m_intake.toggleDynamicMode()));
@@ -150,7 +152,7 @@ public class RobotContainer {
     //driverAButton.whileHeld(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_hood, m_limelight, m_intake));
     // driverXButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(3000), m_shooter));
     // driverBackButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(0), m_shooter));
-    driverBButton.whenPressed(intakeReleaseCommand());
+    // driverBButton.whenPressed(intakeReleaseCommand());
 
     // turn off indexo and limelight LED for drive challenges 
     driverYButton.whenPressed(new ParallelCommandGroup(
@@ -173,16 +175,16 @@ public class RobotContainer {
     // Start Button - reset Odometry
     // Back Button - spool up the shooter
 
-    //opAButton.whenPressed(new InstantCommand(() -> m_intake.deployIntake()));
-    opAButton.whenPressed(intakeReleaseCommand());
-    opBButton.whenPressed(new InstantCommand(() -> m_intake.toggleDynamicMode()));
+    //opBButton.whenPressed(new InstantCommand(() -> m_intake.toggleDynamicMode()));
     //opBButton.whenPressed(new indexerStopCommand(m_indexer)); 
     //opXButton.whileHeld(new indexerReverseCommand(m_indexer));
     //opXButton.whenPressed(new InstantCommand(() -> m_hood.setPositionRotations(m_hood.angleToRotations(70.0)), m_hood));
     //opYButton.whenPressed(new InstantCommand(() -> m_hood.setPositionRotations(m_hood.angleToRotations(46.13)), m_hood));
     //opYButton.whenPressed(new InstantCommand(() -> m_indexer.setIntakeMode(), m_indexer));
-    opYButton.whenPressed(intakeReleaseCommand());
-
+    opXButton.whenPressed(intakeReleaseCommand());
+    opYButton.whenPressed(new InstantCommand(() -> m_indexer.stopIndexer()));
+    opBButton.whenPressed(intakeReleaseCommand());
+    opAButton.whenPressed(intakeRetractCommand());
 
     //opLeftBumper.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(3000), m_shooter));
     opBackButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(0), m_shooter));
@@ -223,17 +225,26 @@ public class RobotContainer {
 
  public Command intakeReleaseCommand() {
   return new SequentialCommandGroup(
-    new InstantCommand(() -> m_intake.deployIntake()), 
-    // now have pneumatics to help deploy intake
-    //new InstantCommand(() -> m_intake.setIntakePercentOutput(0.3)),
+    new InstantCommand(() -> m_intake.releaseIntake()), 
+    new InstantCommand(() -> m_intake.retractIntake()), 
     //new WaitCommand(0.3), 
-    //new InstantCommand(() -> m_intake.setIntakePercentOutput(-0.2)),
-    new WaitCommand(0.5), 
     new InstantCommand(() -> m_intake.setIntakePercentOutput(0.0)),
+    new InstantCommand(() -> m_intake.deployIntake()), 
+    //new InstantCommand(() -> m_intake.setIntakePercentOutput(-0.2)),
+    new WaitCommand(0.2),
     new InstantCommand(() -> m_indexer.setIntakeMode()),
     new InstantCommand(() -> m_intake.setDynamicSpeed(true))
     );
  }
+
+ public Command intakeRetractCommand() {
+  return new SequentialCommandGroup(
+    new InstantCommand(() -> m_intake.setDynamicSpeed(false)),
+    new InstantCommand(() -> m_intake.setIntakePercentOutput(0.0)),
+    new InstantCommand(() -> m_intake.retractIntake())
+    );
+ }
+
 
  /**
    * Do nothing during auton
@@ -414,7 +425,7 @@ public class RobotContainer {
         barrel_path_points,
         new Pose2d(inches2Meters(60), inches2Meters(90), new Rotation2d(Math.PI)), false, 1.5, 0.50);
     
-    // Run path following command, then stop at the end.
+    // Run path following command, then <stop> at the end.
     return ramseteCommand.andThen(() -> m_drive.tankDriveVolts(0, 0));
   }
 
