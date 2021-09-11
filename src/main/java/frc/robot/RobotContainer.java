@@ -184,15 +184,13 @@ public class RobotContainer {
     opYButton.whenPressed(intakeReleaseCommand());
 
 
-    // spin up flywheel to idle RPM
-    opLeftBumper.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(3000), m_shooter));
+    //opLeftBumper.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(3000), m_shooter));
     opBackButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(0), m_shooter));
 
     // left to shoot from under goal, right bumper for fully autonomous shooting
     opLeftBumper.whileHeld(new shooterUnderGoal(m_indexer, m_turret, m_shooter, m_hood));
     opRightBumper.whileHeld(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_hood, m_limelight, m_intake));
 
-    // opLeftBumper.whileHeld(new shooterUnderGoal(m_indexer, m_turret, m_shooter));
     opDPadUp.whenPressed(() -> m_indexer.setBallCount(m_indexer.getBallCount() + 1));
     opDPadDown.whenPressed(() -> m_indexer.setBallCount(m_indexer.getBallCount() - 1));
 
