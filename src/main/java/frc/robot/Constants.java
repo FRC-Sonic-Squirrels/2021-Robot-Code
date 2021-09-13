@@ -106,7 +106,6 @@ public final class Constants {
         // TalonFX encoders have 2048, Rev Robotics have 4096
         public static final int kEncoderCPR = 2048;
 
-        //TODO: Look into these actual values
         // Aprox 6 inch (0.1524 meters) traction wheels, measured 0.15836 m
         // Old measured circumference = 0.500 m
         // Old kDistancePerWheelRevolutionMeters = 0.509
@@ -143,7 +142,6 @@ public final class Constants {
     }
 
     public static final class limeLightConstants {
-        //TODO: Check if this is correct Height
         //Supposed to be correct Height: .582889
         public static final double limeLightHeight_meters = .68394;
         public static final double targetHeight_meters = 2.5019;

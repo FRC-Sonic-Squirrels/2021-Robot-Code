@@ -14,8 +14,6 @@ import static frc.robot.Constants.driveConstants.kDriveKinematics;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.function.BooleanSupplier;
-import java.util.Map;
 import java.util.function.Supplier;
 
 import com.fearxzombie.limelight;
@@ -39,6 +37,7 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
+import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
@@ -792,13 +791,12 @@ public class RobotContainer {
 
   }
 
-  // TODO: this should be in com/team2930/utils/units.java or a new Units.java under Utils
   public double inches2Meters(double i) {
-    return i * 0.0254;
+    return Units.inchesToMeters(i);
   }
 
   public double feet2Meters(double feet) {
-    return (feet * 0.3048);
+    return Units.feetToMeters(feet);
   }
 
 }

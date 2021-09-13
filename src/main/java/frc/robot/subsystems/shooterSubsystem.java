@@ -21,8 +21,6 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.team2930.lib.util.linearInterpolator;
 
 import frc.robot.Constants;
-import frc.robot.RobotContainer;
-
 
 public class shooterSubsystem extends SubsystemBase {
 
