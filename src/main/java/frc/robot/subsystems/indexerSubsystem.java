@@ -172,8 +172,8 @@ public class indexerSubsystem extends SubsystemBase {
     }
     if (mode == Mode.EJECT) {
       setKickerPercentOutput(0.8);
-      setBeltsPercentOutput(0.6);
-      setIntakePercentOutput(0.3);
+      setBeltsPercentOutput(0.8);
+      setIntakePercentOutput(0.6);
     }
     if (mode == Mode.EJECTPAUSE) {
       setKickerPercentOutput(0.8);
@@ -292,14 +292,14 @@ public class indexerSubsystem extends SubsystemBase {
   }
 
   /**
-   * enable Intake mode, pull balls into intake
+   * enable EjectPause mode, pause indexo until fully on target
    */
   public void setEjectPauseMode(){
     mode = Mode.EJECTPAUSE;
   }
 
   /**
-   * enable Intake mode, pull balls into intake
+   * enable stop mode
    */
   public void setStopMode(){
     mode = Mode.STOP;

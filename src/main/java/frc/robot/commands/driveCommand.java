@@ -18,8 +18,9 @@ public class driveCommand extends CommandBase {
 
   driveSubsystem m_drive;
   XboxController driveController = RobotContainer.m_driveController;
-  private double speedMultiplier = 0.7;
+  private double speedMultiplier = 0.8;
   private double rotationMultiplier = 0.6;
+  private boolean curvatureMode = false;
 
   public driveCommand(driveSubsystem drive) {
     addRequirements(drive);
@@ -62,19 +63,27 @@ public class driveCommand extends CommandBase {
       // drive slower, press button in engage turbo mode
 
       speed = speed * speedMultiplier;
-      rotation = rotation * rotationMultiplier;
+      if (! curvatureMode) {
+        // don't modify ration if driving in curvature mode
+        rotation = rotation * rotationMultiplier;
+      }
     }
-    else {
+    else if (!curvatureMode) {
       rotation = rotation * 0.75;
     }
-
 
     if (m_drive.getDriveInvert() == true) {
       // invert driving direction
       speed = -speed;
     }
 
-    m_drive.arcadeDrive(speed, rotation);
+    if (curvatureMode) {
+      // right bumper pressed enables quick turn, to turn in place
+      m_drive.curvatureDrive(speed, rotation, driveController.getBumper(Hand.kRight));
+    }
+    else {
+      m_drive.arcadeDrive(speed, rotation);
+    }
 
     //SmartDashboard.putBoolean("Drive Inverted", m_drive.getDriveInvert());
     //SmartDashboard.putBoolean("Drive Forza Mode", m_drive.getForzaModeEnabled());

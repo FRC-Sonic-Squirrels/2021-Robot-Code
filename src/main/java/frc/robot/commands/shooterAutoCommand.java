@@ -96,9 +96,7 @@ public class shooterAutoCommand extends CommandBase {
         shooterReadyTimeNS = System.nanoTime();
         SmartDashboard.putNumber("Time to Shoot", (double) (shooterReadyTimeNS - startTimeNS) / 1_000_000_000);
     }
-    else if (shooting) {
-      m_indexer.setEjectPauseMode();
-    }
+    
   }
   
   @Override

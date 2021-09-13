@@ -319,8 +319,19 @@ public class driveSubsystem extends SubsystemBase {
    */
   public void arcadeDrive(double fwd, double rot) {
     // use slew rate filters to implement ramp up/down of speed and rotation
-    //m_drive.arcadeDrive(speedFilter.calculate(fwd), rotationFilter.calculate(rot));
+    // m_drive.arcadeDrive(speedFilter.calculate(fwd), rotationFilter.calculate(rot));
     m_drive.arcadeDrive(fwd, rot);
+  }
+
+  /**
+   * Drives the robot using curvature controls.
+   *
+   * @param fwd the commanded forward movement
+   * @param rot the commanded rotation
+   * @param isQuickturn 
+   */
+  public void curvatureDrive(double fwd, double rot, boolean isQuickturn) {
+    m_drive.curvatureDrive(fwd, rot, isQuickturn);
   }
 
   /**
