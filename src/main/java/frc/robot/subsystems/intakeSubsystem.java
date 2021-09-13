@@ -170,7 +170,7 @@ public class intakeSubsystem extends SubsystemBase {
     setDynamicSpeed(false);
     m_intake.setVoltage(0.0);
     setIntakeMotorRPM(0.0);
-    intakeRelay.set(Relay.Value.kForward);
+    // intakeRelay.set(Relay.Value.kForward);
     // intakeDoubleSolenoid.set(DoubleSolenoid.Value.kOff);
   }
 
