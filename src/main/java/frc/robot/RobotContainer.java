@@ -53,6 +53,7 @@ import frc.robot.Constants.driveConstants;
 import frc.robot.commands.driveCommand;
 import frc.robot.commands.indexerDefaultCommand;
 import frc.robot.commands.indexerReverseCommand;
+import frc.robot.commands.intakeDeploy;
 import frc.robot.commands.shooterAutoCommand;
 import frc.robot.commands.shooterUnderGoal;
 import frc.robot.commands.turretDefaultCommand;
@@ -136,19 +137,20 @@ public class RobotContainer {
 
     // Driver Controls
     // A Button toggle Forza mode
-    // B Button toggle square driver inputs
+    // B Button  - invert drive controls
+    // X Button toggle curvature drive mode
     // Left Trigger - reverse throttle (Forza mode)  
     // Right Trigger - forward throttle (Forza mode)
-    // B Button  - invert drive controls
     // Left Bumper - turbo boost, FULL SPEED  
     // driverRightBumper.whenPressed(new InstantCommand(() -> m_drive.toggleDriveInverted()));
     driverBButton.whenPressed(new InstantCommand(() -> m_drive.toggleDriveInverted()));
+    driverXButton.whenPressed(new InstantCommand(() -> m_drive.toggleCurvatureMode()));
 
     // driverAButton.whenPressed(new InstantCommand(() -> m_drive.toggleForzaMode()));
     // driverBButton.whenPressed(new InstantCommand(() -> m_drive.toggleSquaredInputs()));
     // driverXButton.whenPressed(new InstantCommand(() -> m_intake.toggleDynamicMode()));
 
-    //driverAButton.whileHeld(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_hood, m_limelight, m_intake));
+    // driverAButton.whileHeld(new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_hood, m_limelight, m_intake));
     // driverXButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(3000), m_shooter));
     // driverBackButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(0), m_shooter));
     // driverBButton.whenPressed(intakeReleaseCommand());
@@ -185,8 +187,8 @@ public class RobotContainer {
     //opYButton.whenPressed(new InstantCommand(() -> m_indexer.setIntakeMode(), m_indexer));
     opXButton.whenPressed(shooterStopCommand());
     opYButton.whenPressed(new InstantCommand(() -> m_indexer.stopIndexer()));
-    opBButton.whenPressed(intakeReleaseCommand());
-    opAButton.whenPressed(intakeRetractCommand());
+    // opBButton.whenPressed(intakeReleaseCommand());
+    opAButton.whileHeld(new intakeDeploy(m_intake, m_indexer, 200));
 
     //opLeftBumper.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(3000), m_shooter));
     opBackButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(0), m_shooter));

@@ -5,16 +5,19 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.subsystems.indexerSubsystem;
 import frc.robot.subsystems.intakeSubsystem;
 
 public class intakeDeploy extends CommandBase {
   private intakeSubsystem m_intake;
+  private indexerSubsystem m_indexer;
   private long m_delayMs;
   private long start_time = 0;
 
   /** Creates a new intakeDeploy. */
-  public intakeDeploy(intakeSubsystem intake, long motorDelayMs) {
+  public intakeDeploy(intakeSubsystem intake, indexerSubsystem indexer, long motorDelayMs) {
     m_intake = intake;
+    m_indexer = indexer;
     addRequirements(intake);
   }
 
@@ -23,6 +26,7 @@ public class intakeDeploy extends CommandBase {
   public void initialize() {
     m_intake.releaseIntake();        // open solenoids
     m_intake.deployIntake();         // deploy with pneumatics
+    m_indexer.setIntakeMode();       // indexer intake mode
 
     start_time = System.currentTimeMillis();
   }
