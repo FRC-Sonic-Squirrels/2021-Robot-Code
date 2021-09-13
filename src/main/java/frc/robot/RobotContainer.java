@@ -90,7 +90,7 @@ public class RobotContainer {
     configureButtonBindings();
     m_drive.setDefaultCommand(new driveCommand(m_drive));
     m_indexer.setDefaultCommand(new indexerDefaultCommand(m_indexer));
-    //m_turret.setDefaultCommand(new turretDefaultCommand(m_turret));
+    m_turret.setDefaultCommand(new turretDefaultCommand(m_turret));
 
     // chooser.addOption("AutoNav Barrel", getAutonomousBarrelCommand());
     // chooser.addOption("AutoNav Slalom", getAutonomousSlalomCommand());
@@ -154,6 +154,9 @@ public class RobotContainer {
     // driverBackButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(0), m_shooter));
     // driverBButton.whenPressed(intakeReleaseCommand());
 
+    // driverYButton.whenPressed(new InstantCommand(() -> m_hood.setPositionForDistanceFeet(10.0)));
+    // driverXButton.whenPressed(new InstantCommand(() -> m_hood.setPositionForDistanceFeet(17.0)));
+
     // turn off indexo and limelight LED for drive challenges 
     driverYButton.whenPressed(new ParallelCommandGroup(
         new InstantCommand(() -> m_indexer.setStopMode()), 
@@ -181,7 +184,7 @@ public class RobotContainer {
     //opXButton.whenPressed(new InstantCommand(() -> m_hood.setPositionRotations(m_hood.angleToRotations(70.0)), m_hood));
     //opYButton.whenPressed(new InstantCommand(() -> m_hood.setPositionRotations(m_hood.angleToRotations(46.13)), m_hood));
     //opYButton.whenPressed(new InstantCommand(() -> m_indexer.setIntakeMode(), m_indexer));
-    opXButton.whenPressed(intakeReleaseCommand());
+    opXButton.whenPressed(shooterStopCommand());
     opYButton.whenPressed(new InstantCommand(() -> m_indexer.stopIndexer()));
     opBButton.whenPressed(intakeReleaseCommand());
     opAButton.whenPressed(intakeRetractCommand());
@@ -214,6 +217,15 @@ public class RobotContainer {
 
  }
   
+  
+ public Command shooterStopCommand() {
+  return new SequentialCommandGroup(
+    new InstantCommand(() -> m_hood.retractHood()), 
+    new InstantCommand(() -> m_shooter.setShooterRPM(0))
+  );
+ }
+
+
  public Command intakeStartCommand() {
   return new SequentialCommandGroup(
     new InstantCommand(() -> m_intake.deployIntake()), 
