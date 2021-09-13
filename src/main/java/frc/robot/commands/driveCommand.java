@@ -63,12 +63,13 @@ public class driveCommand extends CommandBase {
       // drive slower, press button in engage turbo mode
 
       speed = speed * speedMultiplier;
-      if (! curvatureMode) {
-        // don't modify ration if driving in curvature mode
+      if (! m_drive.getCurvatureModeEnabled()) {
+        // don't modify rotation if in curvature mode
         rotation = rotation * rotationMultiplier;
       }
     }
-    else if (!curvatureMode) {
+    else if (! m_drive.getCurvatureModeEnabled()) {
+      // don't modify rotation if in curvature mode
       rotation = rotation * 0.75;
     }
 
