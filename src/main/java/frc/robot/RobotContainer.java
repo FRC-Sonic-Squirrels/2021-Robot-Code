@@ -92,20 +92,17 @@ public class RobotContainer {
     m_indexer.setDefaultCommand(new indexerDefaultCommand(m_indexer));
     m_turret.setDefaultCommand(new turretDefaultCommand(m_turret));
 
-    // chooser.addOption("AutoNav Barrel", getAutonomousBarrelCommand());
-    // chooser.addOption("AutoNav Slalom", getAutonomousSlalomCommand());
-    // chooser.addOption("AutoNav Bounce", getAutonomousBounceCommand());
-    // chooser.addOption("Galactic Search", getAutonomousGalacticSearch());
-    // chooser.addOption("Galactic Search Red A Pathweaver", getAutonomousRedACommand());
-    // chooser.addOption("Galactic Search Blue A Pathweaver", getAutonomousBlueACommand());
-    // chooser.addOption("Galactic Search Red B Pathweaver", getAutonomousRedBCommand());
-    // chooser.addOption("Galactic Search Blue B PathWeaver", getAutonomousBlueBCommand());
-    chooser.addOption("Go Forward 1", autonCalibrationForward(1.0));
-    chooser.addOption("Go Forward 2", autonCalibrationForward(2.0));
-    chooser.addOption("Go Forward 3", autonCalibrationForward(3.0));
-    chooser.addOption("Shooter Test", getAutonomousToTarget());
-    chooser.addOption("Curve Left", autonCalibrationCurve(1.0, 1.0));
-    chooser.addOption("Curve Right", autonCalibrationCurve(1.0, -1.0));
+    chooser.addOption("Move Back 3 Shoot", moveThenShoot(3.0));
+    chooser.addOption("Right Side 6", rightSide6Ball());
+    chooser.addOption("Move Forward 2 Shoot", moveThenShoot(-2.0));
+    chooser.addOption("Go Forward 1m", autonCalibrationForward(1.0));
+    chooser.addOption("Go Forward 2m", autonCalibrationForward(2.0));
+    chooser.addOption("Go Back 1m", autonCalibrationForward(-1.0));
+    //chooser.addOption("Go Forward 3", autonCalibrationForward(3.0));
+    //chooser.addOption("Shooter Test", getAutonomousToTarget());
+    //chooser.addOption("Curve Left", autonCalibrationCurve(1.0, 1.0));
+    //chooser.addOption("Curve Right", autonCalibrationCurve(1.0, -1.0));
+    chooser.addOption("Do Nothing", getNoAutonomousCommand());
     chooser.setDefaultOption("Do Nothing", getNoAutonomousCommand());
     SmartDashboard.putData("Auto mode", chooser);
 
@@ -120,7 +117,8 @@ public class RobotContainer {
     final JoystickButton driverYButton = new JoystickButton(m_driveController, Button.kY.value);
     final JoystickButton driverStartButton = new JoystickButton(m_driveController, Button.kStart.value);
     final JoystickButton driverBackButton = new JoystickButton(m_driveController, Button.kBack.value);
-    final JoystickButton driverLeftBumper = new JoystickButton(m_driveController, Button.kBumperLeft.value);
+    // driver left bumper is hardcoded to be turbo boost
+    // final JoystickButton driverLeftBumper = new JoystickButton(m_driveController, Button.kBumperLeft.value);
     final JoystickButton driverRightBumper = new JoystickButton(m_driveController, Button.kBumperRight.value);
 
     // Operator Controller Buttons
@@ -136,12 +134,14 @@ public class RobotContainer {
     final POVButton opDPadDown = new POVButton(m_operatorController, 180);
 
     // Driver Controls
-    // A Button toggle Forza mode
+    // A Button  - 
     // B Button  - invert drive controls
-    // X Button toggle curvature drive mode
-    // Left Trigger - reverse throttle (Forza mode)  
+    // X Button  - toggle curvature drive mode
+    // Y Button  - 
+    // Left Trigger  - reverse throttle (Forza mode)  
     // Right Trigger - forward throttle (Forza mode)
-    // Left Bumper - turbo boost, FULL SPEED  
+    // Left Bumper   - turbo boost, FULL SPEED 
+    // Right Bumper  - 
     // driverRightBumper.whenPressed(new InstantCommand(() -> m_drive.toggleDriveInverted()));
     driverBButton.whenPressed(new InstantCommand(() -> m_drive.toggleDriveInverted()));
     driverXButton.whenPressed(new InstantCommand(() -> m_drive.toggleCurvatureMode()));
@@ -155,25 +155,17 @@ public class RobotContainer {
     // driverBackButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(0), m_shooter));
     // driverBButton.whenPressed(intakeReleaseCommand());
 
-    // driverYButton.whenPressed(new InstantCommand(() -> m_hood.setPositionForDistanceFeet(10.0)));
-    // driverXButton.whenPressed(new InstantCommand(() -> m_hood.setPositionForDistanceFeet(17.0)));
-
-    // turn off indexo and limelight LED for drive challenges 
-    driverYButton.whenPressed(new ParallelCommandGroup(
-        new InstantCommand(() -> m_indexer.setStopMode()), 
-        new InstantCommand(() -> m_limelight.setLEDMode(0))));
-
 
     // Operator Controls
     // Left Joystick - manual turret control
     // Left Trigger - manually move the indexer backwards
     // Right Trigger - manually move the indexer forwards
-    // A Button - deploy intake
+    // A Button - deploy intake while Held
     // B Button - stop indexer
-    // X Button - reverse indexer to restage balls
+    // X Button - 
     // Y Button - enable normal indexer ball intake mode 
-    // Right Bumper - shoot
-    // Left Bumper - shoot
+    // Right Bumper - full auto shoot 
+    // Left Bumper - shoot from under goal 
     // D Pad Up - manually increase ball count
     // D Pad Down - manually decrease ball count
     // Start Button - reset Odometry
@@ -182,8 +174,6 @@ public class RobotContainer {
     //opBButton.whenPressed(new InstantCommand(() -> m_intake.toggleDynamicMode()));
     //opBButton.whenPressed(new indexerStopCommand(m_indexer)); 
     //opXButton.whileHeld(new indexerReverseCommand(m_indexer));
-    //opXButton.whenPressed(new InstantCommand(() -> m_hood.setPositionRotations(m_hood.angleToRotations(70.0)), m_hood));
-    //opYButton.whenPressed(new InstantCommand(() -> m_hood.setPositionRotations(m_hood.angleToRotations(46.13)), m_hood));
     //opYButton.whenPressed(new InstantCommand(() -> m_indexer.setIntakeMode(), m_indexer));
     opXButton.whenPressed(shooterStopCommand());
     opYButton.whenPressed(new InstantCommand(() -> m_indexer.stopIndexer()));
@@ -269,7 +259,7 @@ public class RobotContainer {
   }
 
   /**
-   * 
+   * Shoot 3, back up collect 3, move forward, and shoot 3
    * 
    * @return Auto command
    */
@@ -337,6 +327,48 @@ public class RobotContainer {
   }
 
  /**
+   * Back up designated distance in feet and shoot. Negative distance moves "backwards" towards goal.
+   * 
+   * @return Auto command
+   */
+  public Command moveThenShoot(double moveDistanceFeet) {
+
+    // 1. power port is directly in front of robot, in sight of limelight
+    // 2. front of frame over initiation line
+
+    Pose2d startPos = new Pose2d(0, 0, new Rotation2d(0));
+    Pose2d pos1 = new Pose2d(Units.feetToMeters(moveDistanceFeet), 0, new Rotation2d(0));
+
+    Command move1 = createTrajectoryCommand(startPos, List.of(), pos1, (moveDistanceFeet < 0.0), 3.0, 1.8); 
+
+    double goalDistanceFeet = 10.0 - moveDistanceFeet;
+
+    Command ac = new SequentialCommandGroup(
+      // Do these setup things in parallel
+      new ParallelCommandGroup(
+        new InstantCommand(() -> m_indexer.setBallCount(3), m_indexer),
+        new InstantCommand(() -> m_shooter.setShooterRPMforDistanceFeet(goalDistanceFeet), m_shooter),
+        new InstantCommand(() -> m_hood.setPositionForDistanceFeet(goalDistanceFeet), m_hood),
+        new InstantCommand(() -> m_turret.setAngleDegrees(0), m_turret),
+        move1
+        ),
+
+      // shoot until all the balls are gone
+      new ParallelRaceGroup(
+        new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_hood, m_limelight, m_intake).withTimeout(10),
+        new WaitUntilCommand(() -> m_indexer.getBallCount() == 0)
+      ),
+
+      // retract the hood and stop the flywheel
+      shooterStopCommand()
+
+    );
+
+    return  ac;
+  }
+
+
+ /**
    * Forward Autonomous Command
    * 
    * Return an autonomous command that drives straight for a given distance
@@ -353,7 +385,7 @@ public class RobotContainer {
         startPose, 
         List.of(),
         new Pose2d(distanceInMeters, 0.0, new Rotation2d(0)),
-        false, 1.5, 0.75);
+        (distanceInMeters < 0.0), 1.5, 0.75);
 
     // Run path following command, then stop at the end.
     return ramseteCommand.andThen(() -> m_drive.tankDriveVolts(0, 0));
@@ -394,236 +426,6 @@ public class RobotContainer {
   }
 
 
- /**
-   * getAutonomousBarrelCommand - generate Barrel AutoNav Command
-   * 
-   * @return Command object
-   */
-  public Command getAutonomousBarrelCommand(){
-
-    // Tell the odometry know where the robot is starting from and what direction it is pointing.
-    Pose2d startPose = new Pose2d(inches2Meters(50), inches2Meters(90), new Rotation2d(0));
-
-    // distances are in Meters
-    List<Translation2d> barrel_path_points = List.of(
-      // navigate around first barrel, centered at D5 (150,60)
-      new Translation2d( inches2Meters(150), inches2Meters(90)),
-      new Translation2d( inches2Meters(180), inches2Meters(60)),
-      new Translation2d( inches2Meters(150), inches2Meters(30)),
-      new Translation2d( inches2Meters(120), inches2Meters(60)),
-
-      // navigate around B8  (240, 120)
-      new Translation2d( inches2Meters(150), inches2Meters(90)),
-      new Translation2d( inches2Meters(240), inches2Meters(90)),
-      new Translation2d( inches2Meters(270), inches2Meters(120)),
-      new Translation2d( inches2Meters(240), inches2Meters(150)),
-      new Translation2d( inches2Meters(205), inches2Meters(120)),
-
-      // navigate around D10 (300, 60)
-      new Translation2d( inches2Meters(210), inches2Meters(60)),
-      new Translation2d( inches2Meters(300), inches2Meters(30)),
-      new Translation2d( inches2Meters(330), inches2Meters(60)),
-      new Translation2d( inches2Meters(300), inches2Meters(90)), // shift left slightly 
-
-      // avoid cones on the way back
-      new Translation2d( inches2Meters(240), inches2Meters(80)), 
-      new Translation2d( inches2Meters(150), inches2Meters(100))
-
-      // above point is just in case, but from (300, 90) to the finish is a straight shot
-      );
-
-    // Start of Barrel Path
-    Command ramseteCommand = createTrajectoryCommand(
-        startPose,
-        barrel_path_points,
-        new Pose2d(inches2Meters(60), inches2Meters(90), new Rotation2d(Math.PI)), false, 1.5, 0.50);
-    
-    // Run path following command, then <stop> at the end.
-    return ramseteCommand.andThen(() -> m_drive.tankDriveVolts(0, 0));
-  }
-
-
-  /**
-   * getAutonomousSlalomCommand - generate Barrel AutoNav Command
-   * 
-   * @return Command object
-   */
-  public Command getAutonomousSlalomCommand(){
-     
-    Pose2d startPose = new Pose2d(inches2Meters(45), inches2Meters(30), new Rotation2d(0));
-
-    List<Translation2d> slalom_path_points = List.of(
-      new Translation2d( inches2Meters(80), inches2Meters(30)),
-      //new Translation2d( inches2Meters(90), inches2Meters(60)),
-      new Translation2d( inches2Meters(105), inches2Meters(90)),
-      new Translation2d( inches2Meters(255), inches2Meters(90)),
-      new Translation2d( inches2Meters(270), inches2Meters(60)),
-
-      // Between D8(240, 60) and D10(300, 60)
-      new Translation2d( inches2Meters(290), inches2Meters(30)),
-      new Translation2d( inches2Meters(340), inches2Meters(60)),
-      new Translation2d( inches2Meters(285), inches2Meters(90)),
-      //new Translation2d( inches2Meters(270), inches2Meters(60)),
-      new Translation2d( inches2Meters(260), inches2Meters(30)),
-      new Translation2d( inches2Meters(125), inches2Meters(30)),
-      //new Translation2d( inches2Meters(90), inches2Meters(60)),
-      new Translation2d( inches2Meters(75), inches2Meters(90))
-      );
-
-
-    // Start of The Slalom Path Program
-    Command ramseteCommand = createTrajectoryCommand(
-        startPose,
-        slalom_path_points,
-        new Pose2d(inches2Meters(60), inches2Meters(90), new Rotation2d(Math.PI)), false, 0.5, 0.25);
-    
-    // Run path following command, then stop at the end. Turn off Drive train
-    return ramseteCommand.andThen(() -> m_drive.tankDriveVolts(0, 0));
-  }
-
-
-  /**
-   * getAutonomousSlalomCommand - generate Barrel AutoNav Command
-   * 
-   * @return Command object
-   */
-  public Command getAutonomousBounceCommand(){
-    // Pose2d startPose = new Pose2d(inches2Meters(50), inches2Meters(90), new Rotation2d(0));    
-
-    // List<Translation2d> bounce_path_points = List.of(
-      // new Translation2d( inches2Meters(70), inches2Meters(90))
-      // new Translation2d( inches2Meters(90), inches2Meters(150))      
-      // );
-
-    // Start of The Slalom Path Program
-    // Command ramseteCommand = createTrajectoryCommand(
-        // startPose,
-        // bounce_path_points,
-        // new Pose2d(inches2Meters(90), inches2Meters(150), new Rotation2d(Math.PI/2)), false, 1.0, 0.25);
-    
-    // Run path following command, then stop at the end. Turn off Drive train
-    // return ramseteCommand.andThen(() -> m_drive.tankDriveVolts(0, 0));
-
-    return new ParallelCommandGroup(
-      new InstantCommand(() -> m_indexer.stopIndexer()),
-      new InstantCommand(() -> m_intake.setDynamicSpeed(false)),
-      new SequentialCommandGroup(
-      loadPathWeaverTrajectoryCommand("paths/output/BouncePathPartOne.wpilib.json", true),
-      loadPathWeaverTrajectoryCommand("paths/output/BouncePathPartTwo.wpilib.json", false),
-      loadPathWeaverTrajectoryCommand("paths/output/BouncePathPartThree.wpilib.json", false),
-      loadPathWeaverTrajectoryCommand("paths/output/BouncePathPartFour.wpilib.json", false)
-      )
-    );
-  }
-
-  
-  /**
-   * getAutonomousBlueBCommand - generate Blue B AutoNav Command
-   * @return Command object
-   */
-  public Command getAutonomousBlueBCommand(){
-
-    return new ParallelCommandGroup(
-      intakeReleaseCommand(),
-      loadPathWeaverTrajectoryCommand("paths/output/GalacticSearchBlueB.wpilib.json", true)
-    );
-
-  }
-
-  /**
-   * getAutonomousBlueACommand - generate Blue A AutoNav Command
-   * @return Command object
-   */
-  public Command getAutonomousBlueACommand(){
-    //Changing start pose to 12 by 90 because of Orange 1 size
-    /* Pose2d startPose = new Pose2d(inches2Meters(12), inches2Meters(90), new Rotation2d(0));
-
-    List<Translation2d> blue_a_points = List.of(
-      new Translation2d( inches2Meters(180), inches2Meters(30)),
-      new Translation2d( inches2Meters(210), inches2Meters(120)),
-      new Translation2d( inches2Meters(270), inches2Meters(90))
-      );
-    
-    // Start of Blue A program
-    Command ramseteCommand = createTrajectoryCommand(
-      startPose,
-      blue_a_points,
-      new Pose2d(inches2Meters(340), inches2Meters(90), new Rotation2d(0)), false, 1.0, 0.25
-    );
-
-    // Run path following command, then stop at end. Turn off Drive train
-    return ramseteCommand.andThen(() -> m_drive.tankDriveVolts(0, 0));
-    */
-
-    return new ParallelCommandGroup(
-      intakeReleaseCommand(),
-      loadPathWeaverTrajectoryCommand("paths/output/GalacticSearchBlueA.wpilib.json", true)
-    );
-  }
-
-
-  /**
-   * getAutonomousRedBCommand - generate Red B AutoNav Command
-   * @return Command object
-   */
-  public Command getAutonomousRedBCommand(){
-    // Changing start pose to 12 by 90 because of Orange 1 size
-    /* Pose2d startPose = new Pose2d(inches2Meters(12), inches2Meters(90), new Rotation2d(0));
-
-    List<Translation2d> red_b_points = List.of(
-      new Translation2d( inches2Meters(90), inches2Meters(120)),
-      new Translation2d( inches2Meters(150), inches2Meters(60)),
-      new Translation2d( inches2Meters(210), inches2Meters(120))
-      );
-    
-    // Start of Red B program
-    Command ramseteCommand = createTrajectoryCommand(
-      startPose,
-      red_b_points,
-      new Pose2d(inches2Meters(320), inches2Meters(90), new Rotation2d(0)), false, 1.0, 0.25
-    );
-
-    // Run path following command, then stop at end. Turn off Drive train
-    return ramseteCommand.andThen(() -> m_drive.tankDriveVolts(0, 0));
-    */
-    return new ParallelCommandGroup(
-      intakeReleaseCommand(),
-      loadPathWeaverTrajectoryCommand("paths/output/GalacticSearchRedB.wpilib.json", true)
-    );
-  }
-
-
-  /**
-   * getAutonomousRedACommand - generate Red A AutoNav Command
-   * @return Command object
-   */
-  public Command getAutonomousRedACommand(){
-    //Changing start pose to 12 by 90 because of Orange 1 size
-    /* Pose2d startPose = new Pose2d(inches2Meters(12), inches2Meters(90), new Rotation2d(0));
-
-    List<Translation2d> red_a_points = List.of(
-      new Translation2d( inches2Meters(90), inches2Meters(85)),
-      new Translation2d( inches2Meters(150), inches2Meters(75)),
-      new Translation2d( inches2Meters(180), inches2Meters(145))
-      );
-    
-    // Start of Red A program
-    Command ramseteCommand = createTrajectoryCommand(
-      startPose,
-      red_a_points,
-      new Pose2d(inches2Meters(320), inches2Meters(95), new Rotation2d(0)), false, 1.5, 0.5
-    );
-
-    // Run path following command, then stop at end. Turn off Drive train
-    return ramseteCommand;
-    */
-
-    return new ParallelCommandGroup(
-      intakeReleaseCommand(),
-      loadPathWeaverTrajectoryCommand("paths/output/GalacticSearchRedA.wpilib.json", true)
-    );
-  }
-
   /**
    * getAutonomousToTarget - Generate Auton Command used in Autonomous Challenge
    * 
@@ -649,7 +451,6 @@ public class RobotContainer {
     );
 
   }
-
 
   /**
    * Figure 8 Autonomous Command
