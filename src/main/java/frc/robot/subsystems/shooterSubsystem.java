@@ -232,16 +232,6 @@ public class shooterSubsystem extends SubsystemBase {
   }
 
   /**
-   * getRPMforTY() - return RPM based on limelight TY value
-   * 
-   * @param TY limelight TY value
-   * @return RPM for flywheel
-   */
-  public double getRPMforTY(double TY) {
-    return m_lt_angle.getInterpolatedValue(TY);
-  }
-
-  /**
    * getRPMforDistanceFeet() - return RPM based on distance to target in FEET
    * 
    * @param distanceFeet distance in FEET to goal

@@ -118,12 +118,12 @@ public class RobotContainer {
     final JoystickButton driverStartButton = new JoystickButton(m_driveController, Button.kStart.value);
     final JoystickButton driverBackButton = new JoystickButton(m_driveController, Button.kBack.value);
     // driver left bumper is hardcoded to be turbo boost
-    // final JoystickButton driverLeftBumper = new JoystickButton(m_driveController, Button.kBumperLeft.value);
+    final JoystickButton driverLeftBumper = new JoystickButton(m_driveController, Button.kBumperLeft.value);
     final JoystickButton driverRightBumper = new JoystickButton(m_driveController, Button.kBumperRight.value);
 
     // Operator Controller Buttons
     final JoystickButton opAButton = new JoystickButton(m_operatorController, Button.kA.value);
-    final JoystickButton opBButton = new JoystickButton(m_operatorController, Button.kB.value);
+    //final JoystickButton opBButton = new JoystickButton(m_operatorController, Button.kB.value);
     final JoystickButton opXButton = new JoystickButton(m_operatorController, Button.kX.value);
     final JoystickButton opYButton = new JoystickButton(m_operatorController, Button.kY.value);
     final JoystickButton opStartButton = new JoystickButton(m_operatorController, Button.kStart.value);
@@ -143,7 +143,7 @@ public class RobotContainer {
     // Left Bumper   - turbo boost, FULL SPEED 
     // Right Bumper  - 
     // driverRightBumper.whenPressed(new InstantCommand(() -> m_drive.toggleDriveInverted()));
-    driverBButton.whenPressed(new InstantCommand(() -> m_drive.toggleDriveInverted()));
+    driverLeftBumper.whenPressed(new InstantCommand(() -> m_drive.toggleDriveInverted()));
     driverXButton.whenPressed(new InstantCommand(() -> m_drive.toggleCurvatureMode()));
 
     // driverAButton.whenPressed(new InstantCommand(() -> m_drive.toggleForzaMode()));

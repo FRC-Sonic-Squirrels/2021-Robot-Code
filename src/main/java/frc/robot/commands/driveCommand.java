@@ -59,7 +59,8 @@ public class driveCommand extends CommandBase {
       // rotation = rotation * Math.abs(rotation);
     }
 
-    if (driveController.getBumper(Hand.kLeft) == false) {
+    // was getBumper(Hand.kLeft)
+    if (driveController.getBButton() == false) {
       // drive slower, press button in engage turbo mode
 
       speed = speed * speedMultiplier;

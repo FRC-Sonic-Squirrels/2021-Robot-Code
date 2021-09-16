@@ -152,8 +152,8 @@ public class driveSubsystem extends SubsystemBase {
       SmartDashboard.putNumber("right_wheel_Velocity", getRightVelocity());
       SmartDashboard.putNumber("left_wheel_Distance", leftDist);
       SmartDashboard.putNumber("right_wheel_Distance", rightDist);
-      SmartDashboard.putNumber("left volts", falcon1_leftLead.getMotorOutputVoltage());
-      SmartDashboard.putNumber("right volts", falcon3_rightLead.getMotorOutputVoltage());
+      SmartDashboard.putNumber("left_volts", falcon1_leftLead.getMotorOutputVoltage());
+      SmartDashboard.putNumber("right_volts", falcon3_rightLead.getMotorOutputVoltage());
 
       Pose2d currentPose = m_odometry.getPoseMeters();
       SmartDashboard.putNumber("pose_x", currentPose.getTranslation().getX());
@@ -162,9 +162,11 @@ public class driveSubsystem extends SubsystemBase {
 
       // from
       // https://github.com/CrossTheRoadElec/Phoenix-Examples-Languages/blob/master/Java%20General/DriveStraight_Pigeon/src/main/java/frc/robot/Robot.java
-      boolean angleIsGood = (m_gyro.getState() == PigeonIMU.PigeonState.Ready) ? true : false;
-      SmartDashboard.putBoolean("DEBUG pigeon angle is good", angleIsGood);
+      // boolean angleIsGood = (m_gyro.getState() == PigeonIMU.PigeonState.Ready) ? true : false;
+      // SmartDashboard.putBoolean("DEBUG pigeon angle is good", angleIsGood);
+
     }
+    SmartDashboard.putBoolean("CurvatureMode", curvatureModeEnabled);
   }
   
   /**
