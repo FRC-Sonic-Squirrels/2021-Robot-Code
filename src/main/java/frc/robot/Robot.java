@@ -4,6 +4,7 @@ import static frc.robot.Constants.limeLightConstants.targetHeight_meters;
 import static frc.robot.Constants.limeLightConstants.limeLightHeight_meters;
 import static frc.robot.Constants.limeLightConstants.limeLightAngle_degrees;
 
+import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SlewRateLimiter;
@@ -23,6 +24,7 @@ public class Robot extends TimedRobot {
   private static double rateMetersPerSecond = 1.0;
   private static final SlewRateLimiter distanceRateLimiter = new SlewRateLimiter(rateMetersPerSecond, 0.0);
   private double turretErrorDeg = 0.0;
+  private UsbCamera camera; 
 
   @Override
   public void robotInit() {
@@ -31,7 +33,9 @@ public class Robot extends TimedRobot {
     LiveWindow.disableAllTelemetry();
     
     //RobotContainer.m_limelight.setLEDMode(1);
-    CameraServer.getInstance().startAutomaticCapture();
+    camera = CameraServer.getInstance().startAutomaticCapture();
+    camera.setResolution(320, 240);
+    camera.setFPS(20);
     m_robotContainer.m_intake.setDynamicSpeed(false);
   }
 
