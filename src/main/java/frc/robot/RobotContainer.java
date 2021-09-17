@@ -271,13 +271,13 @@ public class RobotContainer {
     //powerPortLocation = new Translation2d(feet2Meters(10.5), inches2Meters(66.91));
 
     Pose2d startPos = new Pose2d(0, 0, new Rotation2d(0));
-    Pose2d back1Pos = new Pose2d(-1.75, 0, new Rotation2d(0));
-    Pose2d back2Pos = new Pose2d(-4.35, 0, new Rotation2d(0));
-    Pose2d finalPos = new Pose2d(-2, 0, new Rotation2d(0));
+    Pose2d back1Pos = new Pose2d(1.75, 0, new Rotation2d(0));
+    Pose2d back2Pos = new Pose2d(4.35, 0, new Rotation2d(0));
+    Pose2d finalPos = new Pose2d(2, -0.5, new Rotation2d(0));
 
-    Command moveBack1 = createTrajectoryCommand(startPos, List.of(), back1Pos, true, 3.0, 1.8); 
-    Command moveBack2 = createTrajectoryCommand(back1Pos, List.of(), back2Pos, true, 0.80, 0.5);
-    Command moveForward = createTrajectoryCommand(back2Pos, List.of(), finalPos, false, 3.0, 1.8);
+    Command moveBack1 = createTrajectoryCommand(startPos, List.of(), back1Pos, false, 3.0, 1.8); 
+    Command moveBack2 = createTrajectoryCommand(back1Pos, List.of(), back2Pos, false, 1.0, 1.0);
+    Command moveForward = createTrajectoryCommand(back2Pos, List.of(), finalPos, true, 3.0, 1.8);
 
     double goalDistanceFeet = 17.0;
 
@@ -299,27 +299,26 @@ public class RobotContainer {
 
       // Move back get 3 more balls
       new ParallelRaceGroup(
-        new indexerDefaultCommand(m_indexer).perpetually(), 
-        intakeReleaseCommand(),
-        new SequentialCommandGroup(
-          moveBack2                    // move back slow
-          //new WaitCommand(0.1)       // time to finish sucking in last ball
-        )
+        new intakeDeploy(m_intake, m_indexer, 200),
+        moveBack2                    // move back slow
+        //new WaitCommand(0.1)       // time to finish sucking in last ball
       ),
+
+
+      new InstantCommand(() -> m_shooter.setShooterRPMforDistanceFeet(goalDistanceFeet), m_shooter),
+      new InstantCommand(() -> m_hood.setPositionForDistanceFeet(goalDistanceFeet), m_hood),
 
       // Move forward prepare to shoot
       new ParallelCommandGroup(
-          new InstantCommand(() -> m_shooter.setShooterRPMforDistanceFeet(goalDistanceFeet), m_shooter),
-          new InstantCommand(() -> m_hood.setPositionForDistanceFeet(goalDistanceFeet), m_hood),
-          // new indexerStageForShootingCommand(m_indexer), 
-          moveForward
-      ),
+          moveForward,
+          new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_hood, m_limelight, m_intake).withTimeout(7)
+      )
 
       // shoot, finish when all the balls are gone
-      new ParallelRaceGroup(
-        new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_hood, m_limelight, m_intake).withTimeout(7),
-        new WaitUntilCommand(() -> m_indexer.getBallCount() == 0)
-      )
+  //    new ParallelRaceGroup(
+  //      new shooterAutoCommand(m_indexer, m_turret, m_shooter, m_hood, m_limelight, m_intake).withTimeout(7),
+  //      new WaitUntilCommand(() -> m_indexer.getBallCount() == 0)
+  //    )
 
     );
 
