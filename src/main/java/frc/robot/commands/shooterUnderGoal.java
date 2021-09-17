@@ -60,7 +60,6 @@ public class shooterUnderGoal extends CommandBase {
     m_indexer.stopIndexer();
     m_shooter.setShooterRPM(0);
     m_turret.stop();
-    m_hood.zeroHoodPos();
   }
 
   @Override
