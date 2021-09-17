@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import com.fearxzombie.limelight;
-import com.team2930.lib.util.geometry;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
