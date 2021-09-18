@@ -48,7 +48,7 @@ public class driveSubsystem extends SubsystemBase {
   // teleop driver control fine tuning
   private boolean driveInvert = true;
   private boolean forzaModeEnabled = true;
-  private boolean curvatureModeEnabled = true;
+  private boolean curvatureModeEnabled = false;
   private boolean squaredInputs = false;
 
   // New Gyro, pigeon IMU on the CAN bus
