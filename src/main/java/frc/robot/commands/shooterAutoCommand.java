@@ -33,6 +33,7 @@ public class shooterAutoCommand extends CommandBase {
   private long shooterReadyTimeNS = 0;
   private double m_Integral = 0;
   private boolean shooting = false;
+  private double currentTargetRPM = 0;
 
   /**
    * shooterAutoCommand class constructor
@@ -77,9 +78,18 @@ public class shooterAutoCommand extends CommandBase {
     m_intake.coastToZero();
     if (startTimeNS == 0) {
       startTimeNS = System.nanoTime();
+      currentTargetRPM = m_shooter.getRPMforDistanceMeter(Robot.distance_meters);
+      m_shooter.setShooterRPM(currentTargetRPM);
+    }
+    else {
+      double targetRPM = m_shooter.getRPMforDistanceMeter(Robot.distance_meters);
+      if (Math.abs(currentTargetRPM - targetRPM) > 25) {
+          currentTargetRPM = targetRPM;
+          m_shooter.setShooterRPM(currentTargetRPM);
+      }
     }
 
-    m_shooter.setShooterRPM(m_shooter.getRPMforDistanceMeter(Robot.distance_meters));
+    //m_shooter.setShooterRPM(m_shooter.getRPMforDistanceMeter(Robot.distance_meters));
     m_hood.setPositionRotations(m_hood.angleToRotations(m_hood.getAngleforDistanceMeter(Robot.distance_meters)));
     double tx_angleError = m_limelight.getTX();
     if (Math.abs(tx_angleError) < 2.0) {
