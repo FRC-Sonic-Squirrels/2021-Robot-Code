@@ -42,7 +42,7 @@ public class shooterUnderGoal extends CommandBase {
   @Override
   public void initialize() {
     m_shooter.setShooterRPMforDistanceFeet(4.0);  // for 4 feet away
-    m_turret.setAngleDegrees(0);
+    m_turret.turretHome();
     m_hood.retractHood();
   }
 
