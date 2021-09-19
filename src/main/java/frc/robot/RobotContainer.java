@@ -92,7 +92,8 @@ public class RobotContainer {
     m_turret.setDefaultCommand(new turretDefaultCommand(m_turret));
 
     chooser.addOption("Move Back 3 Shoot", moveThenShoot(3.0));
-    chooser.addOption("Right Side 6", rightSide6Ball());
+    //chooser.addOption("Right Side 6", rightSide6Ball());
+    chooser.setDefaultOption("Right Side 6", rightSide6Ball());
     chooser.addOption("Move Forward 2 Shoot", moveThenShoot(-2.0));
     chooser.addOption("Go Forward 1m", autonCalibrationForward(1.0));
     chooser.addOption("Go Forward 2m", autonCalibrationForward(2.0));
@@ -102,7 +103,7 @@ public class RobotContainer {
     //chooser.addOption("Curve Left", autonCalibrationCurve(1.0, 1.0));
     //chooser.addOption("Curve Right", autonCalibrationCurve(1.0, -1.0));
     chooser.addOption("Do Nothing", getNoAutonomousCommand());
-    chooser.setDefaultOption("Do Nothing", getNoAutonomousCommand());
+    //chooser.setDefaultOption("Do Nothing", getNoAutonomousCommand());
     SmartDashboard.putData("Auto mode", chooser);
 
   }
@@ -122,7 +123,7 @@ public class RobotContainer {
 
     // Operator Controller Buttons
     final JoystickButton opAButton = new JoystickButton(m_operatorController, Button.kA.value);
-    //final JoystickButton opBButton = new JoystickButton(m_operatorController, Button.kB.value);
+    final JoystickButton opBButton = new JoystickButton(m_operatorController, Button.kB.value);
     final JoystickButton opXButton = new JoystickButton(m_operatorController, Button.kX.value);
     final JoystickButton opYButton = new JoystickButton(m_operatorController, Button.kY.value);
     final JoystickButton opStartButton = new JoystickButton(m_operatorController, Button.kStart.value);
@@ -176,7 +177,7 @@ public class RobotContainer {
     //opYButton.whenPressed(new InstantCommand(() -> m_indexer.setIntakeMode(), m_indexer));
     opXButton.whenPressed(shooterStopCommand());
     opYButton.whenPressed(new InstantCommand(() -> m_indexer.stopIndexer()));
-    // opBButton.whenPressed(intakeReleaseCommand());
+    opBButton.whenPressed(new InstantCommand(() -> m_turret.turretHome()));
     opAButton.whileHeld(new intakeDeploy(m_intake, m_indexer, 200));
 
     //opLeftBumper.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(3000), m_shooter));
