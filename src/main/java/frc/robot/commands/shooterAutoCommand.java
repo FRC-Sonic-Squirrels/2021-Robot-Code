@@ -78,11 +78,11 @@ public class shooterAutoCommand extends CommandBase {
     m_intake.coastToZero();
     if (startTimeNS == 0) {
       startTimeNS = System.nanoTime();
-      currentTargetRPM = m_shooter.getRPMforDistanceMeter(Robot.distance_meters);
+      currentTargetRPM = m_shooter.getRPMforDistanceMeter(Robot.distance_meters) + 25;
       m_shooter.setShooterRPM(currentTargetRPM);
     }
     else {
-      double targetRPM = m_shooter.getRPMforDistanceMeter(Robot.distance_meters);
+      double targetRPM = m_shooter.getRPMforDistanceMeter(Robot.distance_meters) + 25;
       if (Math.abs(currentTargetRPM - targetRPM) > 25) {
           currentTargetRPM = targetRPM;
           m_shooter.setShooterRPM(currentTargetRPM);
