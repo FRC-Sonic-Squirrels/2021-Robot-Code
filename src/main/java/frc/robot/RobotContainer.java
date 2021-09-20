@@ -89,7 +89,7 @@ public class RobotContainer {
     configureButtonBindings();
     m_drive.setDefaultCommand(new driveCommand(m_drive));
     m_indexer.setDefaultCommand(new indexerDefaultCommand(m_indexer));
-    m_turret.setDefaultCommand(new turretDefaultCommand(m_turret));
+    //m_turret.setDefaultCommand(new turretDefaultCommand(m_turret));
 
     chooser.addOption("Move Back 3 Shoot", moveThenShoot(3.0));
     //chooser.addOption("Right Side 6", rightSide6Ball());
