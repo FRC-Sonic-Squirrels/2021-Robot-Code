@@ -238,10 +238,6 @@ public class shooterSubsystem extends SubsystemBase {
    * @return RPM for flywheel
    */
   public double getRPMforDistanceFeet(double distanceFeet) {
-    // TODO: try rounding RPM to nearest 25 rpm, to reduce occilations in reported distance from limelight
-    // double rpm = m_lt_feet.getInterpolatedValue(distanceFeet);
-    // rpm = 25.0 * Math.floor(rpm / 25.0);
-    // return rpm;
     return m_lt_feet.getInterpolatedValue(distanceFeet);
   }
 
