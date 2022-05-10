@@ -8,7 +8,6 @@ package frc.robot.commands;
 
 import com.fearxzombie.limelight;
 
-import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.shooterSubsystem;
@@ -50,7 +49,7 @@ public class turretLimelightCommand extends CommandBase {
       // m_LimelightHasValidTarget = false;
       // m_LimelightDriveCommand = 0.0;
       m_LimelightSteerCommand = 0.0;
-      m_turret.setPercentOutput(RobotContainer.m_operatorController.getX(Hand.kLeft));
+      m_turret.setPercentOutput(RobotContainer.m_operatorController.getLeftX());
       return;
     }
 

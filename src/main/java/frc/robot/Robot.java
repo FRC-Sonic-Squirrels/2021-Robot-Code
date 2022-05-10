@@ -4,10 +4,10 @@ import static frc.robot.Constants.limeLightConstants.targetHeight_meters;
 import static frc.robot.Constants.limeLightConstants.limeLightHeight_meters;
 import static frc.robot.Constants.limeLightConstants.limeLightAngle_degrees;
 
-import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.wpilibj.PowerDistributionPanel;
-import edu.wpi.first.wpilibj.SlewRateLimiter;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -19,7 +19,7 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
-  public PowerDistributionPanel m_pdp = new PowerDistributionPanel(0);
+  public PowerDistribution m_pdp = new PowerDistribution();
   public static double distance_meters = 0.0;
   private static double rateMetersPerSecond = 1.0;
   private static final SlewRateLimiter distanceRateLimiter = new SlewRateLimiter(rateMetersPerSecond, 0.0);
@@ -33,7 +33,7 @@ public class Robot extends TimedRobot {
     LiveWindow.disableAllTelemetry();
     
     //RobotContainer.m_limelight.setLEDMode(1);
-    camera = CameraServer.getInstance().startAutomaticCapture();
+    camera = CameraServer.startAutomaticCapture();
     camera.setResolution(320, 240);
     camera.setFPS(20);
     m_robotContainer.m_intake.setDynamicSpeed(false);

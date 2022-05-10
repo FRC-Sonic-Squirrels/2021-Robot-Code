@@ -17,7 +17,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import edu.wpi.first.wpilibj.Relay;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 import static frc.robot.Constants.canId;
 import static frc.robot.Constants.pneumaticId;
@@ -27,7 +29,7 @@ public class intakeSubsystem extends SubsystemBase {
   private WPI_TalonFX m_intake = new WPI_TalonFX(canId.canId18_intake);
   private TalonFXSensorCollection m_encoder;
   private Relay intakeRelay = new Relay(0);
-  private DoubleSolenoid intakeDoubleSolenoid = new DoubleSolenoid(pneumaticId.id0_intake, pneumaticId.id1_intake);
+  private DoubleSolenoid intakeDoubleSolenoid = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, pneumaticId.id0_intake, pneumaticId.id1_intake);
 
   private driveSubsystem m_drive;
   private double circOfIntake_meters = (1.4725 * Math.PI) * 0.0254;

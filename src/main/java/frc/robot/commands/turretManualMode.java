@@ -8,7 +8,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.turretSubsystem;
@@ -32,13 +31,13 @@ public class turretManualMode extends CommandBase {
   @Override
   public void execute() {
     
-    double stickInput = controller.getX(Hand.kLeft);
+    double stickInput = controller.getLeftX();
     if (Math.abs(stickInput) > 0.05) {
       // invert stick, as positive is CCW
       m_turret.setPercentOutput( - stickInput * 0.5);
     }
     else {
-      if (controller.getStickButtonPressed(Hand.kLeft)) {
+      if (controller.getLeftStickButtonPressed()) {
         m_turret.setAngleDegrees(0);  // home
       }
       if (controller.getXButton()) {
@@ -47,12 +46,12 @@ public class turretManualMode extends CommandBase {
       if (controller.getYButton()) {
         m_turret.setAngleDegrees(-10);
       }
-      if (controller.getBumperPressed(Hand.kLeft)) {
+      if (controller.getLeftBumperPressed()) {
         double currentAngleDegrees = m_turret.getAngleDegrees();
         // CCW is positive
         m_turret.setAngleDegrees(currentAngleDegrees + 5);
       }
-      if (controller.getBumperPressed(Hand.kRight)) {
+      if (controller.getRightBumperPressed()) {
         double currentAngleDegrees = m_turret.getAngleDegrees();
         // CW is negative
         m_turret.setAngleDegrees(currentAngleDegrees - 5);

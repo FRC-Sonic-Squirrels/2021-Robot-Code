@@ -8,7 +8,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.turretSubsystem;
@@ -29,8 +28,8 @@ public class turretDefaultCommand extends CommandBase {
 
   @Override
   public void execute() {
-    if (Math.abs(opController.getX(Hand.kLeft)) >= 0.1) {
-      m_turret.setPercentOutput(opController.getX(Hand.kLeft) * 0.5);
+    if (Math.abs(opController.getLeftX()) >= 0.1) {
+      m_turret.setPercentOutput(opController.getLeftX() * 0.5);
     }
     else {
       m_turret.setPercentOutput(0);

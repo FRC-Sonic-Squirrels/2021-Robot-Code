@@ -8,7 +8,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
@@ -45,12 +44,12 @@ public class driveCommand extends CommandBase {
 
     if (m_drive.getForzaModeEnabled()) {
       // right trigger forward, left trigger for reverse
-      speed = driveController.getTriggerAxis(Hand.kRight) - driveController.getTriggerAxis(Hand.kLeft);
-      rotation = -driveController.getX(Hand.kLeft);
+      speed = driveController.getRightTriggerAxis() - driveController.getLeftTriggerAxis();
+      rotation = -driveController.getLeftX();
     }
     else {
-      speed = driveController.getY(Hand.kLeft);
-      rotation = -driveController.getX(Hand.kRight);
+      speed = driveController.getLeftY();
+      rotation = -driveController.getRightX();
     }
 
     if (m_drive.getSquaredInputs()) {
@@ -81,7 +80,7 @@ public class driveCommand extends CommandBase {
 
     if (curvatureMode) {
       // right bumper pressed enables quick turn, to turn in place
-      m_drive.curvatureDrive(speed, rotation, driveController.getBumper(Hand.kRight));
+      m_drive.curvatureDrive(speed, rotation, driveController.getRightBumper());
     }
     else {
       m_drive.arcadeDrive(speed, rotation);

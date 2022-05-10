@@ -25,18 +25,18 @@ import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj.controller.RamseteController;
-import edu.wpi.first.wpilibj.geometry.Pose2d;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.geometry.Translation2d;
+import edu.wpi.first.math.controller.RamseteController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.trajectory.Trajectory;
-import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
-import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
-import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
-import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
-import edu.wpi.first.wpilibj.util.Units;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.TrajectoryUtil;
+import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
@@ -118,8 +118,8 @@ public class RobotContainer {
     final JoystickButton driverStartButton = new JoystickButton(m_driveController, Button.kStart.value);
     final JoystickButton driverBackButton = new JoystickButton(m_driveController, Button.kBack.value);
     // driver left bumper is hardcoded to be turbo boost
-    final JoystickButton driverLeftBumper = new JoystickButton(m_driveController, Button.kBumperLeft.value);
-    final JoystickButton driverRightBumper = new JoystickButton(m_driveController, Button.kBumperRight.value);
+    final JoystickButton driverLeftBumper = new JoystickButton(m_driveController, Button.kLeftBumper.value);
+    final JoystickButton driverRightBumper = new JoystickButton(m_driveController, Button.kRightBumper.value);
 
     // Operator Controller Buttons
     final JoystickButton opAButton = new JoystickButton(m_operatorController, Button.kA.value);
@@ -128,8 +128,8 @@ public class RobotContainer {
     final JoystickButton opYButton = new JoystickButton(m_operatorController, Button.kY.value);
     final JoystickButton opStartButton = new JoystickButton(m_operatorController, Button.kStart.value);
     final JoystickButton opBackButton = new JoystickButton(m_operatorController, Button.kBack.value);
-    final JoystickButton opLeftBumper = new JoystickButton(m_operatorController, Button.kBumperLeft.value);
-    final JoystickButton opRightBumper = new JoystickButton(m_operatorController, Button.kBumperRight.value);
+    final JoystickButton opLeftBumper = new JoystickButton(m_operatorController, Button.kLeftBumper.value);
+    final JoystickButton opRightBumper = new JoystickButton(m_operatorController, Button.kRightBumper.value);
     final POVButton opDPadUp = new POVButton(m_operatorController, 0);
     final POVButton opDPadDown = new POVButton(m_operatorController, 180);
 
