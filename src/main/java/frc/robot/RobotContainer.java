@@ -144,7 +144,7 @@ public class RobotContainer {
     // Right Bumper  - 
     // driverRightBumper.whenPressed(new InstantCommand(() -> m_drive.toggleDriveInverted()));
     driverLeftBumper.whenPressed(new InstantCommand(() -> m_drive.toggleDriveInverted()));
-    driverXButton.whenPressed(new InstantCommand(() -> m_drive.toggleCurvatureMode()));
+    //driverXButton.whenPressed(new InstantCommand(() -> m_drive.toggleCurvatureMode()));
 
     // driverAButton.whenPressed(new InstantCommand(() -> m_drive.toggleForzaMode()));
     // driverBButton.whenPressed(new InstantCommand(() -> m_drive.toggleSquaredInputs()));
@@ -155,6 +155,12 @@ public class RobotContainer {
     // driverBackButton.whenPressed(new InstantCommand(() -> m_shooter.setShooterRPM(0), m_shooter));
     // driverBButton.whenPressed(intakeReleaseCommand());
 
+    driverXButton.whenPressed(shooterStopCommand());
+    driverYButton.whenPressed(new InstantCommand(() -> m_indexer.stopIndexer()));
+    driverBButton.whenPressed(new InstantCommand(() -> m_turret.turretHome()));
+    driverAButton.toggleWhenPressed(new intakeDeploy(m_intake, m_indexer, 200));
+
+    driverRightBumper.whileHeld(new shooterUnderGoal(m_indexer, m_turret, m_shooter, m_hood));
 
     // Operator Controls
     // Left Joystick - manual turret control
