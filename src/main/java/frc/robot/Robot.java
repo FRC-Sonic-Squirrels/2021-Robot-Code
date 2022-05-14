@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.commands.turretManualMode;
 
 
 public class Robot extends TimedRobot {
@@ -25,6 +26,8 @@ public class Robot extends TimedRobot {
   private static final SlewRateLimiter distanceRateLimiter = new SlewRateLimiter(rateMetersPerSecond, 0.0);
   private double turretErrorDeg = 0.0;
   private UsbCamera camera; 
+
+ Command turretmanual;
 
   @Override
   public void robotInit() {
@@ -94,6 +97,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    turretmanual = new turretManualMode(m_robotContainer.m_turret);
+
     if (m_autonomousCommand != null) {
       System.out.println("Cancelling Autonomous Command");
       m_autonomousCommand.cancel();
@@ -103,6 +108,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
+    turretmanual.execute();
+
   }
 
   @Override

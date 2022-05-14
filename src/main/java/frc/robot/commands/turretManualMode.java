@@ -1,3 +1,4 @@
+
 /*----------------------------------------------------------------------------*/
 /* Copyright (c) 2019 FIRST. All Rights Reserved. */
 /* Open Source Software - may be modified and shared by FRC teams. The code */
@@ -8,6 +9,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.turretSubsystem;
@@ -16,6 +18,7 @@ public class turretManualMode extends CommandBase {
   
   private turretSubsystem m_turret;
   XboxController controller = RobotContainer.m_operatorController;
+  XboxController driver = RobotContainer.m_driveController;
 
   public turretManualMode(turretSubsystem turret) {
     addRequirements(turret);
@@ -30,13 +33,16 @@ public class turretManualMode extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    
-    double stickInput = controller.getLeftX();
-    if (Math.abs(stickInput) > 0.05) {
+    SmartDashboard.putBoolean("turretManualCommand", true);
+    double stickInput = driver.getRightX();
+    if (Math.abs(stickInput) > 0.5) {
       // invert stick, as positive is CCW
-      m_turret.setPercentOutput( - stickInput * 0.5);
+      m_turret.setPercentOutput( - stickInput * 0.1);
     }
+
     else {
+      m_turret.setPercentOutput(0.0);
+
       if (controller.getLeftStickButtonPressed()) {
         m_turret.setAngleDegrees(0);  // home
       }
@@ -63,6 +69,7 @@ public class turretManualMode extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     m_turret.stop();
+    SmartDashboard.putBoolean("turretManualCommand", false);
   }
 
   // Returns true when the command should end.

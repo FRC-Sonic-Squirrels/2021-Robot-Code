@@ -56,6 +56,7 @@ import frc.robot.commands.intakeDeploy;
 import frc.robot.commands.shooterAutoCommand;
 import frc.robot.commands.shooterUnderGoal;
 import frc.robot.commands.turretDefaultCommand;
+import frc.robot.commands.turretManualMode;
 import frc.robot.subsystems.driveSubsystem;
 import frc.robot.subsystems.hoodSubsystem;
 import frc.robot.subsystems.indexerSubsystem;
@@ -74,7 +75,7 @@ public class RobotContainer {
   // public so that it can get the right instance.
   public static final limelight m_limelight = new limelight("limelight-one");
   //public static final limelight m_limelightPowerCell = new limelight("limelight");
-  private final turretSubsystem m_turret = new turretSubsystem();
+  public  final turretSubsystem m_turret = new turretSubsystem();
   public final shooterSubsystem m_shooter = new shooterSubsystem();
   private static final indexerSubsystem m_indexer = new indexerSubsystem();
   public final intakeSubsystem m_intake = new intakeSubsystem(m_drive);
