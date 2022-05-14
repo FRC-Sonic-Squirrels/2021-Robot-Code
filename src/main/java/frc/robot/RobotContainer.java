@@ -157,7 +157,7 @@ public class RobotContainer {
 
     driverXButton.whenPressed(shooterStopCommand());
     driverYButton.whenPressed(new InstantCommand(() -> m_indexer.stopIndexer()));
-    driverBButton.whenPressed(new InstantCommand(() -> m_turret.turretHome()));
+    // driverBButton.whenPressed(new InstantCommand(() -> m_turret.turretHome()));
     driverAButton.toggleWhenPressed(new intakeDeploy(m_intake, m_indexer, 200));
 
     driverRightBumper.whileHeld(new shooterUnderGoal(m_indexer, m_turret, m_shooter, m_hood));
