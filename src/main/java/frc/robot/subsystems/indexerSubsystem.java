@@ -27,6 +27,7 @@ import static frc.robot.Constants.canId;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.ControlType;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
@@ -43,6 +44,18 @@ public class indexerSubsystem extends SubsystemBase {
   private WPI_TalonSRX indexIntake;
   private WPI_TalonFX indexKicker;
   private WPI_TalonFX indexBelts;
+
+  private CANSparkMax newIndexIntake;
+  private CANSparkMax newIndexBelts;
+  private CANSparkMax newIndexKicker;
+
+  private CANPIDController newIndexIntakeController;
+  private CANPIDController newIndexBeltsController;
+  private CANPIDController newIndexKickerController;
+
+  private CANEncoder newIndexIntakeEncoder;
+  private CANEncoder newIndexBeltsEncoder;
+  private CANEncoder newIndexKickerEncoder;
 
   private CANSparkMax m_hopperAgitator;
   private CANEncoder m_agitator_encoder;
@@ -65,6 +78,42 @@ public class indexerSubsystem extends SubsystemBase {
     indexIntake = new WPI_TalonSRX(canId.canId8_indexo_intake_and_hopper);
     indexBelts = new WPI_TalonFX(canId.canId10_indexo_belts);
     indexKicker = new WPI_TalonFX(canId.canId11_indexo_kicker);
+
+    // newIndexIntake = new CANSparkMax(canId.canId8_indexo_intake_and_hopper, MotorType.kBrushless);
+    // newIndexBelts = new CANSparkMax(canId.canId10_indexo_belts, MotorType.kBrushless);
+    // newIndexKicker = new CANSparkMax(canId.canId11_indexo_kicker, MotorType.kBrushless);
+
+    // newIndexIntake.restoreFactoryDefaults();
+    // newIndexBelts.restoreFactoryDefaults();
+    // newIndexKicker.restoreFactoryDefaults();
+
+    // newIndexIntake.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 100);
+    // newIndexIntake.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 500);
+    // newIndexIntake.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 500);
+
+    // newIndexBelts.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 100);
+    // newIndexBelts.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 500);
+    // newIndexBelts.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 500);
+
+    // newIndexKicker.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 100);
+    // newIndexKicker.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 500);
+    // newIndexKicker.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 500);
+
+    // newIndexIntakeController = newIndexIntake.getPIDController();
+    // newIndexBeltsController = newIndexBelts.getPIDController();
+    // newIndexKickerController = newIndexKicker.getPIDController();
+
+    // newIndexIntakeEncoder = newIndexIntake.getEncoder();
+    // newIndexBeltsEncoder = newIndexBelts.getEncoder();
+    // newIndexKickerEncoder = newIndexKicker.getEncoder();
+
+    // newIndexIntake.setInverted(true);
+    // newIndexBelts.setInverted(false);
+    // newIndexKicker.setInverted(false);
+
+    // newIndexIntake.setIdleMode(IdleMode.kBrake);
+    // newIndexBelts.setIdleMode(IdleMode.kBrake);
+    // newIndexKicker.setIdleMode(IdleMode.kBrake);
 
     m_hopperAgitator = new CANSparkMax(indexConstants.hopperAgitator, MotorType.kBrushless);
     m_hopperAgitator.restoreFactoryDefaults();
@@ -151,6 +200,20 @@ public class indexerSubsystem extends SubsystemBase {
     agitatorController.setIZone(0);
     agitatorController.setOutputRange(-0.8, 0.8);
 
+    // newIndexIntakeController.setP(0.00003);
+    // newIndexIntakeController.setI(0.0);
+    // newIndexIntakeController.setD(0.0);
+    // newIndexIntakeController.setOutputRange(-0.8, 0.8);
+
+    // newIndexBeltsController.setP(0.00003);
+    // newIndexBeltsController.setI(0.0);
+    // newIndexBeltsController.setD(0.0);
+    // newIndexBeltsController.setOutputRange(-0.8, 0.8);
+
+    // newIndexKickerController.setP(0.00003);
+    // newIndexKickerController.setI(0.0);
+    // newIndexKickerController.setD(0.0);
+    // newIndexKickerController.setOutputRange(-0.8, 0.8);
   }
 
   @Override
@@ -234,14 +297,17 @@ public class indexerSubsystem extends SubsystemBase {
 
   public void setBeltsPercentOutput(double percent) {
     indexBelts.set(ControlMode.PercentOutput, percent);
+    // newIndexBelts.set(percent);
   }
 
   public void setKickerPercentOutput(double percent) {
     indexKicker.set(ControlMode.PercentOutput, percent);
+    // newIndexKicker.set(percent);
   }
 
   public void setIntakePercentOutput(double percent) {
-      indexIntake.set(ControlMode.PercentOutput, percent);
+    indexIntake.set(ControlMode.PercentOutput, percent);
+    // newIndexIntake.set(percent);
   }
 
   public void setHopperPercentOutput(double percent) {
@@ -385,6 +451,7 @@ public class indexerSubsystem extends SubsystemBase {
    */
   private void stopBelts() {
     setBeltsRPM(0);
+    // newIndexBelts.stopMotor();
   }
 
   /**
