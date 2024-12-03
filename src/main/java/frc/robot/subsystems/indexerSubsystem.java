@@ -107,13 +107,13 @@ public class indexerSubsystem extends SubsystemBase {
     // newIndexBeltsEncoder = newIndexBelts.getEncoder();
     // newIndexKickerEncoder = newIndexKicker.getEncoder();
 
-    newIndexIntake.setInverted(true);
+    newIndexIntake.setInverted(false);
     // newIndexBelts.setInverted(false);
     // newIndexKicker.setInverted(false);
 
     newIndexIntake.setIdleMode(IdleMode.kBrake);
-    newIndexBelts.setIdleMode(IdleMode.kBrake);
-    newIndexKicker.setIdleMode(IdleMode.kBrake);
+    // newIndexBelts.setIdleMode(IdleMode.kBrake);
+    // newIndexKicker.setIdleMode(IdleMode.kBrake);
 
     m_hopperAgitator = new CANSparkMax(indexConstants.hopperAgitator, MotorType.kBrushless);
     m_hopperAgitator.restoreFactoryDefaults();
