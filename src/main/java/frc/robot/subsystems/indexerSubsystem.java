@@ -41,7 +41,7 @@ public class indexerSubsystem extends SubsystemBase {
     STOP
   };
 
-  private WPI_TalonSRX indexIntake;
+  // private WPI_TalonSRX indexIntake;
   private WPI_TalonFX indexKicker;
   private WPI_TalonFX indexBelts;
 
@@ -75,21 +75,21 @@ public class indexerSubsystem extends SubsystemBase {
 
   public indexerSubsystem() {
 
-    indexIntake = new WPI_TalonSRX(canId.canId8_indexo_intake_and_hopper);
+    // indexIntake = new WPI_TalonSRX(canId.canId8_indexo_intake_and_hopper);
     indexBelts = new WPI_TalonFX(canId.canId10_indexo_belts);
     indexKicker = new WPI_TalonFX(canId.canId11_indexo_kicker);
 
-    // newIndexIntake = new CANSparkMax(canId.canId8_indexo_intake_and_hopper, MotorType.kBrushless);
+    newIndexIntake = new CANSparkMax(canId.canId8_indexo_intake_and_hopper, MotorType.kBrushless);
     // newIndexBelts = new CANSparkMax(canId.canId10_indexo_belts, MotorType.kBrushless);
     // newIndexKicker = new CANSparkMax(canId.canId11_indexo_kicker, MotorType.kBrushless);
 
-    // newIndexIntake.restoreFactoryDefaults();
+    newIndexIntake.restoreFactoryDefaults();
     // newIndexBelts.restoreFactoryDefaults();
     // newIndexKicker.restoreFactoryDefaults();
 
-    // newIndexIntake.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 100);
-    // newIndexIntake.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 500);
-    // newIndexIntake.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 500);
+    newIndexIntake.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 100);
+    newIndexIntake.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 500);
+    newIndexIntake.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 500);
 
     // newIndexBelts.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 100);
     // newIndexBelts.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 500);
@@ -99,21 +99,21 @@ public class indexerSubsystem extends SubsystemBase {
     // newIndexKicker.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 500);
     // newIndexKicker.setPeriodicFramePeriod(PeriodicFrame.kStatus2, 500);
 
-    // newIndexIntakeController = newIndexIntake.getPIDController();
+    newIndexIntakeController = newIndexIntake.getPIDController();
     // newIndexBeltsController = newIndexBelts.getPIDController();
     // newIndexKickerController = newIndexKicker.getPIDController();
 
-    // newIndexIntakeEncoder = newIndexIntake.getEncoder();
+    newIndexIntakeEncoder = newIndexIntake.getEncoder();
     // newIndexBeltsEncoder = newIndexBelts.getEncoder();
     // newIndexKickerEncoder = newIndexKicker.getEncoder();
 
-    // newIndexIntake.setInverted(true);
+    newIndexIntake.setInverted(true);
     // newIndexBelts.setInverted(false);
     // newIndexKicker.setInverted(false);
 
-    // newIndexIntake.setIdleMode(IdleMode.kBrake);
-    // newIndexBelts.setIdleMode(IdleMode.kBrake);
-    // newIndexKicker.setIdleMode(IdleMode.kBrake);
+    newIndexIntake.setIdleMode(IdleMode.kBrake);
+    newIndexBelts.setIdleMode(IdleMode.kBrake);
+    newIndexKicker.setIdleMode(IdleMode.kBrake);
 
     m_hopperAgitator = new CANSparkMax(indexConstants.hopperAgitator, MotorType.kBrushless);
     m_hopperAgitator.restoreFactoryDefaults();
@@ -129,23 +129,23 @@ public class indexerSubsystem extends SubsystemBase {
 
     indexBelts.configFactoryDefault();
     indexKicker.configFactoryDefault();
-    indexIntake.configFactoryDefault();
+    // indexIntake.configFactoryDefault();
 
     // reduce CAN traffic for motors (not using speed control)
     indexBelts.setStatusFramePeriod(StatusFrame.Status_1_General, 20);
     indexBelts.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 100);
     indexKicker.setStatusFramePeriod(StatusFrame.Status_1_General, 20);
     indexKicker.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 100);
-    indexIntake.setStatusFramePeriod(StatusFrame.Status_1_General, 20);
-    indexIntake.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 100);
+    // indexIntake.setStatusFramePeriod(StatusFrame.Status_1_General, 20);
+    // indexIntake.setStatusFramePeriod(StatusFrame.Status_2_Feedback0, 100);
 
     // Voltage limits, percent output is scaled to this new max
     indexBelts.configVoltageCompSaturation(11);
     indexBelts.enableVoltageCompensation(true);
     indexKicker.configVoltageCompSaturation(11);
     indexKicker.enableVoltageCompensation(true);
-    indexIntake.configVoltageCompSaturation(11);
-    indexIntake.enableVoltageCompensation(true);
+    // indexIntake.configVoltageCompSaturation(11);
+    // indexIntake.enableVoltageCompensation(true);
 
     // current limits
     indexBelts.configSupplyCurrentLimit(currentLimits.m_currentlimitSecondary);
@@ -157,19 +157,19 @@ public class indexerSubsystem extends SubsystemBase {
     // Brake mode
     indexBelts.setNeutralMode(NeutralMode.Brake);
     indexKicker.setNeutralMode(NeutralMode.Brake);
-    indexIntake.setNeutralMode(NeutralMode.Brake);
+    // indexIntake.setNeutralMode(NeutralMode.Brake);
 
     // Invert
     indexBelts.setInverted(false);
     indexKicker.setInverted(false);
-    indexIntake.setInverted(true);
+    // indexIntake.setInverted(true);
 
     indexBelts.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
     indexKicker.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
-    indexIntake.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
+    // indexIntake.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
 
     // TalonFX don't have sensor phase only TalonSRX
-    indexIntake.setSensorPhase(false);
+    // indexIntake.setSensorPhase(false);
     indexKicker.setSensorPhase(false);
     
     //Set Ramp-Up
@@ -188,10 +188,10 @@ public class indexerSubsystem extends SubsystemBase {
     indexKicker.config_kD(0, 1.5, 10);
     indexKicker.config_kF(0, 0.053, 10);
 
-    indexIntake.config_kP(0, 0.1, 10);
-    indexIntake.config_kI(0, 0.0, 10);
-    indexIntake.config_kD(0, 0.0, 10);
-    indexIntake.config_kF(0, 0.0, 10);
+    // indexIntake.config_kP(0, 0.1, 10);
+    // indexIntake.config_kI(0, 0.0, 10);
+    // indexIntake.config_kD(0, 0.0, 10);
+    // indexIntake.config_kF(0, 0.0, 10);
 
     agitatorController.setP(0.00003);
     agitatorController.setI(0.0);
@@ -200,10 +200,10 @@ public class indexerSubsystem extends SubsystemBase {
     agitatorController.setIZone(0);
     agitatorController.setOutputRange(-0.8, 0.8);
 
-    // newIndexIntakeController.setP(0.00003);
-    // newIndexIntakeController.setI(0.0);
-    // newIndexIntakeController.setD(0.0);
-    // newIndexIntakeController.setOutputRange(-0.8, 0.8);
+    newIndexIntakeController.setP(0.00003);
+    newIndexIntakeController.setI(0.0);
+    newIndexIntakeController.setD(0.0);
+    newIndexIntakeController.setOutputRange(-0.8, 0.8);
 
     // newIndexBeltsController.setP(0.00003);
     // newIndexBeltsController.setI(0.0);
@@ -306,8 +306,8 @@ public class indexerSubsystem extends SubsystemBase {
   }
 
   public void setIntakePercentOutput(double percent) {
-    indexIntake.set(ControlMode.PercentOutput, percent);
-    // newIndexIntake.set(percent);
+    // indexIntake.set(ControlMode.PercentOutput, percent);
+    newIndexIntake.set(percent);
   }
 
   public void setHopperPercentOutput(double percent) {
@@ -329,7 +329,7 @@ public class indexerSubsystem extends SubsystemBase {
   }
 
   public void setIntakeRPM(double rpm) {
-    indexIntake.set(ControlMode.Velocity, rpm * 2048 / 600);
+    // indexIntake.set(ControlMode.Velocity, rpm * 2048 / 600);
   }
 
   public void setAgitatorRPM(double rpm){
